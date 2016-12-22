@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <title>Visualizador de Java</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+
+
+
+<!-- CSS --> 
+    
+            <!-- codemirror --> 
+    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css"><!-- main --> 
+    <link rel="stylesheet" href="lib/codemirror/theme/abcdef.css"><!-- addons theme --> 
+    <link rel="stylesheet" href="lib/codemirror/theme/monokai.css"><!-- addons theme --> 
+    <link rel="stylesheet" href="lib/codemirror/addon/display/fullscreen.css"><!-- addons extraKeys --> 
+    <link rel="stylesheet" href="lib/codemirror/addon/hint/show-hint.css"><!-- addons show-hint --> 
+            <!-- ./codemirror --> 
+
+    <link rel="stylesheet" href="lib/font-awesome-4.6.3/css/font-awesome.min.css">
+   
+    <link rel="stylesheet" href="css/estilos.css">
+
+
+
+
+
+<!-- JS --> 
+    <script src="lib/jquery/jquery-3.1.1.min.js"></script>
+
+            <!-- codemirror --> 
+    <script src="lib/codemirror/lib/codemirror.js"></script><!-- codemirror --> 
+    <script src="lib/codemirror/mode/clike/clike.js"></script><!-- addons mode:text/x-java --> 
+    <script src="lib/codemirror/addon/edit/matchbrackets.js"></script><!-- addons matchBrackets: true --> 
+    <script src="lib/codemirror/addon/edit/closebrackets.js"></script><!-- addons autoCloseBrackets: true --> 
+    <script src="lib/codemirror/addon/selection/active-line.js"></script><!-- addons styleActiveLine: true --> 
+    <script src="lib/codemirror/addon/selection/mark-selection.js"></script><!-- addons styleActiveLine: true --> 
+    <script src="lib/codemirror/addon/display/fullscreen.js"></script><!-- addons extraKeys: {} --> 
+    <script src="lib/codemirror/addon/hint/show-hint.js"></script><!-- addons show-hint --> 
+            <!-- ./codemirror --> 
+
+            <!-- THREE.JS --> 
+    <script src="lib/three-js/build/three.min.js"></script>
+    <script src="lib/three-js/examples/js/Cloth.js"></script>
+    <script src="lib/three-js/examples/js/controls/OrbitControls.js"></script>   
+    <script src="lib/three-js/examples/js/controls/FirstPersonControls.js"></script>           
+            <!-- ./THREE.JS --> 
+
+            <!-- Tween.JS --> 
+
+    <script src="lib/tween/Tween.js"></script>
+
+            <!-- ./Tween.JS --> 
+
+    <script src="js/editor_texto/tabla_de_simbolos.js"></script>
+    <script src="js/editor_texto/setup_javaEditor.js"></script>
+    <script src="js/editor_texto/analisis_sintactico.js"></script>
+
+    <script src="js/dibujando/Element.js"></script>
+    <script src="js/dibujando/Libreria.js"></script>
+    <script src="js/dibujando/Metodo.js"></script>
+    <script src="js/dibujando/Variable.js"></script>
+
+    
+    <script src="js/dibujando/helpers.js"></script>
+
+
+    <script src="js/funciones.js"></script>
+
+
+
+</head>
+<body>
+    <!--
+    <div id="container"></div>
+    <div id="info">
+        <span class="fa-stack fa-lg">
+          <i class="fa fa-square fa-stack-2x"></i>
+          <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
+        </span>
+        hola
+    </div>
+    -->
+    <div id="editor">
+            <textarea name="javaEditor" id="javaEditor" cols="30" rows="10" style="display: none;"></textarea>
+    </div>
+    <div id="menu">
+        <button id="Compilar" onclick="btn_Compilar()"  class="">Compilar</button>
+        <button id="Ejecutar" onclick="btn_Ejecutar()"  class="desactivado">Ejecutar</button>
+        <button id="PorPasos" onclick="btn_pasoApaso()" class="" >Por Pasos</button>
+        <button id="PorPasos" onclick="btn_Camara()" >Camara</button>
+    </div>
+
+  
+
+</body>
+</html>
