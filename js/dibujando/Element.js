@@ -51,7 +51,7 @@ class Element{
     getSonByIndex(index){
         return this._sons.children[index];    
     }
-    _setText(txt,name,visible=true){
+    _setText(txt,name,indice, visible=true, valorAnterior = null){
 
         let element = this._element;
         let cube = this._cube;
@@ -80,7 +80,6 @@ class Element{
 
                 let tam = cube.geometry.parameters;//depth,height,width
                 let scale = cube.scale;//x, y , z
-                let textos = texto.children.length+1;
                 let x = tam.width*scale.x;
                 let y = tam.height*scale.y; 
                 let z = tam.depth*scale.z; 
@@ -93,26 +92,35 @@ class Element{
                     );
 
                 //textMesh1.position.set(-(x/2)+4,(y/2)-(20)*textos,z/2);
-                new TWEEN.Tween(textMesh1.position)
-                        .to({ x: -(x/2)+TAM_GRAL/25, 
-                              y: (y/2)-(TAM_GRAL/5)*textos, 
-                              z: z/2 
-                          },velocidad)
-                        .easing(TWEEN.Easing.Quadratic.In)
-                        .start();
+                let tween = new TWEEN.Tween(textMesh1.position)
+                    .to({ x: -(x/2)+TAM_GRAL/25, 
+                          y: (y/2)-(TAM_GRAL/5)*indice, 
+                          z: z/2 
+                      },velocidad)
+                    .easing(TWEEN.Easing.Quadratic.In)
+                    .onStart(function (){
+                    })
+                    .onUpdate(function () {
+                    })
+                    .onComplete(function () {
+                        if(valorAnterior){
+                            texto.remove(valorAnterior);
+                        }
+                    });
+
+                tween.start();
                     
 
                 texto.add(textMesh1);                                
             } );
     }
     setTextName(txt,visible=true){
-        this._setText(txt, "name", visible);
+        this._setText(txt, "name",1, visible);
     }
     setTextValue(txt,visible=true){
-        let valor = this._texto.getObjectByName("value");
-        if(valor != undefined)this._texto.remove(valor);
+        let valorAnterior = this._texto.getObjectByName("value");
 
-        this._setText(txt, "value", visible);
+        this._setText(txt, "value",2, visible,valorAnterior);
     }
     setValue(){
         this._texto.getObjectByName()
