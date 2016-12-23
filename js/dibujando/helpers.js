@@ -80,7 +80,7 @@ function setupSuelo(){
 
 
 function setupGroupBase(){
-    groupBase = new THREE.Group();
+    groupBase      = new THREE.Group();
     groupBase.name = "group_general";
     scene.add(groupBase);
 }
@@ -101,23 +101,32 @@ function setupZonaLibrerias(){
     scene.add(zonaLibrerias);
 }
 
-function crearLibreria(nombre){
-    var element = new Libreria(nombre);
-    var libreria = element.element;
+function crearLibreria(instruccion){
+    let nombre    = instruccion.nombre;
+
+    let element   = new Libreria(nombre);
+    let libreria  = element.element;
     
     lstElements.push(element);
     groupBase.add(libreria);
 }
 
-function crearMetodo(nombre, my_padre){
-    var element = new Metodo(nombre,my_padre);
-    var metodo = element.element;
+function crearMetodo(instruccion){
+    let nombre    = instruccion.nombre;
+    let my_padre  = instruccion.padre.nombre;
+
+    var element   = new Metodo(nombre,my_padre);
+    var metodo    = element.element;
 
     lstElements.push(element);
     groupBase.getObjectByName(metodo.my_padre).getObjectByName("sons").add(metodo);
 }
 
-function crearVariable(nombre, my_padre, my_valor, lineaInicial){
+function crearVariable(instruccion){
+    let nombre        = instruccion.nombre;
+    let my_padre      = instruccion.padre.nombre;
+    let my_valor      = instruccion.valor;
+    let lineaInicial  = instruccion.lineaInicial;
 
     javaEditor_markClean();
     javaEditor_markText(lineaInicial);
@@ -248,21 +257,25 @@ function eliminarFor(my_padre){
 
 function getElement(name){
     let x = null;
+    //console.log(lstElements);
     for(let i of lstElements){
         if(i.name == name)x=i;
     }
     return x;
 }
 
-function asignarValor(A_quien,valor,lineaInicial){console.log(lstElements)
-    let variable = getElement("element_variable-" + A_quien);
-    if(variable) variable.setTextValue(valor);
-
-
+function asignarValor(instruccion){
+    let A_quien       = instruccion.nombre;
+    let valor         = instruccion.valor;
+    let lineaInicial  = instruccion.lineaInicial;
+    let siguientePaso = true;
 
     javaEditor_markClean();
     javaEditor_markText(lineaInicial);
-   // console.log(A_quien,valor,dibujitos,textito);
+
+    let variable = getElement("element_variable-" + A_quien);
+    if(variable) variable.setTextValue(valor,siguientePaso);
+
 }
 function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     dibujitos = scene.getObjectByName( "variable_group-" + A_quien,true).children[1].children[indice].children[0];
@@ -316,4 +329,39 @@ function setText(contenedor,txt,visible=true){
 
             contenedor.add(textMesh1);                                
         } );
+}
+
+
+function callStaticMethod(instruccion){
+    let metodo   = getElement("element_metodo-"+instruccion.nombre);
+    let cubo     = metodo.cube;
+    let element  = metodo.element;
+    let padre    = groupBase.getObjectByName(element.my_padre,true);
+
+
+ 
+
+    var tweenA = new TWEEN.Tween(element.position)
+    .to({ x: -padre.position.x, 
+          y: -padre.position.y, 
+          z: -padre.position.z }, velocidad)
+    .easing(TWEEN.Easing.Quadratic.In)
+    .onStart(function (){
+        cubo.material.opacity = 1;
+        cubo.material.visible = true;
+    })
+    .onComplete(function () {
+    });
+
+    var tweenB = new TWEEN.Tween(cubo.scale)
+    .to({ x:METODO_SCALE_X,Y:METODO_SCALE_Y,z: METODO_SCALE_Z,}, velocidad/2)
+    .easing(TWEEN.Easing.Quadratic.In)
+    .onComplete(function () {    
+        let siguientePaso = true;
+        let animar        = false;
+        metodo.setTextName(instruccion.nombre, siguientePaso, animar);   
+    });
+
+    tweenA.chain(tweenB);
+    tweenA.start();   
 }

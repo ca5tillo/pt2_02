@@ -7,22 +7,22 @@ class Variable extends Element{
     	this._element.my_name       = nombre;
     	this._element.my_indice     = groupBase.getObjectByName(this._element.my_padre,true).getObjectByName("sons").children.length;
 
+    	
     	this._cube.material.visible = true; 
-    	this._cube.material.opacity = 1;
+    	this._cube.material.opacity = 1;	    
 
-
-	    this.setTextName(nombre+"=");
-	    this.setTextValue(my_valor);
-
-	    this._animate();
+	    this._animate(nombre, my_valor);	  
 	}
-	_animate(){
 
-		var cubo = this._cube;
-        var graphics =this._graphics;
-        var element = this._element;
+	_animate(nombre, my_valor){
+
+		let cubo = this._cube;
+        let graphics =this._graphics;
+        let element = this._element;
+        let _this = this;
  
-		var tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
+		
+		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
 	        .to({ x: -((TAM_GRAL*METODO_SCALE_X)/2-TAM_GRAL/2), 
 	              y:  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)*element.my_indice), 
 	              z: -((TAM_GRAL*METODO_SCALE_Z)/2-TAM_GRAL/2) }, velocidad)
@@ -32,11 +32,17 @@ class Variable extends Element{
 	        .onUpdate(function () {
             })
 	        .onComplete(function () {
+	        	let siguientePaso = true;
+	        	_this.setTextName(nombre+"=");
+			    _this.setTextValue(my_valor,siguientePaso);
 	        	
 	        });
 
-	
 		tween.start();
+		
+		
+		
 	
 	}
+
 }

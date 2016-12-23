@@ -51,7 +51,7 @@ class Element{
     getSonByIndex(index){
         return this._sons.children[index];    
     }
-    _setText(txt,name,indice, visible=true, valorAnterior = null){
+    _setText( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
 
         let element = this._element;
         let cube = this._cube;
@@ -77,6 +77,7 @@ class Element{
 
                 textMesh1 = new THREE.Mesh( textGeo, material );
                 textMesh1.name=name;
+                texto.add(textMesh1);  
 
                 let tam = cube.geometry.parameters;//depth,height,width
                 let scale = cube.scale;//x, y , z
@@ -84,43 +85,61 @@ class Element{
                 let y = tam.height*scale.y; 
                 let z = tam.depth*scale.z; 
 
-                textMesh1.visible = visible;
-                textMesh1.position.set(
-                    -element.position.x,
-                    -element.position.y,
-                    -element.position.z
+                textMesh1.visible = true;
+
+                if( ! animar){
+                    textMesh1.position.set(
+                    -(x/2)+TAM_GRAL/25, 
+                    (y/2)-(TAM_GRAL/5)*indice,
+                    z/2
                     );
+                    if(siguientePaso){
+                        if(esAnimacionFluida)btn_pasoApaso();
+                    }
+                }else{
 
-                //textMesh1.position.set(-(x/2)+4,(y/2)-(20)*textos,z/2);
-                let tween = new TWEEN.Tween(textMesh1.position)
-                    .to({ x: -(x/2)+TAM_GRAL/25, 
-                          y: (y/2)-(TAM_GRAL/5)*indice, 
-                          z: z/2 
-                      },velocidad)
-                    .easing(TWEEN.Easing.Quadratic.In)
-                    .onStart(function (){
-                    })
-                    .onUpdate(function () {
-                    })
-                    .onComplete(function () {
-                        if(valorAnterior){
-                            texto.remove(valorAnterior);
-                        }
-                    });
+                    textMesh1.position.set(
+                        -element.position.x,
+                        -element.position.y,
+                        -element.position.z
+                        );     
+                    let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
+                        .to({ x: -(x/2)+TAM_GRAL/25, 
+                              y: (y/2)-(TAM_GRAL/5)*indice, 
+                              z: z/2 
+                          },velocidad)
+                        .easing(TWEEN.Easing.Quadratic.In)
+                        .onStart(function (){
 
-                tween.start();
+                        })
+                        .onUpdate(function () {
+                            
+                        })
+                        .onComplete(function () {
+                            if(valorAnterior){
+                                texto.remove(valorAnterior);
+                            }
+                            
+                            if(siguientePaso){
+                                if(esAnimacionFluida)btn_pasoApaso();
+                            }
+                        });
+
                     
+                    tween.start();
+                
+                }
 
-                texto.add(textMesh1);                                
+                                          
             } );
     }
-    setTextName(txt,visible=true){
-        this._setText(txt, "name",1, visible);
+    setTextName (txt, siguientePaso=false, animar=true){
+        this._setText("name", 1, txt, siguientePaso, animar, null);
     }
-    setTextValue(txt,visible=true){
+    setTextValue(txt, siguientePaso=false, animar=true){
         let valorAnterior = this._texto.getObjectByName("value");
 
-        this._setText(txt, "value",2, visible,valorAnterior);
+        this._setText("value", 2, txt, siguientePaso, animar, valorAnterior);
     }
     setValue(){
         this._texto.getObjectByName()
