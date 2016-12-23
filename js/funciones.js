@@ -11,31 +11,19 @@
 
 window.addEventListener('load',init);
 
+var arbolSintactico = null;
 var esAnimacionFluida = false;
+var varBuscarFuncion = null;
 var guionDePreCompilacion = [];
 var guionDeEjecucion = [];
-var lstTweens = [];//usada para la animacion fluida
+
 
 var velocidad = 300;
-var arbolSintactico = null;
 var indicepaso = 0;
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(
-    `class Clase{
-        public static void main(String[] args){
-  
-            String cadena = "texto";
-            int numero;
-            numero =5;
-            String cadena2 = "texto texto texto texto ";
-            cadena = "nuevo contenido";
-            int i;
-
-     
-        }
-    }`);
+    javaEditor_setText(ejemploDeCodigo_02);
 
     setupThreeJS();
     //setupGroupBase();
@@ -131,74 +119,75 @@ inserta el el arreglo ** guionDeEjecucion** los pasos de la ejecucion
 function crearGuionAnimacion(){
 
 
-    funcionMain = buscarFuncion(arbolSintactico, "main");
+    funcionMain = buscarFuncion(arbolSintactico,"main");
 
 
     if(funcionMain){// Si existe main lo centramos en la escena
         guionDeEjecucion.push({parametro:funcionMain,metodo:"callStaticMethod"});
-    }
+    
 
 
-    for(let i of funcionMain.hijos){ //Recorremos los hijos de main 
-        switch(i.tipo){
-            case "defVariable":
-                guionDeEjecucion.push({parametro:i,metodo:"crearVariable"});
-            break;
+        for(let i of funcionMain.hijos){ //Recorremos los hijos de main 
+            switch(i.tipo){
+                case "defVariable":
+                    guionDeEjecucion.push({parametro:i,metodo:"crearVariable"});
+                break;
 
-            case "asignacionDeValor":
-                guionDeEjecucion.push({parametro:i,metodo:"asignarValor"});             
-            break;
+                case "asignacionDeValor":
+                    guionDeEjecucion.push({parametro:i,metodo:"asignarValor"});             
+                break;
 
-            case "defFor":
-                guionDeEjecucion.push(
-                    {
-                        metodo:"crearFOR",
-                        parametros:[i.padre.nombre,i.lineaInicial]
+                case "defArreglo":
+                    guionDeEjecucion.push({parametro:i,metodo:"crearArreglo"});
+                break;
 
-                    }
-                );
-                for(let i = 0 ; i<4; i++){
+                case "defFor":
                     guionDeEjecucion.push(
                         {
-                            metodo:"asignarValorArreglo",
-                            parametros:["edad",i,i,9]
+                            metodo:"crearFOR",
+                            parametros:[i.padre.nombre,i.lineaInicial]
 
                         }
                     );
-                }
-                guionDeEjecucion.push(
-                    {
-                        metodo:"eliminarFor",
-                        parametros:[i.padre.nombre]
+                    for(let i = 0 ; i<4; i++){
+                        guionDeEjecucion.push(
+                            {
+                                metodo:"asignarValorArreglo",
+                                parametros:["edad",i,i,9]
 
+                            }
+                        );
                     }
-                );
-                //console.log(i);
-            break;
+                    guionDeEjecucion.push(
+                        {
+                            metodo:"eliminarFor",
+                            parametros:[i.padre.nombre]
+
+                        }
+                    );
+                    //console.log(i);
+                break;
+
+            }
 
         }
 
+    }else{
+        console.log("No se encontro funcion main",funcionMain);
     }
-
-
 }
-
-/*
-Es la animacion de centrar la representacion de la funcion main()
-*/
 
 
 /*
 Busca una funcion en el arbol sintactico
 */
-function buscarFuncion (rrr , name){
-    if(rrr.tipo == "defMetodo" && rrr.nombre == name ){       
-        return rrr;
-    }else{
-        for(let i of rrr.hijos){
-             return buscarFuncion (i , name);
-        }   
-    }
+function buscarFuncion (arbol , nodoNombre){
+    let x = null
+    traverse(arbol,nodoNombre);
+    x = varBuscarFuncion;
+    varBuscarFuncion = null;
+
+    return x;
 }
 /******************************************************************************************************/
 
@@ -210,33 +199,22 @@ var _ejecutarpaso = (i) => self[   guionDeEjecucion[i].metodo    ] (guionDeEjecu
 
 
 function btn_Compilar(){
-
-
-
     arbolSintactico = analisisSintactico_getArbol();
     //as_imprimirArbol(arbolSintactico)
-
 
     crearGuionPrecompilacion();
     run_guionDePreCompilacion();
 
-
-
     crearGuionAnimacion();
-
-
 
     $("#Compilar").addClass("desactivado");
     $("#Ejecutar").removeClass("desactivado");
     $("#PorPasos").removeClass("desactivado");
-
 }
 
 function btn_Ejecutar(){
-    
     esAnimacionFluida = true;
     btn_pasoApaso()
-
 }
 
 function btn_pasoApaso(){
@@ -245,6 +223,66 @@ function btn_pasoApaso(){
         indicepaso += 1; 
     }
 }
-function btn_Camara(){
-    finMain();
+
+
+
+
+//PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO
+var modulos = {
+    tipo:"defMetodo",
+    nombre:"raiz",
+    hijos:[
+        {
+            nombre:"test",
+            tipo:"defMetodo",
+     
+        },{
+
+            nombre:"main",
+            tipo:"defMetodo",
+            hijos:[
+                {
+                    nombre:"VARIABE",
+                    tipo:"defMetodo",
+                    hijos:[
+                        {
+                            nombre:"subVari",
+                            tipo:"defMetodo",
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+};
+function traverse(x, nombre, parent) {
+    //console.log(x)
+    if (isArray(x)) {
+        traverseArray(x, nombre, parent);
+    } else if ((typeof x === 'object') && (x !== null)) {
+        traverseObject(x, nombre, parent);
+    }
 }
+
+function isArray(o) {
+    return Object.prototype.toString.call(o) === '[object Array]';
+}
+
+function traverseArray(arr, nombre, parent) {
+    arr.forEach(function(x) {
+        traverse(x, nombre, parent);
+    });
+    //console.log("<array>");
+}
+
+function traverseObject(obj, nombre,  parent) {
+    //console.log( "<object>"+obj.nombre);
+    if(obj.tipo == "defMetodo" && obj.nombre == nombre ){
+        varBuscarFuncion = obj;
+    }
+    if (obj.hasOwnProperty("hijos")) {
+        traverse(obj["hijos"], nombre, obj);
+    }
+}
+//traverse(modulos,"main");
+//./PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO

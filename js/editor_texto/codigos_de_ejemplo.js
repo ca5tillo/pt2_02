@@ -1,25 +1,30 @@
-var ejemplo_01 =
-`String a;
-a = "hola";
-==85.8<>
-<`;
+var ejemploDeCodigo_01 = `
+    class Clase{
+        public static void main(String[] args){
+  
+            String cadena = "texto";
+            int numero;
+            numero =5;
+            String cadena2 = "texto texto texto texto ";
+            cadena = "nuevo contenido";
+            int i;
 
-var ejemplo_02 =
-`public class MyClass {
-	private String texto = "cadena de texto";
-	private int a = 0;
-	public void saludar(){
-		System.out.println("hola");
-		System.out.println(texto);
-		System.out.println(a);
-	}
-    public static void main() {
-        MyClass s = new MyClass();
-        s.saludar();
-
+     
+        }
     }
-}
 `;
+
+
+var ejemploDeCodigo_02 =`
+    class MyClass {
+        public static void main() {
+            String cadena = "texto";
+            int[] edad = {45, 23, 11, 9};            
+        }
+    }
+`;
+
+
 
 //https://dcrazed.com/free-responsive-html5-css3-templates/
 //https://html5up.net/

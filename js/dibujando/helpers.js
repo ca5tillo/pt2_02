@@ -84,6 +84,7 @@ function setupGroupBase(){
     groupBase.name = "group_general";
     scene.add(groupBase);
 }
+
 function setupZonaLibrerias(){
     var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
     var mat = new THREE.MeshPhongMaterial({color: 'red', transparent:false, opacity:1,visible:true});
@@ -138,7 +139,22 @@ function crearVariable(instruccion){
     groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
 }
 
-function crearArreglo(my_padre, my_visibilidad, my_static, my_tipo, nombre, my_valor,lineaInicial){
+function asignarValor(instruccion){
+    let A_quien       = instruccion.nombre;
+    let valor         = instruccion.valor;
+    let lineaInicial  = instruccion.lineaInicial;
+    let siguientePaso = true;
+
+    javaEditor_markClean();
+    javaEditor_markText(lineaInicial);
+
+    let variable = getElementByName("element_variable-" + A_quien);
+    if(variable) variable.setTextValue(valor,siguientePaso);
+}
+function crearArreglo(instruccion){
+    console.log(instruccion);
+}
+function crearArregloold(my_padre, my_visibilidad, my_static, my_tipo, nombre, my_valor,lineaInicial){
     // Grupo q representa la variable
     var variable = new THREE.Group();
     variable.my_padre = "group_metodo-" + my_padre;
@@ -257,19 +273,7 @@ function eliminarFor(my_padre){
 
 
 
-function asignarValor(instruccion){
-    let A_quien       = instruccion.nombre;
-    let valor         = instruccion.valor;
-    let lineaInicial  = instruccion.lineaInicial;
-    let siguientePaso = true;
 
-    javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
-
-    let variable = getElementByName("element_variable-" + A_quien);
-    if(variable) variable.setTextValue(valor,siguientePaso);
-
-}
 function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     dibujitos = scene.getObjectByName( "variable_group-" + A_quien,true).children[1].children[indice].children[0];
     //console.log(dibujitos)
