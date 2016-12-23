@@ -255,14 +255,7 @@ function eliminarFor(my_padre){
     group_librerias.getObjectByName("metodo_group-" +my_padre,true).children[1].remove(ciclo);
 }
 
-function getElement(name){
-    let x = null;
-    //console.log(lstElements);
-    for(let i of lstElements){
-        if(i.name == name)x=i;
-    }
-    return x;
-}
+
 
 function asignarValor(instruccion){
     let A_quien       = instruccion.nombre;
@@ -273,7 +266,7 @@ function asignarValor(instruccion){
     javaEditor_markClean();
     javaEditor_markText(lineaInicial);
 
-    let variable = getElement("element_variable-" + A_quien);
+    let variable = getElementByName("element_variable-" + A_quien);
     if(variable) variable.setTextValue(valor,siguientePaso);
 
 }
@@ -295,45 +288,17 @@ function finMain(){
 
 
 
-function setText(contenedor,txt,visible=true){
-    var loader = new THREE.FontLoader();
-    var textMesh1;
-    loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
-
-
-            var material = new THREE.MultiMaterial( [
-                new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
-                new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
-            ] );
-            var textGeo = new THREE.TextGeometry( txt, {
-                font: response,
-                size: TAM_GRAL/6,
-                height: 2,
-            });
-
-            textGeo.computeBoundingBox();
-            textGeo.computeVertexNormals();
-
-            textMesh1 = new THREE.Mesh( textGeo, material );
-            textMesh1.name="textito";
-
-            var tam = contenedor.children[0].geometry.parameters;//depth,height,width
-            var scale = contenedor.children[0].scale;//x, y , z
-            var cantidad = contenedor.children.length;
-            var x = tam.width*scale.x;
-            var y = tam.height*scale.y; 
-            var z = tam.depth*scale.z; 
-
-            textMesh1.position.set(-(x/2)+4,(y/2)-(20)*cantidad,z/2);
-            textMesh1.visible = visible;
-
-            contenedor.add(textMesh1);                                
-        } );
+function getElementByName(name){
+    let x = null;
+    //console.log(lstElements);
+    for(let i of lstElements){
+        if(i.name == name)x=i;
+    }
+    return x;
 }
 
-
 function callStaticMethod(instruccion){
-    let metodo   = getElement("element_metodo-"+instruccion.nombre);
+    let metodo   = getElementByName("element_metodo-"+instruccion.nombre);
     let cubo     = metodo.cube;
     let element  = metodo.element;
     let padre    = groupBase.getObjectByName(element.my_padre,true);
