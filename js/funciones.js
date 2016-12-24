@@ -23,7 +23,7 @@ var indicepaso = 0;
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_01);
+    javaEditor_setText(ejemploDeCodigo_02);
 
     setupThreeJS();
     //setupGroupBase();

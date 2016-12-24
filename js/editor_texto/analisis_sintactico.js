@@ -1,5 +1,15 @@
+const RE_IS_ARREGLO = /^(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?LBRACK\s?RBRACK/;
+
+const RE_DEF_CLASE  = /^(PUBLIC|PRIVATE)?CLASSNAME(?=LBRACE)/;
+const RE_DEF_METODO = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAMELPAREN.*(?=RPARENLBRACE)/;
+const RE_DEF_VAR_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(EQ)(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
+const RE_DEF_VAR_NO_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(?=SEMICOLON)/;
+const RE_ASIGNACION_DE_VALOR = /^NAMEEQ(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
+const RE_ARREGLO = /^(PUBLIC|PRIVATE)?(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)LBRACKRBRACKNAMEEQLBRACE.*(?=RBRACESEMICOLON)/;
+    
+
 var as_nivelAnidamiento = 0;
-var ERROR_SINTACTICO = false;
+var ERROR_SINTACTICO    = false;
 
 class ModelParametro{
 	constructor(arr){
@@ -50,28 +60,27 @@ function analisisSintactico_getArbol(){
 	//console.log(new ModelArbol())
 	let tokens = javaEditor_analisisLexico();
 
-	let antesdeLBRACE=[];
-	let str = "";
-	let isFor = false;
-	let isArray = false;
-	let raiz = new ModelArbol();
+	let lst_token      = [];
+	let str            = "";
+    let str_dev        = "";
+	let isFor          = false;
+	let isArray        = false;
+	let raiz           = new ModelArbol();
 
-///*
-	
 	for(let i of tokens){
-	    antesdeLBRACE.push(i);
-	    str += `${i.symbol} `;
+	    lst_token.push(i);
+	    str     += `${i.symbol}`;
+        str_dev += `${i.symbol} `;
 	    
-	    if(/^(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?LBRACK\s?RBRACK/.test(str)){
-	    	isArray = true;
-	    }
-	    if(    i.symbol == "FOR" ){ isFor = true; }
+	    RE_IS_ARREGLO.test(str) ? isArray = true :"";
+	    i.symbol == "FOR" ? isFor = true:""; 
 
 	    if(   (i.symbol == "LBRACE"    && !isArray)
 	        ||(i.symbol == "SEMICOLON" && !isFor)
 	        ){
 
-	        let obj = _as_reglasDeProduccion(antesdeLBRACE,as_nivelAnidamiento+1);
+            str = str.trim();
+	        let obj = _as_reglasDeProduccion(str, str_dev, lst_token,as_nivelAnidamiento+1);
 
 	        //declarar variable, definicion de clase
 	        if(obj != null){
@@ -95,17 +104,24 @@ function analisisSintactico_getArbol(){
 	        	error.nombre="--> ERROR_SINTACTICO <--"+str;
 	        	error.tipo="";
 	        	error.nivelAnidamiento=as_nivelAnidamiento+1;
-	        	error.parametros.push(antesdeLBRACE);
+	        	error.parametros.push(lst_token);
 	        	_as_addNodoEnArbol(raiz,error,as_nivelAnidamiento);
 	        }
 	        
-	        antesdeLBRACE = [];
+	        lst_token = [];
 	        isFor = false;
 	        isArray = false;
 	        str = "";
+            str_dev = "";
+
 	    }else if(i.symbol == "RBRACE"  && !isArray){
 	        _as_finalizarRama(raiz,as_nivelAnidamiento,i);// tambien disminuye en uno al as_nivelAnidamiento
-	        antesdeLBRACE = [];
+	       
+            lst_token = [];
+            isFor = false;
+            isArray = false;
+            str = "";
+            str_dev = "";
 	    }
 
 
@@ -114,94 +130,105 @@ function analisisSintactico_getArbol(){
 	return raiz;
 
 }
-function _as_reglasDeProduccion(arr,nivel){
+function _as_reglasDeProduccion(str, str_dev, arr,nivel){
+    //console.log("*********************************************************");
+   // console.log(str_dev);
+   // console.log(str);
 	// RegExp:
-	let RE_DEF_CLASE  = /^(PUBLIC|PRIVATE)?\s?CLASS NAME LBRACE$/;
-	let RE_DEF_METODO = /^(PUBLIC|PRIVATE)\s(STATIC)?\s?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)\sNAME\sLPAREN/;
-	let RE_DEF_VARIABLE = /^(PUBLIC|PRIVATE)?\s?(STATIC)?\s?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)\s?NAME\s?(EQ)?\s?(NUM|CADENA|BOOLEAN_LITERAL)?\s?(?=SEMICOLON)/;
-	let RE_ASIGNACION_DE_VALOR = /^NAME\s?EQ\s?(NUM|CADENA|BOOLEAN_LITERAL)\s?(?=SEMICOLON)/;
-	let RE_FOR = /^FOR\s?LPAREN.*SEMICOLON.*SEMICOLON.*RPAREN/;
-	let RE_ARREGLO = /^(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING) LBRACK RBRACK NAME EQ LBRACE.*(?=RBRACE SEMICOLON)/;
-	let RE_ASIGNACION_DE_VALOR_ARRAY = /(NAME) LBRACK (NAME|BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?RBRACK EQ /;
-	let str = "";
-	let strmap = {};
-	temporalcontador=0;
-    for(let i of arr){
-    	str += `${i.symbol} `;
 
+
+	let RE_FOR = /^FOR\s?LPAREN.*SEMICOLON.*SEMICOLON.*RPAREN/;
+	let RE_ASIGNACION_DE_VALOR_ARRAY = /(NAME) LBRACK (NAME|BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?RBRACK EQ /;
+
+	let strmap            = {};
+    let palabrasDev       = "-> "; //contiene los string de la frase solo para ver por consola
+    let _RE_              = null;
+	let temporalcontador  = 0;
+
+    for(let i of arr){
+        palabrasDev += `${i.string} `;
     	if(strmap[i.symbol] == undefined){
 			strmap[i.symbol]=i.string;
     	}else{
     		strmap[i.symbol+"_"+temporalcontador]=i.string;
     		temporalcontador+=1;
-    	}
-    	
-       	//console.log(i.symbol,i.string)
+    	}	
     }
-    str = str.trim();
-    //console.log(str)
+    
+   // console.log(palabrasDev)
     //console.log("**************************************")
 
     let lstParametros = _as_getparametros(arr);
 
-
-
-    /*    RECONOCIENDO DEFINICION DE CLASE    */
-    if(RE_DEF_CLASE.test(str)){
-        let obj = new ModelArbol(arr,nivel,"defClase");
-        obj.nombre = arr[1].string;
+     /*    RECONOCIENDO DEFINICION DE CLASE    */
+    if( _RE_ = str.match(RE_DEF_CLASE) ){
+       let obj = new ModelArbol(arr,nivel,"defClase");
+        obj.nombre = strmap.NAME;
         obj.lineaInicial = arr[0].line;
-   
         return obj; 
     }
-
     /*    RECONOCIENDO DEFINICION DE METODO    */
-    if(RE_DEF_METODO.test(str)){
-    	let RE_Txt = str.match(RE_DEF_METODO);
+    if( _RE_ = str.match(RE_DEF_METODO) ){
     	let obj = new ModelArbol(arr,nivel,"defMetodo");
-    	obj.restriccion = RE_Txt[1]; 
-    	obj.static = RE_Txt[2] ? true:false;
-    	obj.retorno = RE_Txt[3];
-    	obj.nombre = RE_Txt[2] ? arr[3].string : arr[2].string;
+    	obj.restriccion = _RE_[1]; 
+    	obj.static = _RE_[2] ? true:false;
+    	obj.retorno = _RE_[3];
+    	obj.nombre = strmap.NAME;
     	obj.parametros = lstParametros;    	
         obj.lineaInicial = arr[0].line;
-    	
-
     	return obj;     	
     }
+    /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS   */
+    if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA) ){
 
-    /*    RECONOCIENDO DEFINICION DE VARIABLES    */
-    if(RE_DEF_VARIABLE.test(str)){
-    	let RE_Txt = str.match(RE_DEF_VARIABLE);
     	let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-    	obj.restriccion = RE_Txt[1] || ""; 
-    	obj.static = RE_Txt[2] ? true:false;
-    	obj.tipoDeDato = RE_Txt[3] || "";
+    	obj.restriccion = _RE_[1] || ""; 
+    	obj.static = _RE_[2] ? true:false;
+    	obj.tipoDeDato = _RE_[3] || "";
     	obj.nombre = strmap.NAME;
-    	if(RE_Txt[3] && RE_Txt[5]){
-    		obj.valor = strmap[RE_Txt[5]];
-    		obj.valor_tipoDeDato = RE_Txt[5];
-    	}else{
-    		obj.valor = "?";
-    		obj.valor_tipoDeDato = "?";
-    	}    	
+		obj.valor = strmap[_RE_[5]];
+		obj.valor_tipoDeDato = _RE_[5];
         obj.lineaInicial = arr[0].line;
-    	
     	return obj; 
     }
-
+    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS   */
+    if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
+        let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
+        obj.restriccion = _RE_[1] || ""; 
+        obj.static = _RE_[2] ? true:false;
+        obj.tipoDeDato = _RE_[3] || "";
+        obj.nombre = strmap.NAME;
+        obj.valor = "?";
+        obj.valor_tipoDeDato = "?";
+        obj.lineaInicial = arr[0].line;
+        return obj; 
+    }
     /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES    */
-    if(RE_ASIGNACION_DE_VALOR.test(str)){
-		let RE_Txt = str.match(RE_ASIGNACION_DE_VALOR);
+    if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR) ){
     	let obj = new ModelArbol(arr,-1,"asignacionDeValor");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-		obj.valor = strmap[RE_Txt[1]];
-		obj.valor_tipoDeDato = RE_Txt[1];
+		obj.valor = strmap[_RE_[1]];
+		obj.valor_tipoDeDato = _RE_[1];
     	obj.nombre = strmap.NAME;
         obj.lineaInicial = arr[0].line;
         return obj; 
     }
+    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
+    if( _RE_ = str.match(RE_ARREGLO)){
+        let obj = new ModelArbol(arr,-1,"defArreglo");
+        obj.nivelAnidamiento = nivel;
+        obj.tipoDeDato = _RE_[2];
+        obj.nombre = strmap.NAME;
+        obj.lineaInicial = arr[0].line;
+
+        obj.hijos = _as_getContenido(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
+        return obj; 
+    }
+
+
+
 
     /*    RECONOCIENDO UN CICLO FOR    */
     if(RE_FOR.test(str)){
@@ -211,22 +238,8 @@ function _as_reglasDeProduccion(arr,nivel){
         return obj; 
     }
 
-    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ]   Nombre_del_array = {};*/
-    if(RE_ARREGLO.test(str)){
-		let RE_Txt = str.match(RE_ARREGLO);
-    	let obj = new ModelArbol(arr,-1,"defArreglo");
-    	obj.nivelAnidamiento = nivel;
-    	obj.tipoDeDato = RE_Txt[1];
-    	obj.nombre = strmap.NAME;
-    	obj.lineaInicial = arr[0].line;
+    
 
-
-
-    	obj.hijos = _as_getContenido(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
-
-
-		return obj; 
-    }
     /*    RECONOCIENDO ASIGNACION ARRAY TIPO Tipo_de_variable[i]=21;*/
     if(RE_ASIGNACION_DE_VALOR_ARRAY.test(str)){
 
@@ -297,7 +310,10 @@ function _as_getContenido(arr,padre,nivel,tipoDeDato,nombre){
         hijo.valor = i;
         hijo.nombre = nombre+`[${y}]`;
         hijo.padre=padre;
+
+        hijo.lineaInicial = 1;
         hijos.push(hijo);
+
      
  
       	y+=1;

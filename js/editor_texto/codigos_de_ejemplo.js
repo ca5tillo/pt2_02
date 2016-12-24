@@ -21,18 +21,20 @@ var ejemploDeCodigo_02 =`
             String cadena = "texto";
             int[] edad = {45, 23, 11, 9};    
             int numero =5;    
-            String cadena2 = "valor";    
+            String cadena2 = "valor";  
+            String[] alumnos = {
+                "Miguel", 
+                "Castillo", 
+                "Cortes"};  
         }
     }
 `;
 var ejemploDeCodigo_03 =`
     public class MyClass {
+        public static void otroMetodo(){}
         public static void main() {
-            String cadena = "texto";
-            int[] edad = {45, 23, 11, 9};   
-            int i = 0; 
-            cadena="58";
-            int[] edadw = {45, 23, 11, 9};    
+            int i = 0;
+            otroMetodo();  
 
         }
     }
