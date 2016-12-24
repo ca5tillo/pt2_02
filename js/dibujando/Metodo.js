@@ -1,9 +1,9 @@
 class Metodo extends Element{
-	constructor(nombre,my_padre){
+	constructor(nameInterno,namePadre){
 		super();	
-		this._name                  = "element_metodo-" + nombre;	
-		this._element.my_padre      = "group_libreria-" + my_padre;// libreria a la que pretenece
-		this._element.name          = "group_metodo-"   + nombre;
-    	this._element.my_name       = nombre;
+		this._name                  = nameInterno;	
+		this._element.my_padre      = namePadre;// libreria a la que pretenece
+		this._element.name          = nameInterno;
+    	this._element.my_name       = nameInterno;
 	}
 }

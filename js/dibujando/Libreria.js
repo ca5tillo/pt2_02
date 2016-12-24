@@ -1,16 +1,16 @@
 class Libreria extends Element{
-	constructor(nombre){
+	constructor(name3D,nameInterno){
 		super();
-		this._name                  = "element_libreria-" + nombre;		
+		this._name                  = nameInterno;		
 		this._element.my_padre      = "group_general"             ;
-	    this._element.name          = "group_libreria-"   + nombre;
+	    this._element.name          = nameInterno;
 	    this._element.my_indice     = groupBase.children.length;
 
 	    this._cube.scale.x          = LIB_SCALE_X;
 	    this._cube.scale.y          = LIB_SCALE_Y;
 	    this._cube.scale.z          = LIB_SCALE_Z;
 
-	    this.setTextName(nombre);
+	    this.setTextName(name3D);
 
 	    this._animate();
 	}

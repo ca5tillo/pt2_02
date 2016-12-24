@@ -1,5 +1,5 @@
 var ejemploDeCodigo_01 = `
-    class Clase{
+    public class Clase{
         public static void main(String[] args){
   
             String cadena = "texto";
@@ -16,10 +16,12 @@ var ejemploDeCodigo_01 = `
 
 
 var ejemploDeCodigo_02 =`
-    class MyClass {
+    public class MyClass {
         public static void main() {
             String cadena = "texto";
-            int[] edad = {45, 23, 11, 9};            
+            int[] edad = {45, 23, 11, 9};    
+            int numero =5;    
+            String cadena2 = "valor";    
         }
     }
 `;

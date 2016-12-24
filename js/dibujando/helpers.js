@@ -103,40 +103,47 @@ function setupZonaLibrerias(){
 }
 
 function crearLibreria(instruccion){
-    let nombre    = instruccion.nombre;
+    let name3D        = `${instruccion.nombre}`;
+    let nameInterno    = `${instruccion.tipo}_${instruccion.nombre}`;
 
-    let element   = new Libreria(nombre);
+    let element   = new Libreria(name3D, nameInterno);
     let libreria  = element.element;
     
     lstElements.push(element);
     groupBase.add(libreria);
+
+
 }
 
 function crearMetodo(instruccion){
-    let nombre    = instruccion.nombre;
-    let my_padre  = instruccion.padre.nombre;
+    let nameInterno  = `${instruccion.tipo}_${instruccion.nombre}`;
+    let namePadre    = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
 
-    var element   = new Metodo(nombre,my_padre);
+    var element   = new Metodo(nameInterno,namePadre);
     var metodo    = element.element;
 
     lstElements.push(element);
     groupBase.getObjectByName(metodo.my_padre).getObjectByName("sons").add(metodo);
+
 }
 
 function crearVariable(instruccion){
-    let nombre        = instruccion.nombre;
-    let my_padre      = instruccion.padre.nombre;
-    let my_valor      = instruccion.valor;
+    let name3D        = `${instruccion.nombre}`;
+    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
+    let valor         = instruccion.valor;
     let lineaInicial  = instruccion.lineaInicial;
 
     javaEditor_markClean();
     javaEditor_markText(lineaInicial);
 
-    var element = new Variable(nombre,my_padre, my_valor);
+    var element = new Variable(name3D,nameInterno,namePadre, valor);
     var variable = element.element;
 
     lstElements.push(element);
     groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
+
+
 }
 
 function asignarValor(instruccion){
@@ -152,7 +159,43 @@ function asignarValor(instruccion){
     if(variable) variable.setTextValue(valor,siguientePaso);
 }
 function crearArreglo(instruccion){
-    console.log(instruccion);
+    let name3D        = `${instruccion.nombre}`;
+    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
+    let lineaInicial  = instruccion.lineaInicial;
+
+
+    javaEditor_markClean();
+    javaEditor_markText(lineaInicial);
+
+    var element = new Arreglo(name3D,nameInterno,namePadre);
+    var variable = element.element;
+
+    lstElements.push(element);
+    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
+
+    for(let i of instruccion.hijos){
+        crearArregloValor(i);
+    }
+
+}
+function crearArregloValor(instruccion){
+    let name3D        = `${instruccion.nombre}`;
+    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
+    let valor         = instruccion.valor;
+    let lineaInicial  = instruccion.lineaInicial;
+
+    javaEditor_markClean();
+    javaEditor_markText(lineaInicial);
+
+    var element = new ArregloValor(nameInterno,namePadre,valor);
+    var variable = element.element;
+
+    lstElements.push(element);
+    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
+
+
 }
 function crearArregloold(my_padre, my_visibilidad, my_static, my_tipo, nombre, my_valor,lineaInicial){
     // Grupo q representa la variable
@@ -302,7 +345,7 @@ function getElementByName(name){
 }
 
 function callStaticMethod(instruccion){
-    let metodo   = getElementByName("element_metodo-"+instruccion.nombre);
+    let metodo   = getElementByName(`${instruccion.tipo}_${instruccion.nombre}`);
     let cubo     = metodo.cube;
     let element  = metodo.element;
     let padre    = groupBase.getObjectByName(element.my_padre,true);

@@ -81,7 +81,7 @@ function crearGuionPrecompilacion(){
         }
     };
     guionDePreCompilacion.push({parametro:{},                metodo:"setupGroupBase"});
-    guionDePreCompilacion.push({parametro:{nombre:"System"}, metodo:"crearLibreria"});
+    guionDePreCompilacion.push({parametro:{nombre:"System",tipo: "defClase"}, metodo:"crearLibreria"});
 
 
     guionAdd_libMeto(arbolSintactico);
