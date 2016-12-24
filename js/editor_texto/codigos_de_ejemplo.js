@@ -25,6 +25,16 @@ var ejemploDeCodigo_02 =`
         }
     }
 `;
+var ejemploDeCodigo_03 =`
+    public class MyClass {
+        public static void main() {
+            String cadena = "texto";
+  
+            cadena="58";
+
+        }
+    }
+`;
 
 
 

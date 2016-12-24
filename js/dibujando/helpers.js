@@ -147,15 +147,15 @@ function crearVariable(instruccion){
 }
 
 function asignarValor(instruccion){
-    let A_quien       = instruccion.nombre;
+    let A_quien       = `defVariable_${instruccion.nombre}`;
     let valor         = instruccion.valor;
     let lineaInicial  = instruccion.lineaInicial;
     let siguientePaso = true;
 
     javaEditor_markClean();
     javaEditor_markText(lineaInicial);
-
-    let variable = getElementByName("element_variable-" + A_quien);
+    
+    let variable = getElementByName(A_quien);
     if(variable) variable.setTextValue(valor,siguientePaso);
 }
 function crearArreglo(instruccion){
