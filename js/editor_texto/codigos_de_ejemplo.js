@@ -29,8 +29,10 @@ var ejemploDeCodigo_03 =`
     public class MyClass {
         public static void main() {
             String cadena = "texto";
-  
+            int[] edad = {45, 23, 11, 9};   
+            int i = 0; 
             cadena="58";
+            int[] edadw = {45, 23, 11, 9};    
 
         }
     }

@@ -60,17 +60,27 @@ class Arreglo extends Element{
 	    this._animate(name3D);
 	}
 	_animate(nombre){
-
-		let cubo = this._cube;
+		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
-        let _this = this;
+        
+		let thisCubo = this._cube;
+        let thisCuboTamano = thisCubo.geometry.parameters;//depth,height,width
+        let thisCuboScale = thisCubo.scale;//x, y , z
+        
+
+        let padreCube = getElementByName(this._element.my_padre).cube;
+        let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
+        let padreCubeScale = padreCube.scale;//x, y , z
+ 
  
 		
 		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
-	        .to({ x: -((TAM_GRAL*METODO_SCALE_X)/2-TAM_GRAL/2), 
-	              y:  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)*element.my_indice), 
-	              z: -((TAM_GRAL*METODO_SCALE_Z)/2-TAM_GRAL/2) }, velocidad)
+	        .to({ 
+					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
+					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
+					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
+	          	}, velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){
 	        })

@@ -18,7 +18,7 @@ class Variable extends Element{
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
-        
+
 		let thisCubo = this._cube;
         let thisCuboTamano = thisCubo.geometry.parameters;//depth,height,width
         let thisCuboScale = thisCubo.scale;//x, y , z
@@ -30,9 +30,11 @@ class Variable extends Element{
  
 		
 		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
-	        .to({ x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
-	              y:  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)*element.my_indice), 
-	              z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  }, velocidad)
+	        .to({ 
+					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
+					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
+					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
+	          	}, velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){
 	        })
