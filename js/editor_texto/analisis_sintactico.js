@@ -9,7 +9,6 @@ const RE_ARREGLO = /^(PUBLIC|PRIVATE)?(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_
 const RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO = /^NAMELPARENRPAREN(?=SEMICOLON)/;
 
 var as_nivelAnidamiento = 0;
-var ERROR_SINTACTICO    = false;
 
 class ModelParametro{
 	constructor(arr){
@@ -62,7 +61,6 @@ function analisisSintactico_getArbol(){
 
 	let lst_token      = [];
 	let str            = "";
-    let str_dev        = "";
 	let isFor          = false;
 	let isArray        = false;
 	let raiz           = new ModelArbol();
@@ -70,7 +68,6 @@ function analisisSintactico_getArbol(){
 	for(let i of tokens){
 	    lst_token.push(i);
 	    str     += `${i.symbol}`;
-        str_dev += `${i.symbol} `;
 	    
 	    RE_IS_ARREGLO.test(str) ? isArray = true :"";
 	    i.symbol == "FOR" ? isFor = true:""; 
@@ -79,49 +76,42 @@ function analisisSintactico_getArbol(){
 	        ||(i.symbol == "SEMICOLON" && !isFor)
 	        ){
 
-            str = str.trim();
-	        let obj = _as_reglasDeProduccion(str, str_dev, lst_token,as_nivelAnidamiento+1);
-
-	        //declarar variable, definicion de clase
-	        if(obj != null){
-	        	_as_addNodoEnArbol(raiz,obj,as_nivelAnidamiento);
-	        	switch(obj.tipo){
-	        		case "defClase":
-	        		case "defMetodo":
-	        		case "defFor":
-	            		as_nivelAnidamiento += 1;
-	        			break;
-	        		case "defVariable":
-	        		case "asignacionDeValor":
-	        		case "defArreglo":
-	        		case "asignacionDeValorArray":
-	        			
-
-	        	}
-	        }else{
-	        	//ERROR_SINTACTICO = true;
-	        	let error = new ModelArbol();
-	        	error.nombre="--> ERROR_SINTACTICO <--"+str;
-	        	error.tipo="";
-	        	error.nivelAnidamiento=as_nivelAnidamiento+1;
-	        	error.parametros.push(lst_token);
-	        	_as_addNodoEnArbol(raiz,error,as_nivelAnidamiento);
-	        }
+	        let obj = _reglasProduccion(str, lst_token,as_nivelAnidamiento+1);    
+        	_addNodo(raiz,obj,as_nivelAnidamiento);
+        	switch(obj.tipo){
+        		case "defClase":
+        		case "defMetodo":
+        		case "defFor":
+            		as_nivelAnidamiento += 1;
+        			break;
+        		case "defVariable":
+        		case "asignacionDeValor":
+        		case "defArreglo":
+        		case "asignacionDeValorArray":
+        			
+        	}
+	       
 	        
 	        lst_token = [];
 	        isFor = false;
 	        isArray = false;
 	        str = "";
-            str_dev = "";
+
 
 	    }else if(i.symbol == "RBRACE"  && !isArray){
+            if(! /^RBRACE/.test(str) ){ // Si str contiene algo mas que RBRACE se concidera error 
+                let error = new ModelArbol(lst_token,-1,"ERROR_SINTACTICO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+                error.nivelAnidamiento=as_nivelAnidamiento+1;
+                error.lineaInicial = lst_token[0].line;
+                _addNodo(raiz,error,as_nivelAnidamiento);
+            }
 	        _as_finalizarRama(raiz,as_nivelAnidamiento,i);// tambien disminuye en uno al as_nivelAnidamiento
-	       
+
             lst_token = [];
             isFor = false;
             isArray = false;
             str = "";
-            str_dev = "";
+
 	    }
 
 
@@ -130,23 +120,25 @@ function analisisSintactico_getArbol(){
 	return raiz;
 
 }
-function _as_reglasDeProduccion(str, str_dev, arr, nivel){
+function _reglasProduccion(str, arr, nivel){
     //console.log("*********************************************************");
     //console.log(str_dev);
     //console.log(str);
-	// RegExp:
+
 
 
 	let RE_FOR = /^FOR\s?LPAREN.*SEMICOLON.*SEMICOLON.*RPAREN/;
 	let RE_ASIGNACION_DE_VALOR_ARRAY = /(NAME) LBRACK (NAME|BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?RBRACK EQ /;
 
 	let strmap            = {};
-    let palabrasDev       = "-> "; //contiene los string de la frase solo para ver por consola
+    let dev_frase         = ""; //contiene los string de la frase solo para ver por consola
+    let dev_str           = ""
     let _RE_              = null;
 	let temporalcontador  = 0;
 
     for(let i of arr){
-        palabrasDev += `${i.string} `;
+        dev_frase += `${i.string} `;
+        dev_str     += `${i.symbol} `;
     	if(strmap[i.symbol] == undefined){
 			strmap[i.symbol]=i.string;
     	}else{
@@ -155,8 +147,9 @@ function _as_reglasDeProduccion(str, str_dev, arr, nivel){
     	}	
     }
     
-    //console.log(palabrasDev)
-    //console.log("**************************************")
+    //console.log("*********************************************************");
+    //console.log(dev_frase);
+    //console.log(str);
 
     let lstParametros = _as_getparametros(arr);
 
@@ -262,8 +255,14 @@ function _as_reglasDeProduccion(str, str_dev, arr, nivel){
         return obj; 
     }
 
-    return null;
+
+    /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
+    let error = new ModelArbol(arr,-1,"ERROR_SINTACTICO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+    error.nivelAnidamiento=nivel;
+    error.lineaInicial = arr[0].line;
+    return error;
 }
+
 
 function _as_getparametros(arr){
 	let parametros = [];
@@ -328,13 +327,13 @@ function _as_getContenido(arr,padre,nivel,tipoDeDato,nombre){
     return hijos;
 }
 
-function _as_addNodoEnArbol(padre,hijo,nivel){
+function _addNodo(padre,hijo,nivel){
     if(padre.nivelAnidamiento_temporal == nivel){
     	hijo.padre=padre;
         padre.hijos.push(hijo);
     }else{
         for(let i of padre.hijos){
-            _as_addNodoEnArbol(i,hijo,nivel);
+            _addNodo(i,hijo,nivel);
         }
     }
 }
@@ -353,23 +352,16 @@ function _as_finalizarRama(padre,nivels,rbrace){
 }
 
 function as_imprimirArbol(O_o){
-	///*
-	if(! ERROR_SINTACTICO){
-	    console.log(
-	    	"    ".repeat(O_o.nivelAnidamiento),
-	
-	    	O_o.tipo,
-	    	O_o.nombre,
-	    	O_o.valor,
-	    	O_o.parametros
-	    	);
-	    for(let i of O_o.hijos){
-	        as_imprimirArbol(i);
-	    }
-	}else{
-		console.log("ERROR SINTACTICO")
-	}
-//*/
+    console.log(
+    	"    ".repeat(O_o.nivelAnidamiento),
+    	O_o.tipo,
+    	O_o.nombre,
+    	O_o.valor,
+    	O_o.parametros
+    	);
+    for(let i of O_o.hijos){
+        as_imprimirArbol(i);
+    }
 }
 
 
