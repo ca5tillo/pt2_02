@@ -41,11 +41,13 @@ var ejemploDeCodigo_03 =`
 `;
 var ejemploDeCodigo_04 =`
     public class MyClass {
-        public static void otroMetodo(){}
+        public static void otroMetodo(){
+            int i = 9;
+        }
         public static void main() {
             int i = 0;
             otroMetodo();  
-
+            int b;
         }
     }
 `;

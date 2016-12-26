@@ -9,7 +9,14 @@ const RE_ARREGLO = /^(PUBLIC|PRIVATE)?(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_
 const RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO = /^NAMELPARENRPAREN(?=SEMICOLON)/;
 
 var as_nivelAnidamiento = 0;
-
+function *GenerateID(){
+    var i = 0;
+    while(true){
+        yield i;
+        i++;
+    }
+}
+var _generateID = GenerateID();
 class ModelParametro{
 	constructor(arr){
 		this.arr = arr;
@@ -24,6 +31,8 @@ class ModelArbol  {
 		tipo             = "ElementoRaiz"
 
 		){
+        this.id                         = _generateID.next().value;
+        this.idPadre                    = -1;
 		this.arr 						= arr;
 		this.nivelAnidamiento_temporal  = nivelAnidamiento;
 		this.nivelAnidamiento 			= nivelAnidamiento;
@@ -117,6 +126,7 @@ function analisisSintactico_getArbol(){
 
 	}
 	//*/
+    as_imprimirArbol(raiz);
 	return raiz;
 
 }
@@ -329,6 +339,7 @@ function _as_getContenido(arr,padre,nivel,tipoDeDato,nombre){
 
 function _addNodo(padre,hijo,nivel){
     if(padre.nivelAnidamiento_temporal == nivel){
+        hijo.idPadre = padre.id;
     	hijo.padre=padre;
         padre.hijos.push(hijo);
     }else{
@@ -353,6 +364,10 @@ function _as_finalizarRama(padre,nivels,rbrace){
 
 function as_imprimirArbol(O_o){
     console.log(
+
+        O_o.id,
+        ",",
+        O_o.idPadre,
     	"    ".repeat(O_o.nivelAnidamiento),
     	O_o.tipo,
     	O_o.nombre,

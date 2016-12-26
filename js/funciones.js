@@ -19,11 +19,11 @@ var guionDeEjecucion = [];
 
 
 var velocidad = 300;
-var indicepaso = 0;
+var indicepaso = 0; //usado para el boton animacion paso a paso
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_02);
+    javaEditor_setText(ejemploDeCodigo_04);
 
     setupThreeJS();
     //setupGroupBase();
@@ -116,85 +116,76 @@ Busca la funcion main en el ** arbolSintactico **
 inserta el el arreglo ** guionDeEjecucion** los pasos de la ejecucion
 
 */
-function crearGuionAnimacion(){
+function addPaso(i){
+    // i de instruccion
+    switch(i.tipo){
+        case "defVariable":
+            guionDeEjecucion.push({parametro:i,metodo:"crearVariable"});
+        break;
 
+        case "asignacionDeValor":
+            guionDeEjecucion.push({parametro:i,metodo:"asignarValor"});             
+        break;
 
-    funcionMain = buscarFuncion(arbolSintactico,"main");
+        case "defArreglo":
+            guionDeEjecucion.push({parametro:i,metodo:"crearArreglo"});
+        break;
 
+        case "llamada_funcion_sinparametros_sinretorno":
+            recorrerMetodo(i.nombre);
 
-    if(funcionMain){// Si existe main lo centramos en la escena
-        guionDeEjecucion.push({parametro:funcionMain,metodo:"callStaticMethod"});
-    
+        break;
 
+        case "defFor":
+            guionDeEjecucion.push(
+                {
+                    metodo:"crearFOR",
+                    parametros:[i.padre.nombre,i.lineaInicial]
 
-        for(let i of funcionMain.hijos){ //Recorremos los hijos de main 
-            switch(i.tipo){
-                case "defVariable":
-                    guionDeEjecucion.push({parametro:i,metodo:"crearVariable"});
-                break;
+                }
+            );
+            for(let i = 0 ; i<4; i++){
+                guionDeEjecucion.push(
+                    {
+                        metodo:"asignarValorArreglo",
+                        parametros:["edad",i,i,9]
 
-                case "asignacionDeValor":
-                    guionDeEjecucion.push({parametro:i,metodo:"asignarValor"});             
-                break;
-
-                case "defArreglo":
-                    guionDeEjecucion.push({parametro:i,metodo:"crearArreglo"});
-                break;
-
-                case "llamada_funcion_sinparametros_sinretorno":
-                    guionDeEjecucion.push({parametro:i,metodo:"callStaticMethod"});
-                    temmetodo = buscarFuncion(arbolSintactico,i.nombre);
-                    //console.log(temmetodo);
-                break;
-
-                case "defFor":
-                    guionDeEjecucion.push(
-                        {
-                            metodo:"crearFOR",
-                            parametros:[i.padre.nombre,i.lineaInicial]
-
-                        }
-                    );
-                    for(let i = 0 ; i<4; i++){
-                        guionDeEjecucion.push(
-                            {
-                                metodo:"asignarValorArreglo",
-                                parametros:["edad",i,i,9]
-
-                            }
-                        );
                     }
-                    guionDeEjecucion.push(
-                        {
-                            metodo:"eliminarFor",
-                            parametros:[i.padre.nombre]
-
-                        }
-                    );
-                    //console.log(i);
-                break;
-
+                );
             }
+            guionDeEjecucion.push(
+                {
+                    metodo:"eliminarFor",
+                    parametros:[i.padre.nombre]
 
+                }
+            );
+            //console.log(i);
+        break;
+
+    }
+}
+function recorrerMetodo(name){
+    let metodo = buscarFuncion(arbolSintactico,name);
+
+    if(metodo){// Si existe el metodo lo centramos en la escena
+        guionDeEjecucion.push({parametro:metodo,metodo:"callStaticMethod"});
+        for(let i of metodo.hijos){ //Recorremos los hijos de main 
+            addPaso(i);
         }
 
     }else{
-        console.log("No se encontro funcion main",funcionMain);
+        console.log("No se encontro funcion main",metodo);
     }
 }
+function crearGuionAnimacion(){
 
-
-/*
-Busca una funcion en el arbol sintactico
-*/
-function buscarFuncion (arbol , nodoNombre){
-    let x = null
-    traverse(arbol,nodoNombre);
-    x = varBuscarFuncion;
-    varBuscarFuncion = null;
-
-    return x;
+    recorrerMetodo("main");
+    
 }
+
+
+
 /******************************************************************************************************/
 
 /*
@@ -229,12 +220,28 @@ function btn_pasoApaso(){
         indicepaso += 1; 
     }
 }
+function btn_camara(){
+    let o1 = getElementByName("defMetodo_main");
+    let o2 = getElementByName("defVariable_cadena");
+    o1.sons.remove(o2.element);
+    lstElements.splice(3, 1);
+    console.log(lstElements,lstElements.length);
 
+}
 
 
 
 //PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO
-var modulos = {
+function buscarFuncion (arbol , nodoNombre){
+    let x = null
+    traverse(arbol,nodoNombre);
+    x = varBuscarFuncion;
+    varBuscarFuncion = null;
+
+    return x;
+}
+
+var ejemplodearbol = {
     tipo:"defMetodo",
     nombre:"raiz",
     hijos:[
@@ -290,5 +297,5 @@ function traverseObject(obj, nombre,  parent) {
         traverse(obj["hijos"], nombre, obj);
     }
 }
-//traverse(modulos,"main");
+//traverse(ejemplodearbol,"main");
 //./PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO

@@ -133,13 +133,15 @@ class Element{
                                           
             } );
     }
+    setTextType (txt, siguientePaso=false, animar=true){
+        this._setText("type",  1, txt, siguientePaso, animar, null);
+    }
     setTextName (txt, siguientePaso=false, animar=true){
-        this._setText("name", 1, txt, siguientePaso, animar, null);
+        this._setText("name",  2, txt, siguientePaso, animar, null);
     }
     setTextValue(txt, siguientePaso=false, animar=true){
         let valorAnterior = this._texto.getObjectByName("value");
-
-        this._setText("value", 2, txt, siguientePaso, animar, valorAnterior);
+        this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
     }
     setValue(){
         this._texto.getObjectByName()
