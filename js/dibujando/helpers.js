@@ -1,4 +1,4 @@
-
+var metodosEnEscena = 0;
 /*      Constantes para la camara    */
 const FOV = 45;
 const ASPECT = window.innerWidth / window.innerHeight;
@@ -103,76 +103,53 @@ function setupZonaLibrerias(){
 }
 
 function crearLibreria(instruccion){
-    let name3D        = `${instruccion.nombre}`;
-    let nameInterno    = `${instruccion.tipo}_${instruccion.nombre}`;
-
-    let element   = new Libreria(name3D, nameInterno);
+    let element   = new Libreria(instruccion);
     let libreria  = element.element;
     
     lstElements.push(element);
     groupBase.add(libreria);
-
-
 }
 
 function crearMetodo(instruccion){
-    let nameInterno  = `${instruccion.tipo}_${instruccion.nombre}`;
-    let namePadre    = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
+    let padre     = getElementByID(instruccion.idPadre);
+    let element   = new Metodo(instruccion);
 
-    var element   = new Metodo(nameInterno,namePadre);
-    var metodo    = element.element;
-
-    lstElements.push(element);
-    groupBase.getObjectByName(metodo.my_padre).getObjectByName("sons").add(metodo);
-
+    padre.subElements.push(element);
+    padre.sons.add(element.element)
 }
 
 function crearVariable(instruccion){
-    let name3D        = `${instruccion.nombre}`;
-    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
-    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
-    let valor         = instruccion.valor;
-    let lineaInicial  = instruccion.lineaInicial;
-
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial);
 
-    var element = new Variable(name3D,nameInterno,namePadre, valor);
-    var variable = element.element;
+    let padre    = getElementByID(instruccion.idPadre);
+    let element  = new Variable(instruccion);
 
-    lstElements.push(element);
-    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
-
+    padre.subElements.push(element);
+    padre.sons.add(element.element)
 
 }
 
-function asignarValor(instruccion){
+function asignarValorVariable(instruccion){
+    javaEditor_markClean();
+    javaEditor_markText(instruccion.lineaInicial);
+
     let A_quien       = `defVariable_${instruccion.nombre}`;
     let valor         = instruccion.valor;
-    let lineaInicial  = instruccion.lineaInicial;
     let siguientePaso = true;
 
-    javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
-    
-    let variable = getElementByName(A_quien);
+    let variable = getElementByName(A_quien, instruccion.idPadre);
     if(variable) variable.setTextValue(valor,siguientePaso);
 }
 function crearArreglo(instruccion){
-    let name3D        = `${instruccion.nombre}`;
-    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
-    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
-    let lineaInicial  = instruccion.lineaInicial;
-
-
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial);
 
-    var element = new Arreglo(name3D,nameInterno,namePadre);
-    var variable = element.element;
+    let padre    = getElementByID(instruccion.idPadre);
+    let element  = new Arreglo(instruccion);
 
-    lstElements.push(element);
-    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
+    padre.subElements.push(element);
+    padre.sons.add(element.element)
 
     for(let i of instruccion.hijos){
         crearArregloValor(i);
@@ -180,89 +157,14 @@ function crearArreglo(instruccion){
 
 }
 function crearArregloValor(instruccion){
-    let name3D        = `${instruccion.nombre}`;
-    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
-    let namePadre     = `${instruccion.padre.tipo}_${instruccion.padre.nombre}`;
-    let valor         = instruccion.valor;
-    let lineaInicial  = instruccion.lineaInicial;
+    //javaEditor_markClean();
+    //javaEditor_markText(instruccion.lineaInicial);
 
-    javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
+    let padre    = getElementByID(instruccion.idPadre);
+    let element = new ArregloValor(instruccion);
 
-    var element = new ArregloValor(nameInterno,namePadre,valor);
-    var variable = element.element;
-
-    lstElements.push(element);
-    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
-
-
-}
-function crearArregloold(my_padre, my_visibilidad, my_static, my_tipo, nombre, my_valor,lineaInicial){
-    // Grupo q representa la variable
-    var variable = new THREE.Group();
-    variable.my_padre = "group_metodo-" + my_padre;
-
-    variable.name = "variable_group-" + nombre;
-    variable.my_valor = my_valor;
-    variable.my_indice = groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").children.length;
-                        // subir la altira para q se apilen           // aumentarle la separacion entre objetos
-    variable.position.y =  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)*variable.my_indice);
-    variable.position.x =  -((TAM_GRAL*METODO_SCALE_X)/2-TAM_GRAL/2);
-    variable.position.z =  -((TAM_GRAL*METODO_SCALE_Z)/2-TAM_GRAL/2);
-    groupBase.getObjectByName(variable.my_padre,true).getObjectByName("sons").add(variable);
-
-    // Crear grupo de representacion visual
-    var dibujitos = new THREE.Group();
-    dibujitos.name="dibujitos";
-    variable.add(dibujitos);
-
-    // Crear grupo que contendra los hijos como metodos , variables etc
-    var hijos = new THREE.Group();
-    hijos.name="hijos";
-    variable.add(hijos);
-
-    // crear cubo
-    var geo = new THREE.BoxGeometry(TAM_GRAL*2, TAM_GRAL, TAM_GRAL);
-    var mat = new THREE.MeshPhongMaterial({color: 'green', transparent:true, opacity:0.6});
-    var malla = new THREE.Mesh(geo, mat);
-
-    malla.castShadow = true;
-    malla.receiveShadow = true;
-    malla.name = "my_geometria";
-
-    dibujitos.add(malla);
-    setText(dibujitos,"[ ]"+nombre,true);
-
-    for(let i of my_valor){
-        var valor = new THREE.Group();
-        hijos.add(valor);
-        valor.position.x = ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)*hijos.children.length);   
-        // Crear grupo de representacion visual
-        var dibujitos2 = new THREE.Group();
-        dibujitos2.name="dibujitos";
-        valor.add(dibujitos2);
-
-        // Crear grupo que contendra los hijos como metodos , variables etc
-        var hijos2 = new THREE.Group();
-        hijos2.name="hijos";
-        valor.add(hijos2);
-
-        // crear cubo
-        var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
-        var mat = new THREE.MeshPhongMaterial({color: 'green', transparent:true, opacity:0.6});
-        var malla = new THREE.Mesh(geo, mat);
-
-        malla.castShadow = true;
-        malla.receiveShadow = true;
-        malla.name = "my_geometria";
-
-        dibujitos2.add(malla);
-        setText(dibujitos2,i,true);
-
-    }
-    javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
-    
+    padre.subElements.push(element);
+    padre.sons.add(element.element)
 }
 
 
@@ -335,20 +237,48 @@ function finMain(){
 
 
 
-function getElementByName(name){
-    let x = null;
-    //console.log(lstElements);
-    for(let i of lstElements){
-        if(i.name == name)x=i;
-    }
-    return x;
+function getElementByID(id){
+    //http://jsfiddle.net/dystroy/MDsyr/
+    let getSubMenuItem = function (subMenuItems, id) {
+        if (subMenuItems) {
+            for (let i = 0; i < subMenuItems.length; i++) {
+                if (subMenuItems[i].id == id) {
+                    return subMenuItems[i];
+                };
+                let found = getSubMenuItem(subMenuItems[i].subElements, id);
+                if (found) return found;
+            }
+        }
+    };
+
+    let searchedItem = getSubMenuItem(lstElements, id) || null;
+    return searchedItem;
 }
-var metodosEnEscena = 0;
+function getElementByName(name, idPadre){
+    //http://jsfiddle.net/dystroy/MDsyr/
+    let getSubMenuItem = function (subMenuItems, name, idPadre) {
+        if (subMenuItems) {
+            for (let i = 0; i < subMenuItems.length; i++) {
+                if (subMenuItems[i].name == name && subMenuItems[i].idPadre == idPadre) {
+                    return subMenuItems[i];
+                };
+                let found = getSubMenuItem(subMenuItems[i].subElements, name, idPadre);
+                if (found) return found;
+            }
+        }
+    };
+
+    let searchedItem = getSubMenuItem(lstElements, name, idPadre) || null;
+    return searchedItem;
+}
+
+
 function callStaticMethod(instruccion){
-    let metodo   = getElementByName(`defMetodo_${instruccion.nombre}`);
+
+    let metodo = getElementByID(instruccion.id);
     let cubo     = metodo.cube;
     let element  = metodo.element;
-    let padre    = groupBase.getObjectByName(element.my_padre,true);
+    let padre    = getElementByID(instruccion.idPadre).element;
 
 
  
@@ -377,4 +307,5 @@ function callStaticMethod(instruccion){
     tweenA.chain(tweenB);
     tweenA.start();   
     metodosEnEscena +=1;
+    //*/
 }

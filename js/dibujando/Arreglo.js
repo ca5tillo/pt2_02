@@ -1,11 +1,15 @@
 class ArregloValor extends Element{
-	constructor(nameInterno,namePadre,valor){
+	constructor(instruccion){
 		super();
+
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+	    let valor         = instruccion.valor;
+	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
+
+	    this._id                    = `${instruccion.id}`;
+        this._idPadre               = `${instruccion.idPadre}`;
 		this._name                  = nameInterno;
-		this._element.my_padre      = namePadre;
-		this._element.name          = nameInterno;
-    	this._element.my_name       = nameInterno;
-    	this._element.my_indice     = groupBase.getObjectByName(namePadre,true).getObjectByName("sons").children.length;
+    	this._element.my_indice     = my_indice;
 
     	
     	this._cube.material.visible = true; 
@@ -45,21 +49,26 @@ class ArregloValor extends Element{
 	}
 }
 class Arreglo extends Element{
-	constructor(name3D,nameInterno,namePadre){
+	constructor(instruccion){
 		super();
+
+		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let name3D        = `${instruccion.nombre}`;
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
+
+	    this._id                    = `${instruccion.id}`;
+        this._idPadre               = `${instruccion.idPadre}`;
 		this._name                  = nameInterno;
-		this._element.my_padre      = namePadre;
-		this._element.name          = nameInterno;
-    	this._element.my_name       = nameInterno;
-    	this._element.my_indice     = groupBase.getObjectByName(namePadre,true).getObjectByName("sons").children.length;
+    	this._element.my_indice     = my_indice;
 
     	
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
-	    this._animate(name3D);
+	    this._animate(tipoDeDato, name3D);
 	}
-	_animate(nombre){
+	_animate(tipoDeDato, nombre){
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
@@ -69,7 +78,7 @@ class Arreglo extends Element{
         let thisCuboScale = thisCubo.scale;//x, y , z
         
 
-        let padreCube = getElementByName(this._element.my_padre).cube;
+        let padreCube = getElementByID(this._idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  
@@ -88,7 +97,8 @@ class Arreglo extends Element{
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
-			    _this.setTextValue(nombre+"=",siguientePaso);
+			    _this.setTextType(tipoDeDato+"[]");
+			    _this.setTextName(nombre+"=",siguientePaso);
 	        	
 	        });
 

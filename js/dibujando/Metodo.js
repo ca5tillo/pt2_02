@@ -1,9 +1,10 @@
 class Metodo extends Element{
-	constructor(nameInterno,namePadre){
+	constructor(instruccion){
 		super();	
+		let nameInterno             = `${instruccion.tipo}_${instruccion.nombre}`;
+		
+		this._id                    = `${instruccion.id}`;
+        this._idPadre               = `${instruccion.idPadre}`;
 		this._name                  = nameInterno;	
-		this._element.my_padre      = namePadre;// libreria a la que pretenece
-		this._element.name          = nameInterno;
-    	this._element.my_name       = nameInterno;
 	}
 }

@@ -1,20 +1,25 @@
 class Variable extends Element{
-	constructor(name3D,nameInterno,namePadre, valor){
+	constructor(instruccion){
 		super();
-		this._name                  = nameInterno;
-		this._element.name          = nameInterno;
-		this._element.my_padre      = namePadre;
-    	this._element.my_name       = name3D;
-    	this._element.my_indice     = groupBase.getObjectByName(namePadre,true).getObjectByName("sons").children.length;
+		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let name3D        = `${instruccion.nombre}`;
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+	    let valor         = instruccion.valor;
+	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
+
+	    this._id                    = `${instruccion.id}`;
+        this._idPadre               = `${instruccion.idPadre}`;
+		this._name                  = nameInterno;	
+    	this._element.my_indice     = my_indice;
 
     	
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
-	    this._animate(name3D, valor);	  
+	    this._animate(tipoDeDato, name3D, valor);	  
 	}
 
-	_animate(nombre, my_valor){
+	_animate(tipoDeDato, nombre, my_valor){
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
@@ -24,7 +29,7 @@ class Variable extends Element{
         let thisCuboScale = thisCubo.scale;//x, y , z
         
 
-        let padreCube = getElementByName(this._element.my_padre).cube;
+        let padreCube = getElementByID(this._idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  
@@ -42,6 +47,7 @@ class Variable extends Element{
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
+	        	_this.setTextType(tipoDeDato);
 	        	_this.setTextName(nombre+"=");
 			    _this.setTextValue(my_valor,siguientePaso);
 	        	

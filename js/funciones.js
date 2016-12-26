@@ -13,7 +13,6 @@ window.addEventListener('load',init);
 
 var arbolSintactico = null;
 var esAnimacionFluida = false;
-var varBuscarFuncion = null;
 var guionDePreCompilacion = [];
 var guionDeEjecucion = [];
 
@@ -124,7 +123,7 @@ function addPaso(i){
         break;
 
         case "asignacionDeValor":
-            guionDeEjecucion.push({parametro:i,metodo:"asignarValor"});             
+            guionDeEjecucion.push({parametro:i,metodo:"asignarValorVariable"});             
         break;
 
         case "defArreglo":
@@ -166,7 +165,7 @@ function addPaso(i){
     }
 }
 function recorrerMetodo(name){
-    let metodo = buscarFuncion(arbolSintactico,name);
+    let metodo = buscarFuncion(name);
 
     if(metodo){// Si existe el metodo lo centramos en la escena
         guionDeEjecucion.push({parametro:metodo,metodo:"callStaticMethod"});
@@ -221,18 +220,53 @@ function btn_pasoApaso(){
     }
 }
 function btn_camara(){
-    let o1 = getElementByName("defMetodo_main");
-    let o2 = getElementByName("defVariable_cadena");
-    o1.sons.remove(o2.element);
-    lstElements.splice(3, 1);
-    console.log(lstElements,lstElements.length);
+    let o1 = getElementByID(4);
+    let o2 = getElementByID(o1._idPadre);
+    //o1.sons.remove(o2.element);
+    //lstElements.splice(3, 1);
+    console.log(o2);
+    console.log(o1);
+    let index = o2.subElements.findIndex(nodo => nodo.id == 4);
+    console.log(index);
+    o2.subElements.splice(index, 1);
+    console.log("**************");
+    console.log(o2);
 
 }
 
 
 
 //PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO
-function buscarFuncion (arbol , nodoNombre){
+
+function buscarFuncion(nodoNombre){
+    //http://jsfiddle.net/dystroy/MDsyr/
+    let getSubMenuItem = function (subMenuItems, nodoNombre) {
+        if (subMenuItems) {
+            for (let i = 0; i < subMenuItems.length; i++) {
+                if (subMenuItems[i].tipo == "defMetodo" && subMenuItems[i].nombre == nodoNombre ){
+                    return subMenuItems[i];
+                };
+                let found = getSubMenuItem(subMenuItems[i].hijos, nodoNombre);
+                if (found) return found;
+            }
+        }
+    };
+
+    let searchedItem = getSubMenuItem(arbolSintactico.hijos, nodoNombre) || null;
+    return searchedItem;
+}
+
+
+
+
+
+
+
+
+
+
+
+function buscarFuncionss (arbol , nodoNombre){
     let x = null
     traverse(arbol,nodoNombre);
     x = varBuscarFuncion;
@@ -240,6 +274,7 @@ function buscarFuncion (arbol , nodoNombre){
 
     return x;
 }
+
 
 var ejemplodearbol = {
     tipo:"defMetodo",
@@ -299,3 +334,5 @@ function traverseObject(obj, nombre,  parent) {
 }
 //traverse(ejemplodearbol,"main");
 //./PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO
+
+

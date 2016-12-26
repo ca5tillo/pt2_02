@@ -126,7 +126,7 @@ function analisisSintactico_getArbol(){
 
 	}
 	//*/
-    as_imprimirArbol(raiz);
+    //as_imprimirArbol(raiz);
 	return raiz;
 
 }
@@ -224,9 +224,10 @@ function _reglasProduccion(str, arr, nivel){
         obj.nivelAnidamiento = nivel;
         obj.tipoDeDato = _RE_[2];
         obj.nombre = strmap.NAME;
+        obj.valor_tipoDeDato = _RE_[2];
         obj.lineaInicial = arr[0].line;
 
-        obj.hijos = _as_getContenido(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
+        obj.hijos = _getContenidoArreglo(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
         return obj; 
     }
     /*    RECONOCIENDO LLAMADA A METODO*/
@@ -300,7 +301,7 @@ function _as_getparametros(arr){
     }
     return lstParametros;
 }
-function _as_getContenido(arr,padre,nivel,tipoDeDato,nombre){
+function _getContenidoArreglo(arr,padre,nivel,tipoDeDato,nombre){
 	let str = "";
 	let parametros = [];
     let insertinparam = false;
@@ -325,6 +326,7 @@ function _as_getContenido(arr,padre,nivel,tipoDeDato,nombre){
         hijo.tipoDeDato = tipoDeDato;
         hijo.valor = i;
         hijo.nombre = nombre+`[${y}]`;
+        hijo.idPadre = padre.id;
         hijo.padre=padre;
 
         hijo.lineaInicial = 1;

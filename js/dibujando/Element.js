@@ -1,17 +1,22 @@
 class Element{
     constructor(){
+        this._id;
+        this._idPadre;
+        this._subElements   = [];
+        this._name          = "";
+
         this._element       = new THREE.Group();
         this._graphics      = new THREE.Group();
-        this._texto         = new THREE.Group();
-        this._sons          = new THREE.Group();
+        this._text          = new THREE.Group();
+        this._sons          = new THREE.Group();        
         this._cube          = this._setcube();
-        this._name          = "";
+        
 
         this._graphics.name = "graphics";
         this._sons.name     = "sons";
 
         this._graphics.add(this._cube);
-        this._graphics.add(this._texto);
+        this._graphics.add(this._text);
 
         this._element.add(this._graphics);
         this._element.add(this._sons);
@@ -28,7 +33,15 @@ class Element{
         return malla;
     }
 
-    
+    get id(){
+        return this._id; 
+    }
+    get idPadre(){
+        return this._idPadre; 
+    }
+    get subElements(){
+        return this._subElements; 
+    }
     get name(){
         return this._name;  
     }
@@ -38,8 +51,8 @@ class Element{
     get graphics(){
         return this._graphics;  
     }
-    get texto(){
-        return this._texto; 
+    get text(){
+        return this._text; 
     }
     get sons(){
         return this._sons;    
@@ -55,7 +68,7 @@ class Element{
 
         let element = this._element;
         let cube = this._cube;
-        let texto = this._texto;
+        let texto = this._text;
 
         let loader = new THREE.FontLoader();
         let textMesh1;
@@ -140,11 +153,8 @@ class Element{
         this._setText("name",  2, txt, siguientePaso, animar, null);
     }
     setTextValue(txt, siguientePaso=false, animar=true){
-        let valorAnterior = this._texto.getObjectByName("value");
+        let valorAnterior = this._text.getObjectByName("value");
         this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
-    }
-    setValue(){
-        this._texto.getObjectByName()
     }
 
 }

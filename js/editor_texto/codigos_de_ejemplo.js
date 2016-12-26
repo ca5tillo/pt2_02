@@ -20,12 +20,14 @@ var ejemploDeCodigo_02 =`
         public static void main() {
             String cadena = "texto";
             int[] edad = {45, 23, 11, 9};    
-            int numero =5;    
+            int numero;    
             String cadena2 = "valor";  
             String[] alumnos = {
                 "Miguel", 
                 "Castillo", 
                 "Cortes"};  
+
+            numero =5;
         }
     }
 `;
@@ -43,11 +45,13 @@ var ejemploDeCodigo_04 =`
     public class MyClass {
         public static void otroMetodo(){
             int i = 9;
+            i=100;
         }
         public static void main() {
             int i = 0;
             otroMetodo();  
             int b;
+            i=55;
         }
     }
 `;

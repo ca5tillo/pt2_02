@@ -1,9 +1,13 @@
 class Libreria extends Element{
-	constructor(name3D,nameInterno){
+	constructor(instruccion){
 		super();
+		let name3D                  = `${instruccion.nombre}`;
+		let nameInterno             = `${instruccion.tipo}_${instruccion.nombre}`;
+
+        this._id                    = `${instruccion.id}`;
+        this._idPadre               = `${instruccion.idPadre}`;
+
 		this._name                  = nameInterno;		
-		this._element.my_padre      = "group_general"             ;
-	    this._element.name          = nameInterno;
 	    this._element.my_indice     = groupBase.children.length;
 
 	    this._cube.scale.x          = LIB_SCALE_X;
