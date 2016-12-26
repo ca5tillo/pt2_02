@@ -39,6 +39,16 @@ var ejemploDeCodigo_03 =`
         }
     }
 `;
+var ejemploDeCodigo_04 =`
+    public class MyClass {
+        public static void otroMetodo(){}
+        public static void main() {
+            int i = 0;
+            otroMetodo();  
+
+        }
+    }
+`;
 
 
 

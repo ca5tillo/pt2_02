@@ -6,7 +6,7 @@ const RE_DEF_VAR_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FL
 const RE_DEF_VAR_NO_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(?=SEMICOLON)/;
 const RE_ASIGNACION_DE_VALOR = /^NAMEEQ(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
 const RE_ARREGLO = /^(PUBLIC|PRIVATE)?(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)LBRACKRBRACKNAMEEQLBRACE.*(?=RBRACESEMICOLON)/;
-    
+const RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO = /^NAMELPARENRPAREN(?=SEMICOLON)/;
 
 var as_nivelAnidamiento = 0;
 var ERROR_SINTACTICO    = false;
@@ -130,10 +130,10 @@ function analisisSintactico_getArbol(){
 	return raiz;
 
 }
-function _as_reglasDeProduccion(str, str_dev, arr,nivel){
+function _as_reglasDeProduccion(str, str_dev, arr, nivel){
     //console.log("*********************************************************");
-   // console.log(str_dev);
-   // console.log(str);
+    //console.log(str_dev);
+    //console.log(str);
 	// RegExp:
 
 
@@ -155,20 +155,20 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
     	}	
     }
     
-   // console.log(palabrasDev)
+    //console.log(palabrasDev)
     //console.log("**************************************")
 
     let lstParametros = _as_getparametros(arr);
 
-     /*    RECONOCIENDO DEFINICION DE CLASE    */
+     /*    RECONOCIENDO DEFINICION DE CLASE                                    */
     if( _RE_ = str.match(RE_DEF_CLASE) ){
        let obj = new ModelArbol(arr,nivel,"defClase");
         obj.nombre = strmap.NAME;
         obj.lineaInicial = arr[0].line;
         return obj; 
     }
-    /*    RECONOCIENDO DEFINICION DE METODO    */
-    if( _RE_ = str.match(RE_DEF_METODO) ){
+    /*    RECONOCIENDO DEFINICION DE METODO                                    */
+    if( _RE_ = str.match(RE_DEF_METODO)              ){
     	let obj = new ModelArbol(arr,nivel,"defMetodo");
     	obj.restriccion = _RE_[1]; 
     	obj.static = _RE_[2] ? true:false;
@@ -178,8 +178,8 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
         obj.lineaInicial = arr[0].line;
     	return obj;     	
     }
-    /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS   */
-    if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA) ){
+    /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                  */
+    if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
 
     	let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
@@ -192,7 +192,7 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
         obj.lineaInicial = arr[0].line;
     	return obj; 
     }
-    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS   */
+    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS               */
     if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
         let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
         obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
@@ -205,8 +205,8 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
         obj.lineaInicial = arr[0].line;
         return obj; 
     }
-    /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES    */
-    if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR) ){
+    /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                       */
+    if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
     	let obj = new ModelArbol(arr,-1,"asignacionDeValor");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
 		obj.valor = strmap[_RE_[1]];
@@ -216,7 +216,7 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
         return obj; 
     }
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
-    if( _RE_ = str.match(RE_ARREGLO)){
+    if( _RE_ = str.match(RE_ARREGLO)                 ){
         let obj = new ModelArbol(arr,-1,"defArreglo");
         obj.nivelAnidamiento = nivel;
         obj.tipoDeDato = _RE_[2];
@@ -226,7 +226,14 @@ function _as_reglasDeProduccion(str, str_dev, arr,nivel){
         obj.hijos = _as_getContenido(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
         return obj; 
     }
-
+    /*    RECONOCIENDO LLAMADA A METODO*/
+    if( _RE_ = str.match(RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO)){
+        let obj = new ModelArbol(arr,-1,"llamada_funcion_sinparametros_sinretorno");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
+        obj.nombre = strmap.NAME;
+        obj.lineaInicial = arr[0].line;
+        return obj; 
+    }
 
 
 

@@ -343,9 +343,9 @@ function getElementByName(name){
     }
     return x;
 }
-
+var metodosEnEscena = 0;
 function callStaticMethod(instruccion){
-    let metodo   = getElementByName(`${instruccion.tipo}_${instruccion.nombre}`);
+    let metodo   = getElementByName(`defMetodo_${instruccion.nombre}`);
     let cubo     = metodo.cube;
     let element  = metodo.element;
     let padre    = groupBase.getObjectByName(element.my_padre,true);
@@ -355,8 +355,8 @@ function callStaticMethod(instruccion){
 
     var tweenA = new TWEEN.Tween(element.position)
     .to({ x: -padre.position.x, 
-          y: -padre.position.y, 
-          z: -padre.position.z }, velocidad)
+          y: -padre.position.y+TAM_GRAL*2*metodosEnEscena, 
+          z: -padre.position.z+TAM_GRAL*2*metodosEnEscena }, velocidad)
     .easing(TWEEN.Easing.Quadratic.In)
     .onStart(function (){
         cubo.material.opacity = 1;
@@ -376,4 +376,5 @@ function callStaticMethod(instruccion){
 
     tweenA.chain(tweenB);
     tweenA.start();   
+    metodosEnEscena +=1;
 }

@@ -23,7 +23,7 @@ var indicepaso = 0;
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_02);
+    javaEditor_setText(ejemploDeCodigo_04);
 
     setupThreeJS();
     //setupGroupBase();
@@ -139,6 +139,12 @@ function crearGuionAnimacion(){
 
                 case "defArreglo":
                     guionDeEjecucion.push({parametro:i,metodo:"crearArreglo"});
+                break;
+
+                case "llamada_funcion_sinparametros_sinretorno":
+                    guionDeEjecucion.push({parametro:i,metodo:"callStaticMethod"});
+                    temmetodo = buscarFuncion(arbolSintactico,i.nombre);
+                    console.log(temmetodo);
                 break;
 
                 case "defFor":
