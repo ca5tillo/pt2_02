@@ -110,17 +110,29 @@ function crearLibreria(instruccion){
     groupBase.add(libreria);
 }
 
-function crearMetodo(instruccion){
+function crearMetodo(instruccion,l){
+
+    javaEditor_markClean();
+    javaEditor_markText(instruccion.lineaInicial, instruccion.lineaFinal);
+    javaEditor_markText2(l, l);
+
     let padre     = getElementByID(instruccion.idPadre);
     let element   = new Metodo(instruccion);
-
     padre.subElements.push(element);
-    padre.sons.add(element.element)
+    padre.sons.add(element.element);
+
+    element.MethodIn(instruccion);
+}
+
+function MethodOut(instruccion){
+    javaEditor_markClean();
+    let metodo   = getElementByID(instruccion.id);
+    metodo.MethodOut(instruccion);
 }
 
 function crearVariable(instruccion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
 
     let padre    = getElementByID(instruccion.idPadre);
     let element  = new Variable(instruccion);
@@ -132,7 +144,7 @@ function crearVariable(instruccion){
 
 function asignarValorVariable(instruccion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
 
     let A_quien       = `defVariable_${instruccion.nombre}`;
     let valor         = instruccion.valor;
@@ -143,7 +155,7 @@ function asignarValorVariable(instruccion){
 }
 function crearArreglo(instruccion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
 
     let padre    = getElementByID(instruccion.idPadre);
     let element  = new Arreglo(instruccion);
@@ -209,7 +221,7 @@ function crearFOR(my_padre,lineaInicial){
 
 
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
+    javaEditor_markText(lineaInicial,lineaInicial);
 }
 function eliminarFor(my_padre){
     ciclo = group_librerias.getObjectByName("metodo_group-" +my_padre,true).getObjectByName("cicloFor_group-",true);
@@ -227,7 +239,7 @@ function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     setupText(dibujitos,valor,true,true);
 
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial);
+    javaEditor_markText(lineaInicial,lineaInicial);
    // console.log(A_quien,valor,dibujitos,textito);
 }
 function finMain(){
@@ -273,39 +285,5 @@ function getElementByName(name, idPadre){
 }
 
 
-function callStaticMethod(instruccion){
-
-    let metodo = getElementByID(instruccion.id);
-    let cubo     = metodo.cube;
-    let element  = metodo.element;
-    let padre    = getElementByID(instruccion.idPadre).element;
 
 
- 
-
-    var tweenA = new TWEEN.Tween(element.position)
-    .to({ x: -padre.position.x, 
-          y: -padre.position.y+TAM_GRAL*2*metodosEnEscena, 
-          z: -padre.position.z+TAM_GRAL*2*metodosEnEscena }, velocidad)
-    .easing(TWEEN.Easing.Quadratic.In)
-    .onStart(function (){
-        cubo.material.opacity = 1;
-        cubo.material.visible = true;
-    })
-    .onComplete(function () {
-    });
-
-    var tweenB = new TWEEN.Tween(cubo.scale)
-    .to({ x:METODO_SCALE_X,Y:METODO_SCALE_Y,z: METODO_SCALE_Z,}, velocidad/2)
-    .easing(TWEEN.Easing.Quadratic.In)
-    .onComplete(function () {    
-        let siguientePaso = true;
-        let animar        = false;
-        metodo.setTextName(instruccion.nombre, siguientePaso, animar);   
-    });
-
-    tweenA.chain(tweenB);
-    tweenA.start();   
-    metodosEnEscena +=1;
-    //*/
-}

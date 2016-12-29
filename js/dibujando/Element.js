@@ -11,7 +11,7 @@ class Element{
         this._sons          = new THREE.Group();        
         this._cube          = this._setcube();
         
-
+        this._element.name  = "";
         this._graphics.name = "graphics";
         this._sons.name     = "sons";
 

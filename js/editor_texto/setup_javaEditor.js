@@ -1,4 +1,6 @@
-var javaEditor;var algo = null;
+var javaEditor;
+var marcatextos_1 = null;
+var marcatextos_2 = null;
 
 function setup_javaEditor(){
 	javaEditor = CodeMirror.fromTextArea(document.getElementById("javaEditor"), {
@@ -44,13 +46,19 @@ function javaEditor_addHintWords(){
     //*/
 }
 
-function javaEditor_markText(linea){
+function javaEditor_markText(lineaI,lineaF){
     //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
-    algo = javaEditor.markText({line: linea, ch: 0}, {line: linea, ch: 200}, {className: "styled-background"});
+    marcatextos_1 = javaEditor.markText({line: lineaI, ch: 0}, {line: lineaF, ch: 200}, {className: "styled-background"});
+}
+function javaEditor_markText2(lineaI,lineaF){
+    //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
+    marcatextos_2 = javaEditor.markText({line: lineaI, ch: 0}, {line: lineaF, ch: 200}, {className: "styled-background"});
 }
 function javaEditor_markClean(){
-    if(algo != null)
-    algo.clear();
+    if(marcatextos_1 != null)
+        marcatextos_1.clear();
+    if(marcatextos_2 != null)
+        marcatextos_2.clear();
    // javaEditor.clear ({line: linea, ch: 0}, {line: linea, ch: 200})
 }
 

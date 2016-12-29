@@ -7,7 +7,8 @@ class Libreria extends Element{
         this._id                    = `${instruccion.id}`;
         this._idPadre               = `${instruccion.idPadre}`;
 
-		this._name                  = nameInterno;		
+		this._name                  = nameInterno;	
+		this._element.name          = nameInterno;	
 	    this._element.my_indice     = groupBase.children.length;
 
 	    this._cube.scale.x          = LIB_SCALE_X;

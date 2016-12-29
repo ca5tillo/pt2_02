@@ -9,6 +9,7 @@ class ArregloValor extends Element{
 	    this._id                    = `${instruccion.id}`;
         this._idPadre               = `${instruccion.idPadre}`;
 		this._name                  = nameInterno;
+		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
 
     	
@@ -60,6 +61,7 @@ class Arreglo extends Element{
 	    this._id                    = `${instruccion.id}`;
         this._idPadre               = `${instruccion.idPadre}`;
 		this._name                  = nameInterno;
+		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
 
     	

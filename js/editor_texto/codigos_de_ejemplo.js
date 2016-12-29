@@ -43,12 +43,22 @@ var ejemploDeCodigo_03 =`
 `;
 var ejemploDeCodigo_04 =`
     public class MyClass {
+        public static void otroMetodo2(){
+            int i = 9;
+            i=100;
+            int[] edad = {45, 23, 11, 9};   
+
+        }
         public static void otroMetodo(){
             int i = 9;
             i=100;
+            int[] edad = {45, 23, 11, 9};  
+            otroMetodo2();  
         }
         public static void main() {
             int i = 0;
+            otroMetodo();  
+            int[] edad = {45, 23, 11, 9};    
             otroMetodo();  
             int b;
             i=55;
