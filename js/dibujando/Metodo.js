@@ -17,7 +17,7 @@ class Metodo extends Element{
 	    let padre    = getElementByID(instruccion.idPadre).element;
 
 	    var tweenA = new TWEEN.Tween(element.position)
-	    .to({ x: -padre.position.x, 
+	    .to({ x: -padre.position.x+TAM_GRAL*2*metodosEnEscena, 
 	          y: -padre.position.y+TAM_GRAL*2*metodosEnEscena, 
 	          z: -padre.position.z+TAM_GRAL*2*metodosEnEscena }, velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)

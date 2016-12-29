@@ -65,6 +65,19 @@ var ejemploDeCodigo_04 =`
         }
     }
 `;
+var ejemploDeCodigo_05 =`
+    public class MyClass {
+        public static int otroMetodo(int a, int b,int c){
+            
+        }
+        public static void main() {
+            int a = 8;
+            int b = 2;
+            
+            otroMetodo(a, b, 5);
+        }
+    }
+`;
 
 
 

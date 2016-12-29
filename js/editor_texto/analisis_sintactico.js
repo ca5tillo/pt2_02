@@ -2,11 +2,12 @@ const RE_IS_ARREGLO = /^(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|S
 
 const RE_DEF_CLASE  = /^(PUBLIC|PRIVATE)?CLASSNAME(?=LBRACE)/;
 const RE_DEF_METODO = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAMELPAREN.*(?=RPARENLBRACE)/;
-const RE_DEF_VAR_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(EQ)(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
-const RE_DEF_VAR_NO_INICIALIZADA = /^(PUBLIC|PRIVATE)?(STATIC)?(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(?=SEMICOLON)/;
+const RE_DEF_VAR_INICIALIZADA = /^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(EQ)(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
+const RE_DEF_VAR_NO_INICIALIZADA = /^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME(?=SEMICOLON)/;
 const RE_ASIGNACION_DE_VALOR = /^NAMEEQ(NUM|CADENA|BOOLEAN_LITERAL)(?=SEMICOLON)/;
 const RE_ARREGLO = /^(PUBLIC|PRIVATE)?(BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)LBRACKRBRACKNAMEEQLBRACE.*(?=RBRACESEMICOLON)/;
 const RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO = /^NAMELPARENRPAREN(?=SEMICOLON)/;
+const RE_LLAMADA_FUNCION_CON_PARAMETROS_SIN_RETORNO = /^NAMELPAREN.+RPAREN(?=SEMICOLON)/;
 
 var as_nivelAnidamiento = 0;
 function *GenerateID(){
@@ -18,9 +19,9 @@ function *GenerateID(){
 }
 var _generateID = GenerateID();
 class ModelParametro{
-	constructor(arr){
-		this.arr = arr;
-		this.tipo = "parametro";
+	constructor(tipo,nombre){
+		this.tipo = tipo;
+        this.nombre = nombre;
 	}
 
 }
@@ -161,7 +162,6 @@ function _reglasProduccion(str, arr, nivel){
     //console.log(dev_frase);
     //console.log(str);
 
-    let lstParametros = _as_getparametros(arr);
 
      /*    RECONOCIENDO DEFINICION DE CLASE                                    */
     if( _RE_ = str.match(RE_DEF_CLASE) ){
@@ -177,21 +177,19 @@ function _reglasProduccion(str, arr, nivel){
     	obj.static = _RE_[2] ? true:false;
     	obj.retorno = _RE_[3];
     	obj.nombre = strmap.NAME;
-    	obj.parametros = lstParametros;    	
+    	obj.parametros = _as_getparametros(arr);    	
         obj.lineaInicial = arr[0].line;
+
     	return obj;     	
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                  */
     if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
-
     	let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-    	obj.restriccion = _RE_[1] || ""; 
-    	obj.static = _RE_[2] ? true:false;
-    	obj.tipoDeDato = _RE_[3] || "";
+    	obj.tipoDeDato = _RE_[1] || "";
     	obj.nombre = strmap.NAME;
-		obj.valor = strmap[_RE_[5]];
-		obj.valor_tipoDeDato = _RE_[5];
+		obj.valor = strmap[_RE_[3]];
+		obj.valor_tipoDeDato = _RE_[3];
         obj.lineaInicial = arr[0].line;
     	return obj; 
     }
@@ -199,9 +197,7 @@ function _reglasProduccion(str, arr, nivel){
     if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
         let obj = new ModelArbol(arr,-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
         obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.restriccion = _RE_[1] || ""; 
-        obj.static = _RE_[2] ? true:false;
-        obj.tipoDeDato = _RE_[3] || "";
+        obj.tipoDeDato = _RE_[1] || "";
         obj.nombre = strmap.NAME;
         obj.valor = "?";
         obj.valor_tipoDeDato = "?";
@@ -226,7 +222,6 @@ function _reglasProduccion(str, arr, nivel){
         obj.nombre = strmap.NAME;
         obj.valor_tipoDeDato = _RE_[2];
         obj.lineaInicial = arr[0].line;
-
         obj.hijos = _getContenidoArreglo(arr,obj,nivel+1,obj.tipoDeDato,obj.nombre);
         return obj; 
     }
@@ -236,6 +231,16 @@ function _reglasProduccion(str, arr, nivel){
         obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
         obj.nombre = strmap.NAME;
         obj.lineaInicial = arr[0].line;
+        return obj; 
+    }
+    /*    RECONOCIENDO LLAMADA A METODO*/
+    if( _RE_ = str.match(RE_LLAMADA_FUNCION_CON_PARAMETROS_SIN_RETORNO)){
+        let obj = new ModelArbol(arr,-1,"llamada_funcion_conparametros_sinretorno");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
+        obj.nombre = strmap.NAME;
+        obj.lineaInicial = arr[0].line;
+        obj.envioParametros=_envioParametros(arr);
+        
         return obj; 
     }
 
@@ -267,6 +272,7 @@ function _reglasProduccion(str, arr, nivel){
     }
 
 
+
     /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
     let error = new ModelArbol(arr,-1,"ERROR_SINTACTICO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
     error.nivelAnidamiento=nivel;
@@ -274,31 +280,74 @@ function _reglasProduccion(str, arr, nivel){
     return error;
 }
 
+function _envioParametros(arr){
 
-function _as_getparametros(arr){
-	let parametros = [];
+    let strmap            = {};
     let insertinparam = false;
+
+    let str="";
+    let _re;
     let lstParametros = [];
-    let parametro = [];
+
+
+    for(let i of arr){
+       // if(i.symbol == "RPAREN")insertinparam=false;
+        if(insertinparam){
+            
+            str     += `${i.symbol}`;
+            if(strmap[i.symbol] == undefined)
+                strmap[i.symbol]=i.string;
+
+            if( _re = str.match(/^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING|NAME|NUM|CADENA|BOOLEAN_LITERAL)(COMMA|RPAREN)/)){
+
+
+                let modelParametro = new ModelParametro(_re[1],strmap[_re[1]]);
+                lstParametros.push(modelParametro);
+                str="";
+                strmap={};
+            }
+          
+        
+
+        }
+        if(i.symbol == "LPAREN")insertinparam=true;
+    }
+  
+    return lstParametros;
+}
+function _as_getparametros(arr){
+
+    let strmap            = {};
+    let insertinparam = false;
+
+    let str="";
+    let _re;
+    let lstParametros = [];
+
 
     for(let i of arr){
         if(i.symbol == "RPAREN")insertinparam=false;
-        if(insertinparam)parametros.push(i);
+        if(insertinparam){
+            if(i.symbol != "COMMA"){
+                str     += `${i.symbol}`;
+                if(strmap[i.symbol] == undefined)
+                    strmap[i.symbol]=i.string;
+
+                if( _re = str.match(/^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME$/)){
+
+
+                    let modelParametro = new ModelParametro(_re[1],strmap.NAME);
+                    lstParametros.push(modelParametro);
+                    str="";
+                    strmap={};
+                }
+            }
+
+        }
         if(i.symbol == "LPAREN")insertinparam=true;
     }
-    if(parametros.length > 0){
-        let y = 0;
-        for(let i of parametros){
-            y+=1;
-            if(i.symbol != "COMMA")
-            	parametro.push(i);
-            if(i.symbol == "COMMA" || parametros.length == y){
-                let modelParametro = new ModelParametro(parametro);
-                lstParametros.push(modelParametro);
-                parametro=[];
-            }
-        }
-    }
+    
+
     return lstParametros;
 }
 function _getContenidoArreglo(arr,padre,nivel,tipoDeDato,nombre){

@@ -21,8 +21,9 @@ var velocidad = 200;
 var indicepaso = 0; //usado para el boton animacion paso a paso
 
 function init(){
+    console.log("a"+5)
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_04);
+    javaEditor_setText(ejemploDeCodigo_05);
 
     setupThreeJS();
     //setupGroupBase();
@@ -132,7 +133,10 @@ function addPaso(i){
 
         case "llamada_funcion_sinparametros_sinretorno":
             recorrerMetodo(i.nombre,i.lineaInicial);
+        break;
 
+        case "llamada_funcion_conparametros_sinretorno":
+            llamada_metodo_con_parametros(i);
         break;
 
         case "defFor":
@@ -164,6 +168,10 @@ function addPaso(i){
 
     }
 }
+function llamada_metodo_con_parametros(instruccion){
+    let metodo = arbolSintactico_GetFunctionByName(instruccion.nombre);
+    let envioParametros = instruccion.envioParametros;
+}
 function recorrerMetodo(name,l=0){
     let metodo = arbolSintactico_GetFunctionByName(name);
 
@@ -183,9 +191,7 @@ function recorrerMetodo(name,l=0){
     }
 }
 function crearGuionAnimacion(){
-
     recorrerMetodo("main");
-    
 }
 
 
@@ -226,6 +232,7 @@ function btn_pasoApaso(){
 }
 function btn_camara(){
     console.log(lstElements)
+    esAnimacionFluida = false;
 
     /*
     let o1 = getElementByID(4);
