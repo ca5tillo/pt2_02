@@ -21,7 +21,7 @@ var indicepaso = 0; //usado para el boton animacion paso a paso
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_05);
+    javaEditor_setText(ejemploDeCodigo_04);
 
     setupThreeJS();
     //setupGroupBase();
@@ -225,11 +225,12 @@ function btn_Ejecutar(){
 function btn_pasoApaso(){
     if(indicepaso < guionDeEjecucion.length){
         _ejecutarpaso(indicepaso)
+        bonsai();
         indicepaso += 1; 
     }
 }
 function btn_camara(){
-    console.log(lstElements)
+    //console.log(lstElements)
     esAnimacionFluida = false;
 }
 
@@ -263,3 +264,35 @@ function arbolSintactico_GetFunctionByName(nodoNombre){
 
 
 
+function bonsai(){
+    $('#representacion_arbol').empty();
+
+    _createLista = function (nodo){
+        let li    = document.createElement("li");        
+        let texto = document.createTextNode(nodo.name); 
+        li.appendChild(texto);  
+        if(nodo.subElements.length > 0){
+            let ul = document.createElement("ul"); 
+            li.appendChild(ul);                          
+            for(let i of nodo.subElements){
+                ul.appendChild(_createLista(i));  
+            }
+        } 
+        return li;
+    }
+    let ul    = document.createElement("ul"); 
+    let att   = document.createAttribute("id");      
+    att.value = "arbolito";                         
+    ul.setAttributeNode(att); 
+
+    ul.appendChild(_createLista(lstElements[1]));   
+
+    document.getElementById("representacion_arbol").appendChild(ul);  
+
+    $('ul#arbolito').bonsai({
+        expandAll: true,
+        createInputs: "radio"
+    });
+
+
+}

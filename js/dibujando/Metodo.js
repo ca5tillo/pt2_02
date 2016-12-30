@@ -68,7 +68,7 @@ class Metodo extends Element{
 	    .onComplete(function () {  
 	        padre.sons.remove(metodo.element);
 	        padre.subElements.splice(index, 1);
-
+	        bonsai();
 	        if(esAnimacionFluida)btn_pasoApaso();
 	      
 	    });
