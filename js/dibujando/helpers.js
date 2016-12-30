@@ -55,7 +55,8 @@ function setupThreeJS(){
     renderer.shadowMap.enabled = true;
     //renderer.setClearColor( scene.fog.color );
 
-    document.body.appendChild(renderer.domElement);
+
+    document.getElementById("representacion_3D").appendChild(renderer.domElement);
 }
 var      setupAxis = () => scene.add( new THREE.AxisHelper( 1e19 ) );
 
@@ -123,7 +124,28 @@ function crearMetodo(instruccion,l){
 
     element.MethodIn(instruccion);
 }
+function llamada_metodo_con_parametrosA(instruccion,metodo){
+    console.log("estupidin")
+    let envioParametros = instruccion.envioParametros;
+    let parametros = [];
+    for(let i of envioParametros){
+        let nombre = i.nombre;
+        let idPadre = instruccion.idPadre;
+        parametros.push(getElementByName(nombre,idPadre));
+    }
 
+
+    let padre     = getElementByID(metodo.idPadre);
+    let element   = new Metodo(metodo);
+    padre.subElements.push(element);
+    padre.sons.add(element.element);
+
+    element.MethodIn(metodo);
+    console.log("instruccion",instruccion)
+    console.log("metodo",metodo)
+    console.log("envioParametros",envioParametros)
+    console.log("parametros",parametros)
+}
 function MethodOut(instruccion){
     javaEditor_markClean();
     let metodo   = getElementByID(instruccion.id);
@@ -146,7 +168,7 @@ function asignarValorVariable(instruccion){
     javaEditor_markClean();
     javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
 
-    let A_quien       = `defVariable_${instruccion.nombre}`;
+    let A_quien       = `${instruccion.nombre}`;
     let valor         = instruccion.valor;
     let siguientePaso = true;
 

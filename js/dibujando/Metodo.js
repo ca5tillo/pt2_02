@@ -5,7 +5,7 @@ class Metodo extends Element{
 		
 		this._id                    = `${instruccion.id}`;
         this._idPadre               = `${instruccion.idPadre}`;
-		this._name                  = nameInterno;	
+		this._name                  = `${instruccion.nombre}`;	
 		this._element.name          = nameInterno;
 		
 	}

@@ -4,12 +4,12 @@ class Variable extends Element{
 		let tipoDeDato    = `${instruccion.tipoDeDato}`;
 		let name3D        = `${instruccion.nombre}`;
 	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
-	    let valor         = instruccion.valor;
+	    let valor         = `${instruccion.valor}`;
 	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
 
 	    this._id                    = `${instruccion.id}`;
         this._idPadre               = `${instruccion.idPadre}`;
-		this._name                  = nameInterno;	
+		this._name                  = `${instruccion.nombre}`;	
 		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
 

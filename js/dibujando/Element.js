@@ -147,9 +147,11 @@ class Element{
             } );
     }
     setTextType (txt, siguientePaso=false, animar=true){
+        
         this._setText("type",  1, txt, siguientePaso, animar, null);
     }
     setTextName (txt, siguientePaso=false, animar=true){
+
         this._setText("name",  2, txt, siguientePaso, animar, null);
     }
     setTextValue(txt, siguientePaso=false, animar=true){

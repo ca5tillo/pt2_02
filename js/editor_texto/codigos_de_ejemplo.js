@@ -74,7 +74,7 @@ var ejemploDeCodigo_05 =`
             int a = 8;
             int b = 2;
             
-            otroMetodo(a, b, 5);
+            otroMetodo(a, b, b);
         }
     }
 `;

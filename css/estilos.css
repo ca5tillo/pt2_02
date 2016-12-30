@@ -1,12 +1,13 @@
 html, body {
     height: 100%;
+    width:  100%;
 }
 
 body {
     background-color: #000000;
     margin: 0;
     font-family: Helvetica, sans-serif;;
-    overflow: hidden;
+    /*overflow: hidden;*/
 }
 
 a {
@@ -29,7 +30,19 @@ a {
     position: absolute;
     width: 500px;
 }
-
+#representacion_3D{
+    height: 100%;
+    width: 100%;
+}
+#representacion_arbol{
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 500px;
+    height: 100%;
+    background:rgba(0,0,0,.3);
+    z-index: 9;
+}
 #menu {
     position: absolute;
     bottom: 20px;

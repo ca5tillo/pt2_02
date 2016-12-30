@@ -41,9 +41,7 @@
 
             <!-- THREE.JS --> 
     <script src="lib/three-js/build/three.min.js"></script>
-    <script src="lib/three-js/examples/js/Cloth.js"></script>
-    <script src="lib/three-js/examples/js/controls/OrbitControls.js"></script>   
-    <script src="lib/three-js/examples/js/controls/FirstPersonControls.js"></script>           
+    <script src="lib/three-js/examples/js/controls/OrbitControls.js"></script>           
             <!-- ./THREE.JS --> 
 
             <!-- Tween.JS --> 
@@ -62,9 +60,9 @@
     <script src="js/dibujando/Metodo.js"></script>
     <script src="js/dibujando/Variable.js"></script>
     <script src="js/dibujando/Arreglo.js"></script>
-
-    
     <script src="js/dibujando/helpers.js"></script>
+
+    <script src="js/libreto/create.js"></script>
 
 
     <script src="js/funciones.js"></script>
@@ -73,19 +71,13 @@
 
 </head>
 <body>
-    <!--
-    <div id="container"></div>
-    <div id="info">
-        <span class="fa-stack fa-lg">
-          <i class="fa fa-square fa-stack-2x"></i>
-          <i class="fa fa-terminal fa-stack-1x fa-inverse"></i>
-        </span>
-        hola
-    </div>
-    -->
+    
     <div id="editor">
             <textarea name="javaEditor" id="javaEditor" cols="30" rows="10" style="display: none;"></textarea>
     </div>
+    <div id="representacion_3D"></div>
+
+
     <div id="menu">
         <button id="Compilar" onclick="btn_Compilar()"  class="">Compilar</button>
         <button id="Ejecutar" onclick="btn_Ejecutar()"  class="desactivado">Ejecutar</button>
@@ -94,7 +86,7 @@
         
     </div>
 
-  
+    <div id="representacion_arbol"></div>
 
 </body>
 </html>

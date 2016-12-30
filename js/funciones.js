@@ -13,7 +13,6 @@ window.addEventListener('load',init);
 
 var arbolSintactico = null;
 var esAnimacionFluida = false;
-var guionDePreCompilacion = [];
 var guionDeEjecucion = [];
 
 
@@ -21,7 +20,6 @@ var velocidad = 200;
 var indicepaso = 0; //usado para el boton animacion paso a paso
 
 function init(){
-    console.log("a"+5)
     setup_javaEditor();
     javaEditor_setText(ejemploDeCodigo_05);
 
@@ -58,48 +56,35 @@ function render(){
 
 
 /*
-Recorre el ** arbolSintactico **
-Inserta obj al arreglo ** guionDePreCompilacion **
-En estos objetos indica que FUNCIONES usara de los helpers de dibujado
+Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
+Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
+que FUNCIONES usaran de los helpers de dibujado
 
-El ultimo objeto hace referencia a la funcion moverlibrerias(),  esta funcion es quien inicia la animacion
+Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
+el ** guionDePreCompilacion **
 */
 function crearGuionPrecompilacion(){
-
-    guionAdd_libMeto = function (O_o){
-        switch(O_o.tipo){
-            case  "defClase":
-                guionDePreCompilacion.push({parametro:O_o, metodo:"crearLibreria"});
-            break;
-            
-            case "defMetodo":
-                //guionDePreCompilacion.push({parametro:O_o, metodo:"crearMetodo"   });
-            break;
+    let _guion = [];  //guionDePreCompilacion
+    _run = function (){
+        for(let i of _guion){
+            self[   i.metodo    ] (i.parametro);
+        }
+    }
+    _add = function (O_o){
+        if(O_o.tipo == "defClase"){
+            _guion.push({parametro:O_o, metodo:"crearLibreria"});
         }
         for(let i of O_o.hijos){
-            guionAdd_libMeto(i);
+            _add(i);
         }
     };
-    guionDePreCompilacion.push({parametro:{},                metodo:"setupGroupBase"});
-    guionDePreCompilacion.push({parametro:{nombre:"System",tipo: "defClase"}, metodo:"crearLibreria"});
+    _guion.push({parametro:{},                                 metodo:"setupGroupBase"});
+    _guion.push({parametro:{nombre:"System",tipo: "defClase"}, metodo:"crearLibreria" });
 
-
-    guionAdd_libMeto(arbolSintactico);
-
+    _add(arbolSintactico);
+    _run();
 }
 
-
-
-/* 
-Ejecuta las instrucciones que contiene el arreglo ** guionDePreCompilacion **
-La animacion inicia dado que la ultima instruccion de esta lista es la llamada a moverlibrerias() quien desencadena las animaciones
-de precompilacion
-*/
-function run_guionDePreCompilacion (){
-    for(let i of guionDePreCompilacion){
-        self[   i.metodo    ] (i.parametro);
-    }
-}
 /******************************************************************************************************/
 
 /******************************************************************************************************\                 _                              _                 
@@ -170,7 +155,21 @@ function addPaso(i){
 }
 function llamada_metodo_con_parametros(instruccion){
     let metodo = arbolSintactico_GetFunctionByName(instruccion.nombre);
-    let envioParametros = instruccion.envioParametros;
+
+    if(metodo){// Si existe el metodo lo centramos en la escena
+
+        guionDeEjecucion.push({parametro:[instruccion,metodo], metodo:"llamada_metodo_con_parametrosA"   });
+
+
+        for(let i of metodo.hijos){ //Recorremos los hijos del metodo 
+            addPaso(i);
+        }
+        
+        guionDeEjecucion.push({parametro:[metodo],metodo:"MethodOut"});
+
+    }else{
+        console.log("No se encontro funcion main",metodo);
+    }
 }
 function recorrerMetodo(name,l=0){
     let metodo = arbolSintactico_GetFunctionByName(name);
@@ -210,7 +209,6 @@ function btn_Compilar(){
     //as_imprimirArbol(arbolSintactico)
 
     crearGuionPrecompilacion();
-    run_guionDePreCompilacion();
 
     crearGuionAnimacion();
 
@@ -233,20 +231,6 @@ function btn_pasoApaso(){
 function btn_camara(){
     console.log(lstElements)
     esAnimacionFluida = false;
-
-    /*
-    let o1 = getElementByID(4);
-    let o2 = getElementByID(o1._idPadre);
-    //o1.sons.remove(o2.element);
-    //lstElements.splice(3, 1);
-    console.log(o2);
-    console.log(o1);
-    let index = o2.subElements.findIndex(nodo => nodo.id == 4);
-    console.log(index);
-    o2.subElements.splice(index, 1);
-    console.log("**************");
-    console.log(o2);
-    //*/
 }
 
 
