@@ -1,13 +1,13 @@
 class Libreria extends Element{
 	constructor(instruccion){
 		super();
-		let name3D                  = `${instruccion.nombre}`;
-		let nameInterno             = `${instruccion.tipo}_${instruccion.nombre}`;
+		let name3D                  = `${instruccion.name}`;
+		let nameInterno             = `${instruccion.tipo}_${instruccion.name}`;
 
-        this._id                    = `${instruccion.id}`;
-        this._idPadre               = `${instruccion.idPadre}`;
+        this._id                    = instruccion.id||null;
+        this._idPadre               = instruccion.idPadre||"0";
 
-		this._name                  = `${instruccion.nombre}`;
+		this._name                  = `${instruccion.name}`;
 		this._element.name          = nameInterno;	
 	    this._element.my_indice     = groupBase.children.length;
 
@@ -17,11 +17,11 @@ class Libreria extends Element{
 
 	    this.setTextName(name3D);
 
-	    this._animate();
+
 	}
 
 
-    _animate(){
+    in(){
         var cubo = this._cube;
         var graphics =this._graphics;
         var element = this._element;
@@ -39,7 +39,7 @@ class Libreria extends Element{
         }).start();
 
  		// MOVER A LA BLOQUE DE LAS LIBRERIAS
-///*
+
 	    new TWEEN.Tween(element.position)
 	    .to({ 
 	        x: zonaLibrerias.position.x, 
@@ -51,7 +51,6 @@ class Libreria extends Element{
 
 	    }).start();
 
-//*/
 
     }
 } 

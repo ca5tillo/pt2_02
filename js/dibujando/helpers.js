@@ -109,20 +109,23 @@ function crearLibreria(instruccion){
     
     lstElements.push(element);
     groupBase.add(libreria);
+    element.in();
 }
 
-function crearMetodo(instruccion,l){
-
+function crearMetodo(llamada,declaracion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial, instruccion.lineaFinal);
-    javaEditor_markText2(l, l);
+    javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
+    if(llamada.name != "main"){
+        javaEditor_markText2(llamada.lineaInicial);
+    }
 
-    let padre     = getElementByID(instruccion.idPadre);
-    let element   = new Metodo(instruccion);
+
+    let padre     = llamada.name == "main" ? getElementByID(declaracion.idPadre) : getElementByID(llamada.idPadre);
+    let element   = new Metodo(llamada,declaracion);
     padre.subElements.push(element);
     padre.sons.add(element.element);
 
-    element.MethodIn(instruccion);
+    element.in(declaracion);
 }
 function llamada_metodo_con_parametrosA(instruccion,metodo){
     console.log("estupidin")
@@ -149,12 +152,12 @@ function llamada_metodo_con_parametrosA(instruccion,metodo){
 function MethodOut(instruccion){
     javaEditor_markClean();
     let metodo   = getElementByID(instruccion.id);
-    metodo.MethodOut(instruccion);
+    metodo.out(instruccion);
 }
 
-function crearVariable(instruccion){
+function crearVariable(instruccion){console.log(instruccion)
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial);
 
     let padre    = getElementByID(instruccion.idPadre);
     let element  = new Variable(instruccion);
@@ -166,7 +169,7 @@ function crearVariable(instruccion){
 
 function asignarValorVariable(instruccion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial);
 
     let A_quien       = `${instruccion.nombre}`;
     let valor         = instruccion.valor;
@@ -177,7 +180,7 @@ function asignarValorVariable(instruccion){
 }
 function crearArreglo(instruccion){
     javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial,instruccion.lineaInicial);
+    javaEditor_markText(instruccion.lineaInicial);
 
     let padre    = getElementByID(instruccion.idPadre);
     let element  = new Arreglo(instruccion);
@@ -243,7 +246,7 @@ function crearFOR(my_padre,lineaInicial){
 
 
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial,lineaInicial);
+    javaEditor_markText(lineaInicial);
 }
 function eliminarFor(my_padre){
     ciclo = group_librerias.getObjectByName("metodo_group-" +my_padre,true).getObjectByName("cicloFor_group-",true);
@@ -261,7 +264,7 @@ function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     setupText(dibujitos,valor,true,true);
 
     javaEditor_markClean();
-    javaEditor_markText(lineaInicial,lineaInicial);
+    javaEditor_markText(lineaInicial);
    // console.log(A_quien,valor,dibujitos,textito);
 }
 function finMain(){

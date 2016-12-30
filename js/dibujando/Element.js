@@ -1,7 +1,7 @@
 class Element{
     constructor(){
-        this._id;
-        this._idPadre;
+        this._id            = null;
+        this._idPadre       = null; 
         this._subElements   = [];
         this._name          = "";
 

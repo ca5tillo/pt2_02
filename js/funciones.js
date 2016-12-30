@@ -79,7 +79,7 @@ function crearGuionPrecompilacion(){
         }
     };
     _guion.push({parametro:{},                                 metodo:"setupGroupBase"});
-    _guion.push({parametro:{nombre:"System",tipo: "defClase"}, metodo:"crearLibreria" });
+    _guion.push({parametro:{name:"System",tipo: "defClase"}, metodo:"crearLibreria" });
 
     _add(arbolSintactico);
     _run();
@@ -117,44 +117,19 @@ function addPaso(i){
         break;
 
         case "llamada_funcion_sinparametros_sinretorno":
-            recorrerMetodo(i.nombre,i.lineaInicial);
+            recorrerMetodo(i);
         break;
 
         case "llamada_funcion_conparametros_sinretorno":
             llamada_metodo_con_parametros(i);
         break;
 
-        case "defFor":
-            guionDeEjecucion.push(
-                {
-                    metodo:"crearFOR",
-                    parametros:[i.padre.nombre,i.lineaInicial]
-
-                }
-            );
-            for(let i = 0 ; i<4; i++){
-                guionDeEjecucion.push(
-                    {
-                        metodo:"asignarValorArreglo",
-                        parametros:["edad",i,i,9]
-
-                    }
-                );
-            }
-            guionDeEjecucion.push(
-                {
-                    metodo:"eliminarFor",
-                    parametros:[i.padre.nombre]
-
-                }
-            );
-            //console.log(i);
-        break;
+        
 
     }
 }
 function llamada_metodo_con_parametros(instruccion){
-    let metodo = arbolSintactico_GetFunctionByName(instruccion.nombre);
+    let metodo = arbolSintactico_GetFunctionByName(instruccion.name);
 
     if(metodo){// Si existe el metodo lo centramos en la escena
 
@@ -171,26 +146,25 @@ function llamada_metodo_con_parametros(instruccion){
         console.log("No se encontro funcion main",metodo);
     }
 }
-function recorrerMetodo(name,l=0){
-    let metodo = arbolSintactico_GetFunctionByName(name);
+function recorrerMetodo(instruccion){
+    let declaracion = arbolSintactico_GetFunctionByName(instruccion.name);
 
 
+    if(declaracion){// Si existe el metodo lo centramos en la escena
 
-    if(metodo){// Si existe el metodo lo centramos en la escena
-
-        guionDeEjecucion.push({parametro:[metodo,l], metodo:"crearMetodo"   });
-        for(let i of metodo.hijos){ //Recorremos los hijos del metodo 
+        guionDeEjecucion.push({parametro:[instruccion,declaracion], metodo:"crearMetodo"   });
+        for(let i of declaracion.hijos){ //Recorremos los hijos del metodo 
             addPaso(i);
         }
         
-        guionDeEjecucion.push({parametro:[metodo],metodo:"MethodOut"});
+        guionDeEjecucion.push({parametro:[declaracion],metodo:"MethodOut"});
 
     }else{
-        console.log("No se encontro funcion main",metodo);
+        console.log("No se encontro funcion main",declaracion);
     }
 }
 function crearGuionAnimacion(){
-    recorrerMetodo("main");
+    recorrerMetodo({name:"main"});
 }
 
 
@@ -207,7 +181,7 @@ var _ejecutarpaso = (i) => self[   guionDeEjecucion[i].metodo    ] (...guionDeEj
 function btn_Compilar(){
     arbolSintactico = analisisSintactico_getArbol();
     //as_imprimirArbol(arbolSintactico)
-
+A522(arbolSintactico);
     crearGuionPrecompilacion();
 
     crearGuionAnimacion();
@@ -225,12 +199,12 @@ function btn_Ejecutar(){
 function btn_pasoApaso(){
     if(indicepaso < guionDeEjecucion.length){
         _ejecutarpaso(indicepaso)
-        bonsai();
+        pintarArbolDeLlamadas();
         indicepaso += 1; 
     }
 }
 function btn_camara(){
-    //console.log(lstElements)
+    console.log(lstElements)
     esAnimacionFluida = false;
 }
 
@@ -243,7 +217,7 @@ function arbolSintactico_GetFunctionByName(nodoNombre){
     let getSubMenuItem = function (subMenuItems, nodoNombre) {
         if (subMenuItems) {
             for (let i = 0; i < subMenuItems.length; i++) {
-                if (subMenuItems[i].tipo == "defMetodo" && subMenuItems[i].nombre == nodoNombre ){
+                if (subMenuItems[i].tipo == "defMetodo" && subMenuItems[i].name == nodoNombre ){
                     return subMenuItems[i];
                 };
                 let found = getSubMenuItem(subMenuItems[i].hijos, nodoNombre);
@@ -264,12 +238,12 @@ function arbolSintactico_GetFunctionByName(nodoNombre){
 
 
 
-function bonsai(){
-    $('#representacion_arbol').empty();
+function pintarArbolDeLlamadas(){
+    $('#representacion_arbolDeLlamadas').empty();
 
     _createLista = function (nodo){
         let li    = document.createElement("li");        
-        let texto = document.createTextNode(nodo.name); 
+        let texto = document.createTextNode(`[${nodo.id||""},${nodo.idPadre||""}]  ${nodo.name}`); 
         li.appendChild(texto);  
         if(nodo.subElements.length > 0){
             let ul = document.createElement("ul"); 
@@ -281,15 +255,45 @@ function bonsai(){
         return li;
     }
     let ul    = document.createElement("ul"); 
-    let att   = document.createAttribute("id");      
-    att.value = "arbolito";                         
-    ul.setAttributeNode(att); 
+    ul.setAttribute("id", "arbol"); 
+    let raiz = new Element();
+    raiz._subElements = lstElements;
+    ul.appendChild(_createLista(raiz));   
 
-    ul.appendChild(_createLista(lstElements[1]));   
+    document.getElementById("representacion_arbolDeLlamadas").appendChild(ul);  
 
-    document.getElementById("representacion_arbol").appendChild(ul);  
+    $('#representacion_arbolDeLlamadas ul#arbol').bonsai({
+        expandAll: true,
+        createInputs: "radio"
+    });
 
-    $('ul#arbolito').bonsai({
+
+}
+
+function A522(nodo){
+    $('#representacion_arbolSintactico').empty();
+
+    _createLista = function (nodo){
+        let li    = document.createElement("li");        
+        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}]${nodo.name}`); 
+        li.appendChild(texto);  
+        if(nodo.hijos.length > 0){
+            let ul = document.createElement("ul"); 
+            li.appendChild(ul);                          
+            for(let i of nodo.hijos){
+                ul.appendChild(_createLista(i));  
+            }
+        } 
+        return li;
+    }
+    let ul    = document.createElement("ul");          
+    ul.setAttribute("id", "arbol"); 
+
+    ul.appendChild(_createLista(nodo));   
+
+    document.getElementById("representacion_arbolSintactico").appendChild(ul);  
+
+    $('#representacion_arbolSintactico ul#arbol').bonsai({
         expandAll: true,
         createInputs: "radio"
     });

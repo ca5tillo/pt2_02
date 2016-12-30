@@ -46,13 +46,15 @@ function javaEditor_addHintWords(){
     //*/
 }
 
-function javaEditor_markText(lineaI,lineaF){
+function javaEditor_markText(lineaI,lineaF = null){
+    let _lineaF = lineaF ? lineaF : lineaI;
     //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
-    marcatextos_1 = javaEditor.markText({line: lineaI, ch: 0}, {line: lineaF, ch: 200}, {className: "styled-background"});
+    marcatextos_1 = javaEditor.markText({line: lineaI, ch: 0}, {line: _lineaF, ch: 200}, {className: "styled-background"});
 }
-function javaEditor_markText2(lineaI,lineaF){
+function javaEditor_markText2(lineaI,lineaF = null){
+    let _lineaF = lineaF ? lineaF : lineaI;
     //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
-    marcatextos_2 = javaEditor.markText({line: lineaI, ch: 0}, {line: lineaF, ch: 200}, {className: "styled-background"});
+    marcatextos_2 = javaEditor.markText({line: lineaI, ch: 0}, {line: _lineaF, ch: 200}, {className: "styled-background"});
 }
 function javaEditor_markClean(){
     if(marcatextos_1 != null)

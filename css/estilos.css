@@ -8,6 +8,7 @@ body {
     margin: 0;
     font-family: Helvetica, sans-serif;;
     /*overflow: hidden;*/
+     overflow-x: hidden;
 }
 
 a {
@@ -34,7 +35,7 @@ a {
     height: 100%;
     width: 100%;
 }
-#representacion_arbol{
+#representacion_arbolDeLlamadas{
     position: absolute;
     right: 0;
     top: 0;
@@ -43,6 +44,17 @@ a {
     background:rgba(255,255,255,.3);
     z-index: 9;
     color:#fff;
+}
+#representacion_arbolSintactico{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 500px;
+    height: 60%;
+    background:rgba(255,255,255,.3);
+    z-index: 9;
+    color:#fff;
+    overflow: auto;
 }
 #menu {
     position: absolute;
