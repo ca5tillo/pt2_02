@@ -4,9 +4,11 @@ class Libreria extends Element{
 		let name3D                  = `${instruccion.name}`;
 		let nameInterno             = `${instruccion.tipo}_${instruccion.name}`;
 
-        this._id                    = instruccion.id||null;
-        this._idPadre               = instruccion.idPadre||"0";
 
+
+		this._idPadre               = lstElements.id;
+		this._idContenedor          = lstElements.id;
+		this._idAS                  = instruccion.id;
 		this._name                  = `${instruccion.name}`;
 		this._element.name          = nameInterno;	
 	    this._element.my_indice     = groupBase.children.length;
@@ -19,7 +21,9 @@ class Libreria extends Element{
 
 
 	}
-
+	get idAS(){
+		return this._idAS;
+	}
 
     in(){
         var cubo = this._cube;

@@ -1,4 +1,3 @@
-var metodosEnEscena = 0;
 /*      Constantes para la camara    */
 const FOV = 45;
 const ASPECT = window.innerWidth / window.innerHeight;
@@ -29,7 +28,9 @@ const METODO_SCALE_Z = 5;
 
 var groupBase;
 var zonaLibrerias;
-var lstElements = [];
+var lstElements = null; //nodo raiz
+var lstIDsMetodos = [];
+var lstIDsRamas = [];
 
 
 function setupThreeJS(){
@@ -84,6 +85,11 @@ function setupGroupBase(){
     groupBase      = new THREE.Group();
     groupBase.name = "group_general";
     scene.add(groupBase);
+
+    lstElements = new Element();
+    lstElements.name = "Elemento Raiz";
+    lstElements.idPadre = lstElements.id;
+    lstElements.idContenedor = lstElements.id;
 }
 
 function setupZonaLibrerias(){
@@ -107,8 +113,10 @@ function crearLibreria(instruccion){
     let element   = new Libreria(instruccion);
     let libreria  = element.element;
     
-    lstElements.push(element);
+    lstElements.subElements.push(element);
     groupBase.add(libreria);
+
+    //animar la entrada
     element.in();
 }
 
@@ -119,9 +127,12 @@ function crearMetodo(llamada,declaracion){
         javaEditor_markText2(llamada.lineaInicial);
     }
 
-
-    let padre     = llamada.name == "main" ? getElementByID(declaracion.idPadre) : getElementByID(llamada.idPadre);
+    let idPadre   = lstIDsRamas[lstIDsRamas.length-1];
+    let padre     = llamada.name == "main" ? getElementLibByName(declaracion.padre.name) : lstElements.getChildrenById(idPadre);
     let element   = new Metodo(llamada,declaracion);
+    lstIDsMetodos.push(element.id);
+    lstIDsRamas.push(element.id);
+
     padre.subElements.push(element);
     padre.sons.add(element.element);
 
@@ -151,57 +162,66 @@ function llamada_metodo_con_parametrosA(instruccion,metodo){
 }
 function MethodOut(instruccion){
     javaEditor_markClean();
-    let metodo   = getElementByID(instruccion.id);
+    let idMetodoActual   = lstIDsMetodos[lstIDsMetodos.length-1];
+    let metodo   = lstElements.getChildrenById(idMetodoActual);
+
     metodo.out(instruccion);
 }
 
-function crearVariable(instruccion){console.log(instruccion)
+function crearVariable(instruccion){
     javaEditor_markClean();
     javaEditor_markText(instruccion.lineaInicial);
 
-    let padre    = getElementByID(instruccion.idPadre);
+    let idPadre  = lstIDsRamas[lstIDsRamas.length-1];
+    let padre    = lstElements.getChildrenById(idPadre);
     let element  = new Variable(instruccion);
 
     padre.subElements.push(element);
-    padre.sons.add(element.element)
+    padre.sons.add(element.element);
 
+    element.in(instruccion);
 }
-
 function asignarValorVariable(instruccion){
     javaEditor_markClean();
     javaEditor_markText(instruccion.lineaInicial);
 
-    let A_quien       = `${instruccion.nombre}`;
+    let A_quien       = `${instruccion.name}`;
     let valor         = instruccion.valor;
     let siguientePaso = true;
+    let idContenedor  = lstIDsMetodos[lstIDsMetodos.length-1];
 
-    let variable = getElementByName(A_quien, instruccion.idPadre);
+    let variable    = lstElements.getChildrenById(idContenedor).getChildrenByName(A_quien,true);
     if(variable) variable.setTextValue(valor,siguientePaso);
 }
 function crearArreglo(instruccion){
     javaEditor_markClean();
     javaEditor_markText(instruccion.lineaInicial);
 
-    let padre    = getElementByID(instruccion.idPadre);
+    let idPadre  = lstIDsRamas[lstIDsRamas.length-1];
+    let padre    = lstElements.getChildrenById(idPadre);
     let element  = new Arreglo(instruccion);
 
+
+    lstIDsRamas.push(element.id);
     padre.subElements.push(element);
     padre.sons.add(element.element)
-
+    element.in(instruccion);
     for(let i of instruccion.hijos){
         crearArregloValor(i);
     }
-
+    lstIDsRamas.pop();
 }
 function crearArregloValor(instruccion){
     //javaEditor_markClean();
     //javaEditor_markText(instruccion.lineaInicial);
 
-    let padre    = getElementByID(instruccion.idPadre);
+    let idPadre  = lstIDsRamas[lstIDsRamas.length-1];
+    let padre    = lstElements.getChildrenById(idPadre);
     let element = new ArregloValor(instruccion);
 
     padre.subElements.push(element);
-    padre.sons.add(element.element)
+    padre.sons.add(element.element);
+    element.in(instruccion);
 }
 
 
@@ -267,47 +287,10 @@ function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     javaEditor_markText(lineaInicial);
    // console.log(A_quien,valor,dibujitos,textito);
 }
-function finMain(){
-    scene.remove(groupBase);
-    javaEditor_markClean();
-}
 
 
 
-function getElementByID(id){
-    //http://jsfiddle.net/dystroy/MDsyr/
-    let getSubMenuItem = function (subMenuItems, id) {
-        if (subMenuItems) {
-            for (let i = 0; i < subMenuItems.length; i++) {
-                if (subMenuItems[i].id == id) {
-                    return subMenuItems[i];
-                };
-                let found = getSubMenuItem(subMenuItems[i].subElements, id);
-                if (found) return found;
-            }
-        }
-    };
 
-    let searchedItem = getSubMenuItem(lstElements, id) || null;
-    return searchedItem;
-}
-function getElementByName(name, idPadre){
-    //http://jsfiddle.net/dystroy/MDsyr/
-    let getSubMenuItem = function (subMenuItems, name, idPadre) {
-        if (subMenuItems) {
-            for (let i = 0; i < subMenuItems.length; i++) {
-                if (subMenuItems[i].name == name && subMenuItems[i].idPadre == idPadre) {
-                    return subMenuItems[i];
-                };
-                let found = getSubMenuItem(subMenuItems[i].subElements, name, idPadre);
-                if (found) return found;
-            }
-        }
-    };
-
-    let searchedItem = getSubMenuItem(lstElements, name, idPadre) || null;
-    return searchedItem;
-}
 
 
 

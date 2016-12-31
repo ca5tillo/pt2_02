@@ -2,13 +2,13 @@ class ArregloValor extends Element{
 	constructor(instruccion){
 		super();
 
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
 	    let valor         = instruccion.valor;
-	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
+	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
 
-	    this._id                    = `${instruccion.id}`;
-        this._idPadre               = `${instruccion.idPadre}`;
-		this._name                  = `${instruccion.nombre}`;	
+	    this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
+        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
+		this._name                  = `${instruccion.name}`;	
 		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
 
@@ -16,14 +16,15 @@ class ArregloValor extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	
 
-    	this._animate(valor);	 
+    	 
 	}
-	_animate(my_valor){
+	in(instruccion){
+		let my_valor         = instruccion.valor;
 
+        let _this = this;
 		let cubo = this._cube;
         let graphics =this._graphics;
         let element = this._element;
-        let _this = this;
  
 		
 		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
@@ -53,14 +54,14 @@ class Arreglo extends Element{
 	constructor(instruccion){
 		super();
 
-		let tipoDeDato    = `${instruccion.tipoDeDato}`;
-		let name3D        = `${instruccion.nombre}`;
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.nombre}`;
-	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
+	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
 
-	    this._id                    = `${instruccion.id}`;
-        this._idPadre               = `${instruccion.idPadre}`;
-		this._name                  = `${instruccion.nombre}`;	
+
+
+        this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
+        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
+		this._name                  = `${instruccion.name}`;	
 		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
 
@@ -68,9 +69,12 @@ class Arreglo extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
-	    this._animate(tipoDeDato, name3D);
+
 	}
-	_animate(tipoDeDato, nombre){
+	in(instruccion){
+		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let nombre        = `${instruccion.name}`;
+
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
@@ -80,7 +84,7 @@ class Arreglo extends Element{
         let thisCuboScale = thisCubo.scale;//x, y , z
         
 
-        let padreCube = getElementByID(this._idPadre).cube;
+        let padreCube = lstElements.getChildrenById(_this.idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  

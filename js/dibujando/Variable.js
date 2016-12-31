@@ -1,14 +1,16 @@
 class Variable extends Element{
 	constructor(instruccion){
 		super();
-		let tipoDeDato    = `${instruccion.tipoDeDato}`;
-		let name3D        = `${instruccion.name}`;
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
-	    let valor         = `${instruccion.valor}`;
-	    let my_indice     = getElementByID(instruccion.idPadre).sons.children.length;
 
-	    this._id                    = `${instruccion.id}`;
-        this._idPadre               = `${instruccion.idPadre}`;
+
+	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
+
+	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
+
+
+        this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
+        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
+		
 		this._name                  = `${instruccion.name}`;	
 		this._element.name          = nameInterno;
     	this._element.my_indice     = my_indice;
@@ -17,10 +19,14 @@ class Variable extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
-	    this._animate(tipoDeDato, name3D, valor);	  
+  
 	}
 
-	_animate(tipoDeDato, nombre, my_valor){
+	in(instruccion){
+		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let name3D        = `${instruccion.name}`;
+	    let valor         = `${instruccion.valor}`;
+
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;
@@ -30,7 +36,7 @@ class Variable extends Element{
         let thisCuboScale = thisCubo.scale;//x, y , z
         
 
-        let padreCube = getElementByID(this._idPadre).cube;
+        let padreCube = lstElements.getChildrenById(_this.idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  
@@ -49,8 +55,8 @@ class Variable extends Element{
 	        .onComplete(function () {
 	        	let siguientePaso = true;
 	        	_this.setTextType(tipoDeDato);
-	        	_this.setTextName(nombre+"=");
-			    _this.setTextValue(my_valor,siguientePaso);
+	        	_this.setTextName(name3D+"=");
+			    _this.setTextValue(valor,siguientePaso);
 	        	
 	        });
 

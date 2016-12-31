@@ -56,6 +56,26 @@ a {
     color:#fff;
     overflow: auto;
 }
+#representacionarreglo1{
+    position: absolute;
+    right: 500px;
+    top: 0;
+    width: 500px;
+    height: 100px;
+    background:rgba(255,255,255,.3);
+    z-index: 9;
+    color:#fff;
+}
+#representacionarreglo2{
+    position: absolute;
+    right: 500px;
+    top: 100px;
+    width: 500px;
+    height: 100px;
+    background:rgba(255,255,255,.3);
+    z-index: 9;
+    color:#fff;
+}
 #menu {
     position: absolute;
     bottom: 20px;

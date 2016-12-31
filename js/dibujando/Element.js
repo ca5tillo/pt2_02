@@ -1,7 +1,8 @@
 class Element{
     constructor(){
-        this._id            = null;
-        this._idPadre       = null; 
+        this._id            = dibujando_generateID.next().value;
+        this._idPadre       = null; // Es el padre directo Ej. si declaro una variable dentro de un for el for es el padre directo
+        this._idContenedor  = null; // EJ. si es una variable a que metodo pertenece sin importa si antes pertenece a un for 
         this._subElements   = [];
         this._name          = "";
 
@@ -21,29 +22,33 @@ class Element{
         this._element.add(this._graphics);
         this._element.add(this._sons);
     }
-    _setcube(){
-        var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
-        var mat = new THREE.MeshPhongMaterial({color: 'green', transparent:true, opacity:0,visible:false});
-        var malla = new THREE.Mesh(geo, mat);
-
-        malla.castShadow = true;
-        malla.receiveShadow = true;
-        malla.name = "my_geometria";
-
-        return malla;
-    }
 
     get id(){
         return this._id; 
     }
+    set id(id){
+        this._id = id;
+    }
     get idPadre(){
         return this._idPadre; 
+    }
+    set idPadre(idPadre){
+        this._idPadre = idPadre;
+    }
+    get idContenedor(){
+        return this._idContenedor;
+    }
+    set idContenedor(idContenedor){
+        this._idContenedor = idContenedor;
     }
     get subElements(){
         return this._subElements; 
     }
     get name(){
         return this._name;  
+    }
+    set name(name){
+        this._name = name;
     }
     get element(){
         return this._element;  
@@ -61,8 +66,16 @@ class Element{
         return this._cube;
     }
 
-    getSonByIndex(index){
-        return this._sons.children[index];    
+    _setcube(){
+        var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
+        var mat = new THREE.MeshPhongMaterial({color: 'green', transparent:true, opacity:0,visible:false});
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
     }
     _setText( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
 
@@ -146,6 +159,10 @@ class Element{
                                           
             } );
     }
+    getSonByIndex(index){
+
+        return this._sons.children[index];    
+    }
     setTextType (txt, siguientePaso=false, animar=true){
         
         this._setText("type",  1, txt, siguientePaso, animar, null);
@@ -157,6 +174,42 @@ class Element{
     setTextValue(txt, siguientePaso=false, animar=true){
         let valorAnterior = this._text.getObjectByName("value");
         this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
+    }
+    getChildrenByName(name, profundidad = false){
+        //http://jsfiddle.net/dystroy/MDsyr/
+        let getSubMenuItem = function (subMenuItems, name) {
+            if (subMenuItems) {
+                for (let i = 0; i < subMenuItems.length; i++) {
+                    if (subMenuItems[i].name == name) {
+                        return subMenuItems[i];
+                    };
+                    if(profundidad){
+                        let found = getSubMenuItem(subMenuItems[i].subElements, name);
+                        if (found) return found;
+                    }
+                }
+            }
+        };
+
+        let searchedItem = getSubMenuItem(this._subElements, name) || null;
+        return searchedItem;
+    }
+    getChildrenById(id){
+        //http://jsfiddle.net/dystroy/MDsyr/
+        let getSubMenuItem = function (subMenuItems, id) {
+            if (subMenuItems) {
+                for (let i = 0; i < subMenuItems.length; i++) {
+                    if (subMenuItems[i].id == id) {
+                        return subMenuItems[i];
+                    };
+                    let found = getSubMenuItem(subMenuItems[i].subElements, id);
+                    if (found) return found;
+                
+                }
+            }
+        };
+        let searchedItem = getSubMenuItem(this._subElements, id) || null;
+        return searchedItem;
     }
 
 }

@@ -182,8 +182,9 @@ function btn_Compilar(){
     arbolSintactico = analisisSintactico_getArbol();
     //as_imprimirArbol(arbolSintactico)
 A522(arbolSintactico);
-    crearGuionPrecompilacion();
 
+    crearGuionPrecompilacion();
+pintarArbolDeLlamadas();
     crearGuionAnimacion();
 
     $("#Compilar").addClass("desactivado");
@@ -204,7 +205,7 @@ function btn_pasoApaso(){
     }
 }
 function btn_camara(){
-    console.log(lstElements)
+    console.log(lstElements.getChildrenById(4,true))
     esAnimacionFluida = false;
 }
 
@@ -239,11 +240,13 @@ function arbolSintactico_GetFunctionByName(nodoNombre){
 
 
 function pintarArbolDeLlamadas(){
+    document.getElementById("representacionarreglo1").innerHTML = lstIDsMetodos.join(" * ");
+    document.getElementById("representacionarreglo2").innerHTML = lstIDsRamas.join(" * ");
     $('#representacion_arbolDeLlamadas').empty();
 
     _createLista = function (nodo){
         let li    = document.createElement("li");        
-        let texto = document.createTextNode(`[${nodo.id||""},${nodo.idPadre||""}]  ${nodo.name}`); 
+        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre},${nodo.idContenedor},${nodo.idAS || ""}]  ${nodo.name}`); 
         li.appendChild(texto);  
         if(nodo.subElements.length > 0){
             let ul = document.createElement("ul"); 
@@ -256,18 +259,17 @@ function pintarArbolDeLlamadas(){
     }
     let ul    = document.createElement("ul"); 
     ul.setAttribute("id", "arbol"); 
-    let raiz = new Element();
-    raiz._subElements = lstElements;
-    ul.appendChild(_createLista(raiz));   
+    if(lstElements){
+        ul.appendChild(_createLista(lstElements));   
 
-    document.getElementById("representacion_arbolDeLlamadas").appendChild(ul);  
+        document.getElementById("representacion_arbolDeLlamadas").appendChild(ul);  
 
-    $('#representacion_arbolDeLlamadas ul#arbol').bonsai({
-        expandAll: true,
-        createInputs: "radio"
-    });
+        $('#representacion_arbolDeLlamadas ul#arbol').bonsai({
+            expandAll: true,
+            createInputs: "radio"
+        });
 
-
+    }
 }
 
 function A522(nodo){

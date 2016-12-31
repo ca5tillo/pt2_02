@@ -10,14 +10,8 @@ const RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO = /^NAMELPARENRPAREN(?=SEMIC
 const RE_LLAMADA_FUNCION_CON_PARAMETROS_SIN_RETORNO = /^NAMELPAREN.+RPAREN(?=SEMICOLON)/;
 
 var as_nivelAnidamiento = 0;
-function *GenerateID(){
-    var i = 0;
-    while(true){
-        yield i;
-        i++;
-    }
-}
-var _generateID = GenerateID();
+
+
 class ModelParametro{
 	constructor(tipo,nombre){
 		this.tipo = tipo;
@@ -31,10 +25,8 @@ class ModelArbol  {
 		tipo             = "ElementoRaiz"
 
 		){
-        this.id                         = _generateID.next().value;
+        this.id                         = analisisSintactico_generateID.next().value;
         this.idPadre                    = 0;
-		this.nivelAnidamiento_temporal  = nivelAnidamiento;
-		this.nivelAnidamiento 			= nivelAnidamiento;
 		this.padre						={};
 
 		this.tipo = tipo;//defClase, defMetodo, defVariable, asignarValor,llamadaAmetodos
@@ -59,6 +51,8 @@ class ModelArbol  {
 
 
 
+        this.nivelAnidamiento_temporal  = nivelAnidamiento;
+        this.nivelAnidamiento           = nivelAnidamiento;
 
 		
 	}
