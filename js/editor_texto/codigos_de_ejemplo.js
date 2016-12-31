@@ -55,11 +55,13 @@ var ejemploDeCodigo_04 =`public class MyClass {
         }
         public static void main() {
             int[] edad = {45, 23, 11, 9};    
+            otroMetodo();  
             int i = 0;
             otroMetodo();  
-            otroMetodo();  
             int b;
+            otroMetodo(); 
             i=55;
+            otroMetodo(); 
         }
     }
 `;
