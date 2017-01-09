@@ -21,7 +21,7 @@ var indicepaso = 0; //usado para el boton animacion paso a paso
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_04);
+    javaEditor_setText(ejemploDeCodigo_05);
 
     setupThreeJS();
     //setupGroupBase();
@@ -104,6 +104,9 @@ inserta el el arreglo ** guionDeEjecucion** los pasos de la ejecucion
 function addPaso(i){
     // i de instruccion
     switch(i.tipo){
+        case "ERROR_SINTACTICO":
+            console.log(i)
+        break;
         case "defVariable":
             guionDeEjecucion.push({parametro:[i],metodo:"crearVariable"});
         break;
@@ -123,19 +126,67 @@ function addPaso(i){
         case "llamada_funcion_conparametros_sinretorno":
             llamada_metodo_con_parametros(i);
         break;
+        case "return_variable":
+            guionDeEjecucion.push({parametro:[i],metodo:"returnVariable"});
+        break;
+        case "ASIGNARAVARIALEDESDEMETODO":
+            ASIGNARAVARIALEDESDEMETODO(i);
+            
+        break;
 
         
 
     }
 }
+function ASIGNARAVARIALEDESDEMETODO(instruccion){
+    let nameVariable        = instruccion.nameVariable;
+    let metodo              = arbolSintactico_GetFunctionByName(instruccion.nameMatodo);
+    let lstParametrosEnvio  = instruccion.argumentos;
+    let lstParametrosRecibo = metodo.parametros;
+
+    let destino          = nameVariable;
+
+    console.log("instruccion" ,instruccion)
+    console.log("nameVariable" ,nameVariable)
+    console.log("metodo" ,metodo)
+    console.log("lstParametrosEnvio" ,lstParametrosEnvio)
+    console.log("lstParametrosRecibo" ,lstParametrosRecibo)
+
+    if(metodo){// Si existe el metodo lo centramos en la escena
+
+        guionDeEjecucion.push({parametro:[instruccion,metodo,destino], metodo:"llamada_metodo_con_parametrosA"   });
+        //crear reglas para el paso de parametros 
+        for(let i = 0;i < lstParametrosEnvio.length; i++){
+            guionDeEjecucion.push({parametro:[lstParametrosEnvio[i],lstParametrosRecibo[i]], metodo:"crearVariablesRecibidas"   });
+        }
+
+        // crear reglas para el contenido de la funcion 
+        for(let i of metodo.hijos){ //Recorremos los hijos del metodo 
+            addPaso(i);
+        }
+        
+        //guionDeEjecucion.push({parametro:[i],metodo:"asignarValorVariable"});      
+        guionDeEjecucion.push({parametro:[metodo],metodo:"MethodOut"});
+
+    }else{
+        console.log("No se encontro funcion main",metodo);
+    }
+}
 function llamada_metodo_con_parametros(instruccion){
-    let metodo = arbolSintactico_GetFunctionByName(instruccion.name);
+    let metodo              = arbolSintactico_GetFunctionByName(instruccion.name);
+    let lstParametrosEnvio  = instruccion.argumentos;
+    let lstParametrosRecibo = metodo.parametros;
+
 
     if(metodo){// Si existe el metodo lo centramos en la escena
 
         guionDeEjecucion.push({parametro:[instruccion,metodo], metodo:"llamada_metodo_con_parametrosA"   });
+        //crear reglas para el paso de parametros 
+        for(let i = 0;i < lstParametrosEnvio.length; i++){
+            guionDeEjecucion.push({parametro:[lstParametrosEnvio[i],lstParametrosRecibo[i]], metodo:"crearVariablesRecibidas"   });
+        }
 
-
+        // crear reglas para el contenido de la funcion 
         for(let i of metodo.hijos){ //Recorremos los hijos del metodo 
             addPaso(i);
         }
@@ -151,8 +202,11 @@ function recorrerMetodo(instruccion){
 
 
     if(declaracion){// Si existe el metodo lo centramos en la escena
-
-        guionDeEjecucion.push({parametro:[instruccion,declaracion], metodo:"crearMetodo"   });
+        if(instruccion.name == "main"){
+            guionDeEjecucion.push({parametro:[declaracion], metodo:"crearMetodoMain"   });
+        }else{
+            guionDeEjecucion.push({parametro:[instruccion,declaracion], metodo:"crearMetodo"   });
+        }
         for(let i of declaracion.hijos){ //Recorremos los hijos del metodo 
             addPaso(i);
         }
@@ -180,8 +234,7 @@ var _ejecutarpaso = (i) => self[   guionDeEjecucion[i].metodo    ] (...guionDeEj
 
 function btn_Compilar(){
     arbolSintactico = analisisSintactico_getArbol();
-    //as_imprimirArbol(arbolSintactico)
-A522(arbolSintactico);
+    as_imprimirArbol(arbolSintactico);
 
     crearGuionPrecompilacion();
 pintarArbolDeLlamadas();
@@ -190,8 +243,10 @@ pintarArbolDeLlamadas();
     $("#Compilar").addClass("desactivado");
     $("#Ejecutar").removeClass("desactivado");
     $("#PorPasos").removeClass("desactivado");
-}
 
+    
+}
+var generadores = [];
 function btn_Ejecutar(){
     esAnimacionFluida = true;
     btn_pasoApaso()
@@ -205,9 +260,106 @@ function btn_pasoApaso(){
     }
 }
 function btn_camara(){
-    console.log(lstElements.getChildrenById(4,true))
-    esAnimacionFluida = false;
+    let instruccion = null;
+    let index_1     = generadores.length-1;// indice del ultimo generador
+    let tipo        = null;
+
+
+    
+    if(generadores.length == 0){
+        let main = arbolSintactico_GetFunctionByName("main");
+        let id   = crearMetodoMain(main);
+        generadores.push({id:id, generador:Generador(main), children:[]});
+
+    }else{
+
+
+        instruccion = getInstruccion();
+
+        if(instruccion){
+            instruccion = instruccion.value; // esto es porq aun era el obj del generador
+            tipo        = instruccion.tipo
+
+            switch(tipo){
+                case "ERROR_SINTACTICO":
+                    console.log(i)
+                break;
+                
+                case "defVariable":
+                    crearVariable(instruccion);                
+                break;
+                case "asignacionDeValor":
+                    asignarValorVariable(instruccion);         
+                break;
+
+                case "defArreglo":
+                    crearArreglo(instruccion);
+                break;
+
+                case "llamada_funcion_sinparametros_sinretorno":
+                    let declaracion = arbolSintactico_GetFunctionByName(instruccion.name);
+                    crearMetodo(instruccion,declaracion);
+
+                    generadores.push({generador:Generador(declaracion),children:[]});
+
+                break;
+
+                case "llamada_funcion_conparametros_sinretorno":
+                    console.log(instruccion)
+                    //llamada_metodo_con_parametros(i);
+                break;
+                case "return_variable":
+                    guionDeEjecucion.push({parametro:[i],metodo:"returnVariable"});
+                break;
+                case "ASIGNARAVARIALEDESDEMETODO":
+                    //ASIGNARAVARIALEDESDEMETODO(i);
+                    
+                break;
+
+            
+            }
+            /*
+            if( i.value.tipo == "ASIGNARAVARIALEDESDEMETODO" ){
+                let metodo = arbolSintactico_GetFunctionByName(i.value.nameMatodo);
+                generadores.push({generador:Generador(metodo),children:[]});
+            }
+            if( i.value.tipo == "defArreglo" ){
+                let as = {generador:Generador2(i),children:[]}
+                generadores[index_1].children.push(as)
+              
+            }
+            
+            //*/
+        }
+    }
+
+    pintarArbolDeLlamadas();
 }
+function getInstruccion(){
+    let i = null;
+    if(generadores.length > 0){
+        let index_1 = generadores.length-1;    // indice del ultimo generador
+        let index_2 = generadores[index_1].children.length-1;  // indice del ultimo hijo del ultimo generador
+        let n       = generadores[index_1].children.length;  // numero de hijos del ultimo generador
+
+        if(n > 0){// Tienen prioridad los generadores de segundo nivel
+            i = generadores[index_1].children[index_2].generador.next();
+            if(i.done){
+                generadores[index_1].children.pop();
+                i = getInstruccion();
+            }
+        }else{// Si no hay generadores de segundo nivel
+            i = generadores[index_1].generador.next();
+            if(i.done){
+                generadores.pop();
+                i = getInstruccion();
+            }
+        }
+    }
+    return i;
+}
+function *Generador(nodo){ for(let i of nodo.hijos){ yield i; } }
+
 
 
 
@@ -272,33 +424,3 @@ function pintarArbolDeLlamadas(){
     }
 }
 
-function A522(nodo){
-    $('#representacion_arbolSintactico').empty();
-
-    _createLista = function (nodo){
-        let li    = document.createElement("li");        
-        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}]${nodo.name}`); 
-        li.appendChild(texto);  
-        if(nodo.hijos.length > 0){
-            let ul = document.createElement("ul"); 
-            li.appendChild(ul);                          
-            for(let i of nodo.hijos){
-                ul.appendChild(_createLista(i));  
-            }
-        } 
-        return li;
-    }
-    let ul    = document.createElement("ul");          
-    ul.setAttribute("id", "arbol"); 
-
-    ul.appendChild(_createLista(nodo));   
-
-    document.getElementById("representacion_arbolSintactico").appendChild(ul);  
-
-    $('#representacion_arbolSintactico ul#arbol').bonsai({
-        expandAll: true,
-        createInputs: "radio"
-    });
-
-
-}

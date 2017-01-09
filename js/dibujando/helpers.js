@@ -119,16 +119,31 @@ function crearLibreria(instruccion){
     //animar la entrada
     element.in();
 }
+function crearMetodoMain(declaracion){
+    javaEditor_markClean();
+    javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
 
+
+    let idPadre   = lstIDsRamas[lstIDsRamas.length-1];
+    let padre     = getElementLibByName(declaracion.padre.name);
+    let element   = new MetodoMain(declaracion);
+    lstIDsMetodos.push(element.id);
+    lstIDsRamas.push(element.id);
+
+    padre.subElements.push(element);
+    padre.sons.add(element.element);
+
+    element.in(declaracion);
+    return element.id;
+}
 function crearMetodo(llamada,declaracion){
     javaEditor_markClean();
     javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
-    if(llamada.name != "main"){
-        javaEditor_markText2(llamada.lineaInicial);
-    }
+    javaEditor_markText2(llamada.lineaInicial);
+
 
     let idPadre   = lstIDsRamas[lstIDsRamas.length-1];
-    let padre     = llamada.name == "main" ? getElementLibByName(declaracion.padre.name) : lstElements.getChildrenById(idPadre);
+    let padre     = lstElements.getChildrenById(idPadre);
     let element   = new Metodo(llamada,declaracion);
     lstIDsMetodos.push(element.id);
     lstIDsRamas.push(element.id);
@@ -137,40 +152,93 @@ function crearMetodo(llamada,declaracion){
     padre.sons.add(element.element);
 
     element.in(declaracion);
+
+    return element.id;
 }
-function llamada_metodo_con_parametrosA(instruccion,metodo){
-    console.log("estupidin")
-    let envioParametros = instruccion.envioParametros;
-    let parametros = [];
-    for(let i of envioParametros){
-        let nombre = i.nombre;
-        let idPadre = instruccion.idPadre;
-        parametros.push(getElementByName(nombre,idPadre));
+function llamada_metodo_con_parametrosA(llamada,declaracion,destino){
+    javaEditor_markClean();
+    javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
+    if(llamada.name != "main"){
+        javaEditor_markText2(llamada.lineaInicial);
     }
 
+    let idPadre         = lstIDsRamas[lstIDsRamas.length-1];
+    let idContenedor    = lstIDsMetodos[lstIDsMetodos.length-1];
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let padre           = llamada.name == "main" ? getElementLibByName(declaracion.padre.name) : lstElements.getChildrenById(idPadre);
+    let parametros = [];
+    
 
-    let padre     = getElementByID(metodo.idPadre);
-    let element   = new Metodo(metodo);
+
+    let element   = new Metodo(llamada,declaracion);
+    element.returnA = argumentos;
+    lstIDsMetodos.push(element.id);
+    lstIDsRamas.push(element.id);
+
     padre.subElements.push(element);
     padre.sons.add(element.element);
 
-    element.MethodIn(metodo);
-    console.log("instruccion",instruccion)
-    console.log("metodo",metodo)
-    console.log("envioParametros",envioParametros)
-    console.log("parametros",parametros)
+    element.in(declaracion);
+
+    
+}
+
+function returnVariable(instruccion){
+    if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }
+
+    let siguientePaso   = true;
+    let idContenedor    = lstIDsMetodos[lstIDsMetodos.length-1];
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let variable        = contenedor.getChildrenByName(instruccion.name,true);
+    let destino         = lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
+
+    let value           = variable.value;
+
+    destino.setTextValue(value,siguientePaso);
+    console.log(contenedor);
+    console.log(destino);
+    console.log(value);
+    //contenedor.out({});
 }
 function MethodOut(instruccion){
     javaEditor_markClean();
     let idMetodoActual   = lstIDsMetodos[lstIDsMetodos.length-1];
     let metodo   = lstElements.getChildrenById(idMetodoActual);
-
+    if(metodo)
     metodo.out(instruccion);
 }
+function crearVariablesRecibidas(ParametrosEnvio, ParametrosRecibo){
+    /*if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }//*/
 
+
+    let idContenedor    = lstIDsMetodos[lstIDsMetodos.length-2];
+    let idPadre         = lstIDsRamas[lstIDsRamas.length-1];
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let padre           = lstElements.getChildrenById(idPadre);
+
+    let elementoOrigen  = contenedor.getChildrenByName(ParametrosEnvio.name,true);
+
+
+
+
+    let element  = new VariablePorParametro({name:ParametrosRecibo.name,valor:elementoOrigen.value,tipoDeDato:ParametrosRecibo.tipo});
+    padre.subElements.push(element);
+    padre.sons.add(element.element);
+
+    element.in({name:ParametrosRecibo.name,valor:elementoOrigen.value,tipoDeDato:ParametrosRecibo.tipo}, elementoOrigen.element);
+
+}
 function crearVariable(instruccion){
-    javaEditor_markClean();
-    javaEditor_markText(instruccion.lineaInicial);
+    if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }
 
     let idPadre  = lstIDsRamas[lstIDsRamas.length-1];
     let padre    = lstElements.getChildrenById(idPadre);

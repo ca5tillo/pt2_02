@@ -6,7 +6,7 @@ function *GenerateID(){
     }
 }
 var analisisSintactico_generateID = GenerateID();
-var dibujando_generateID = GenerateID();
+
 
 function getElementLibByName(name){
     let x = null;

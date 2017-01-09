@@ -1,3 +1,4 @@
+var dibujando_generateID = GenerateID();
 class Element{
     constructor(){
         this._id            = dibujando_generateID.next().value;
@@ -78,16 +79,13 @@ class Element{
         return malla;
     }
     _setText( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
-
-        let element = this._element;
-        let cube = this._cube;
-        let texto = this._text;
-
-        let loader = new THREE.FontLoader();
+        let element   = this._element;
+        let cube      = this._cube;
+        let texto     = this._text;
+        let loader    = new THREE.FontLoader();
         let textMesh1;
+
         loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
-
-
                 let material = new THREE.MultiMaterial( [
                     new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
                     new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
@@ -97,67 +95,59 @@ class Element{
                     size: TAM_GRAL/8,
                     height: 2,
                 });
-
                 textGeo.computeBoundingBox();
                 textGeo.computeVertexNormals();
 
-                textMesh1 = new THREE.Mesh( textGeo, material );
-                textMesh1.name=name;
-                texto.add(textMesh1);  
-
-                let tam = cube.geometry.parameters;//depth,height,width
-                let scale = cube.scale;//x, y , z
-                let x = tam.width*scale.x;
-                let y = tam.height*scale.y; 
-                let z = tam.depth*scale.z; 
-
+                textMesh1         = new THREE.Mesh( textGeo, material );
+                textMesh1.name    = name;
                 textMesh1.visible = true;
 
-                if( ! animar){
-                    textMesh1.position.set(
-                    -(x/2)+TAM_GRAL/25, 
-                    (y/2)-(TAM_GRAL/5)*indice,
-                    z/2
-                    );
+                texto.add(textMesh1);  
+
+                // Es el tamaño real del cubo operando por su escala 
+                let tam   = cube.geometry.parameters;//depth,height,width
+                let scale = cube.scale;//x, y , z
+                let x     = tam.width*scale.x;
+                let y     = tam.height*scale.y; 
+                let z     = tam.depth*scale.z; 
+
+                // Destino del texto sobre su cubo (realizo x/2 para obtener la distancia del centro a la orilla despues le sumo un margen para q no quede al raz del cubo)
+                let xi = -(x/2)+TAM_GRAL/25;
+                let yi = (y/2)-(TAM_GRAL/5)*indice;
+                let zi = z/2;
+
+                // Cambiamos la posicion del texto
+                if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
+                    textMesh1.position.set(xi, yi, zi);    
                     if(siguientePaso){
                         if(esAnimacionFluida)btn_pasoApaso();
                     }
                 }else{
-
                     textMesh1.position.set(
                         -element.position.x,
                         -element.position.y,
                         -element.position.z
-                        );     
-                    let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                        .to({ x: -(x/2)+TAM_GRAL/25, 
-                              y: (y/2)-(TAM_GRAL/5)*indice, 
-                              z: z/2 
-                          },velocidad)
-                        .easing(TWEEN.Easing.Quadratic.In)
-                        .onStart(function (){
+                        );     // lo envio al centro del metodo o padre
 
-                        })
-                        .onUpdate(function () {
-                            
-                        })
-                        .onComplete(function () {
+                    let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
+                        .to         ({ x:xi, y:yi, z:zi },velocidad)
+                        .easing     (TWEEN.Easing.Quadratic.In)
+                        .onStart    ( function (){} )
+                        .onUpdate   ( function (){} )
+                        .onComplete ( function (){
                             if(valorAnterior){
                                 texto.remove(valorAnterior);
-                            }
-                            
+                            }                            
                             if(siguientePaso){
                                 if(esAnimacionFluida)btn_pasoApaso();
                             }
-                        });
-
-                    
+                        });                    
                     tween.start();
                 
                 }
 
                                           
-            } );
+            });// ./loader.load({})
     }
     getSonByIndex(index){
 
@@ -176,7 +166,8 @@ class Element{
         this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
     }
     getChildrenByName(name, profundidad = false){
-        //http://jsfiddle.net/dystroy/MDsyr/
+        // http://jsfiddle.net/dystroy/MDsyr/
+        // Retorna la primera coincidencia
         let getSubMenuItem = function (subMenuItems, name) {
             if (subMenuItems) {
                 for (let i = 0; i < subMenuItems.length; i++) {
@@ -195,7 +186,8 @@ class Element{
         return searchedItem;
     }
     getChildrenById(id){
-        //http://jsfiddle.net/dystroy/MDsyr/
+        // http://jsfiddle.net/dystroy/MDsyr/
+        // Retorna la primera coincidencia
         let getSubMenuItem = function (subMenuItems, id) {
             if (subMenuItems) {
                 for (let i = 0; i < subMenuItems.length; i++) {

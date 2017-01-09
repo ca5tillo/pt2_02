@@ -1,13 +1,13 @@
-class Metodo extends Element{
-	constructor(llamada,declaracion){
+class MetodoMain extends Element{
+	constructor(declaracion){
 		super();	
 
 		
 
-        this._idPadre               =  llamada.name == "main" ? getElementLibByName(declaracion.padre.name).id : lstIDsRamas.length > 0 ? lstIDsRamas[lstIDsRamas.length-1]:-1;
-		this._idContenedor          =  llamada.name == "main" ? getElementLibByName(declaracion.padre.name).id : lstIDsMetodos[lstIDsMetodos.length-1];
+        this._idPadre               =  getElementLibByName(declaracion.padre.name).id;
+		this._idContenedor          =  getElementLibByName(declaracion.padre.name).id;
 		this._name                  = `${declaracion.name}`;	
-		this._libcontenedor         =  declaracion.id;
+
 		
 	}
 	_getLibBy_idAS(idAS){
@@ -27,14 +27,12 @@ class Metodo extends Element{
 	    let libreria = _this._getLibBy_idAS(declaracion.idPadre).element;
 	
 
-	    // cambiamos el punto de origen ya que son metodos estaticos que se llaman desde su libreria
-	    if(_this.name != "main")element.position.set(libreria.position.x,libreria.position.y,libreria.position.z);
 
 	    //solo si es main se encuentra en el area de las librerias ya q se genera la instancia en el metodo q lo llama 
 	    var tweenA = new TWEEN.Tween(element.position)
-	    .to({ x: _this.name == "main" ? -libreria.position.x : 0 + TAM_GRAL*2, 
-	          y: _this.name == "main" ? -libreria.position.y : 0 + TAM_GRAL*2, 
-	          z: _this.name == "main" ? -libreria.position.z : 0 + TAM_GRAL*2 
+	    .to({ x: -libreria.position.x, 
+	          y: -libreria.position.y, 
+	          z: -libreria.position.z 
 	      }, velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
@@ -91,7 +89,7 @@ class Metodo extends Element{
 	        padre.subElements.splice(index, 1);
 	        lstIDsRamas.splice(index2, 1);
 	        lstIDsMetodos.pop();
-	        pintarArbolDeLlamadas();
+	        pintarArbolDe();
 	        if(esAnimacionFluida)btn_pasoApaso();
 
 	    });

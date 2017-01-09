@@ -10,11 +10,11 @@
 <!-- CSS --> 
     
             <!-- codemirror --> 
-    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css"><!-- main --> 
-    <link rel="stylesheet" href="lib/codemirror/theme/abcdef.css"><!-- addons theme --> 
-    <link rel="stylesheet" href="lib/codemirror/theme/monokai.css"><!-- addons theme --> 
-    <link rel="stylesheet" href="lib/codemirror/addon/display/fullscreen.css"><!-- addons extraKeys --> 
-    <link rel="stylesheet" href="lib/codemirror/addon/hint/show-hint.css"><!-- addons show-hint --> 
+    <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">            <!-- main --> 
+    <link rel="stylesheet" href="lib/codemirror/theme/abcdef.css">              <!-- addons theme --> 
+    <link rel="stylesheet" href="lib/codemirror/theme/monokai.css">             <!-- addons theme --> 
+    <link rel="stylesheet" href="lib/codemirror/addon/display/fullscreen.css">  <!-- addons extraKeys --> 
+    <link rel="stylesheet" href="lib/codemirror/addon/hint/show-hint.css">      <!-- addons show-hint --> 
             <!-- ./codemirror --> 
 
     <link rel="stylesheet" href="lib/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -35,14 +35,14 @@
     <script src="lib/jquery/jquery-3.1.1.min.js"></script>
 
             <!-- codemirror --> 
-    <script src="lib/codemirror/lib/codemirror.js"></script><!-- codemirror --> 
-    <script src="lib/codemirror/mode/clike/clike.js"></script><!-- addons mode:text/x-java --> 
-    <script src="lib/codemirror/addon/edit/matchbrackets.js"></script><!-- addons matchBrackets: true --> 
-    <script src="lib/codemirror/addon/edit/closebrackets.js"></script><!-- addons autoCloseBrackets: true --> 
-    <script src="lib/codemirror/addon/selection/active-line.js"></script><!-- addons styleActiveLine: true --> 
-    <script src="lib/codemirror/addon/selection/mark-selection.js"></script><!-- addons styleActiveLine: true --> 
-    <script src="lib/codemirror/addon/display/fullscreen.js"></script><!-- addons extraKeys: {} --> 
-    <script src="lib/codemirror/addon/hint/show-hint.js"></script><!-- addons show-hint --> 
+    <script src="lib/codemirror/lib/codemirror.js"></script>                    <!-- codemirror --> 
+    <script src="lib/codemirror/mode/clike/clike.js"></script>                  <!-- addons mode:text/x-java --> 
+    <script src="lib/codemirror/addon/edit/matchbrackets.js"></script>          <!-- addons matchBrackets: true --> 
+    <script src="lib/codemirror/addon/edit/closebrackets.js"></script>          <!-- addons autoCloseBrackets: true --> 
+    <script src="lib/codemirror/addon/selection/active-line.js"></script>       <!-- addons styleActiveLine: true --> 
+    <script src="lib/codemirror/addon/selection/mark-selection.js"></script>    <!-- addons styleActiveLine: true --> 
+    <script src="lib/codemirror/addon/display/fullscreen.js"></script>          <!-- addons extraKeys: {} --> 
+    <script src="lib/codemirror/addon/hint/show-hint.js"></script>              <!-- addons show-hint --> 
             <!-- ./codemirror --> 
 
             <!-- THREE.JS --> 
@@ -57,15 +57,18 @@
     <script src="js/helpers.js"></script>
 
     <script src="js/editor_texto/codigos_de_ejemplo.js"></script>
-    <script src="js/editor_texto/tabla_de_simbolos.js"></script>
-    <script src="js/editor_texto/setup_javaEditor.js"></script>
-    <script src="js/editor_texto/analisis_sintactico.js"></script>
+    <script src="js/editor_texto/analisis_lexico/tabla_de_simbolos.js"></script>
+    <script src="js/editor_texto/analisis_lexico/setup_javaEditor.js"></script>
+    <script src="js/editor_texto/analisis_sintactico/reglas_produccion.js"></script>
+    <script src="js/editor_texto/analisis_sintactico/analisis_sintactico.js"></script>
 
-    <script src="js/dibujando/Element.js"></script>
-    <script src="js/dibujando/Libreria.js"></script>
-    <script src="js/dibujando/Metodo.js"></script>
-    <script src="js/dibujando/Variable.js"></script>
-    <script src="js/dibujando/Arreglo.js"></script>
+    <script src="js/dibujando/models/Element.js"></script>
+    <script src="js/dibujando/models/Libreria.js"></script>
+    <script src="js/dibujando/models/Metodo.js"></script>
+    <script src="js/dibujando/models/MetodoMain.js"></script>
+    <script src="js/dibujando/models/Variable.js"></script>
+    <script src="js/dibujando/models/VariablePorParametro.js"></script>    
+    <script src="js/dibujando/models/Arreglo.js"></script>
     <script src="js/dibujando/helpers.js"></script>
 
     <script src="js/libreto/create.js"></script>
@@ -100,6 +103,7 @@
     <div id="representacion_arbolSintactico" ></div>
     <div id="representacionarreglo1"></div>
     <div id="representacionarreglo2"></div>
+    <div id="infonodo_as"></div>
 
 
 </body>

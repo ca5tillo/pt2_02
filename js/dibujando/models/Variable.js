@@ -3,7 +3,7 @@ class Variable extends Element{
 		super();
 
 
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
+
 
 	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
 
@@ -11,8 +11,10 @@ class Variable extends Element{
         this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
         this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
 		
+		this._type                  = `${instruccion.tipoDeDato}`;
 		this._name                  = `${instruccion.name}`;	
-		this._element.name          = nameInterno;
+		this._value                 = `${instruccion.valor}`;
+		this._element.name          = `${instruccion.name}`;	
     	this._element.my_indice     = my_indice;
 
     	
@@ -21,7 +23,15 @@ class Variable extends Element{
 
   
 	}
-
+	get name(){
+		return this._name;
+	}
+	get value(){
+		return this._value;
+	}
+	get typeData(){
+		return this._typeData;
+	}
 	in(instruccion){
 		let tipoDeDato    = `${instruccion.tipoDeDato}`;
 		let name3D        = `${instruccion.name}`;
