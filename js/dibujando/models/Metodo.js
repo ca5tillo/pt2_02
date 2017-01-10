@@ -2,10 +2,9 @@ class Metodo extends Element{
 	constructor(llamada,declaracion){
 		super();	
 
-		
 
-        this._idPadre               =  lstIDsRamas.length > 0 ? lstIDsRamas[lstIDsRamas.length-1]:-1;
-		this._idContenedor          =  lstIDsMetodos[lstIDsMetodos.length-1];
+        this._idPadre               =  getIdsAncestros().p;
+		this._idContenedor          =  getIdsAncestros().c;
 		this._name                  = `${declaracion.name}`;	
 		this._returnA				= `${declaracion.returnA}`;	
 
@@ -20,7 +19,7 @@ class Metodo extends Element{
 	_getLibBy_idAS(idAS){
 		/*Ya que son metodos estaticos necesito conoser la posicion de la libreria*/
 		let x = null;
-	    for(let i of lstElements.subElements){
+	    for(let i of lstElements.children){
 	        if (i.idAS == idAS)
 	            x = i;
 	    }
@@ -66,15 +65,14 @@ class Metodo extends Element{
 	
 
 	}
-	out(instruccion){
+	out(){
 
 
 	    let padre    = lstElements.getChildrenById(this.idPadre);
 	    let metodo   = this;
-	    let hijos    = metodo.subElements;
+	    let hijos    = metodo.children;
 	    let cube     = metodo.cube;
-	    let index    = padre.subElements.findIndex(nodo => nodo.id == metodo.id);
-	    let index2   = lstIDsRamas.findIndex(nodo => nodo == metodo.id);
+	    let index    = padre.children.findIndex(nodo => nodo.id == metodo.id);
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
@@ -95,9 +93,9 @@ class Metodo extends Element{
 	    .onComplete(function () {  
 
 	        padre.sons.remove(metodo.element);
-	        padre.subElements.splice(index, 1);
-	        lstIDsRamas.splice(index2, 1);
-	        lstIDsMetodos.pop();
+	        padre.children.splice(index, 1);
+
+
 	        pintarArbolDeLlamadas();
 	        if(esAnimacionFluida)btn_pasoApaso();
 

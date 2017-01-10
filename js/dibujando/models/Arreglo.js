@@ -1,15 +1,16 @@
 class ArregloValor extends Element{
 	constructor(instruccion){
 		super();
+	    let my_indice     = lstElements.getChildrenById(getIdsAncestros().p).sons.children.length;
 
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
-	    let valor         = instruccion.valor;
-	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
+	    this._idPadre               =  getIdsAncestros().p;
+		this._idContenedor          =  getIdsAncestros().c;
 
-	    this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
-        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
+
+		this._type                  = `${instruccion.type}`;
 		this._name                  = `${instruccion.name}`;	
-		this._element.name          = nameInterno;
+		this._value                 = `${instruccion.value}`;	
+		this._element.name          = `${instruccion.name}`;	
     	this._element.my_indice     = my_indice;
 
     	
@@ -19,7 +20,8 @@ class ArregloValor extends Element{
     	 
 	}
 	in(instruccion){
-		let my_valor         = instruccion.valor;
+		let my_valor         = instruccion.value;
+		let nombre        = `${instruccion.name}`;
 
         let _this = this;
 		let cubo = this._cube;
@@ -38,31 +40,28 @@ class ArregloValor extends Element{
 	        .onUpdate(function () {
             })
 	        .onComplete(function () {
-	        	let siguientePaso = true;
+			    _this.setTextName(nombre);
 			    _this.setTextValue(my_valor);
 	        	
 	        });
 
 		tween.start();
-		
-		
-		
-	
 	}
 }
 class Arreglo extends Element{
 	constructor(instruccion){
 		super();
 
-	    let nameInterno   = `${instruccion.tipo}_${instruccion.name}`;
-	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
+	    let my_indice     = lstElements.getChildrenById(getIdsAncestros().p).sons.children.length;
+
+	    this._idPadre               =  getIdsAncestros().p;
+		this._idContenedor          =  getIdsAncestros().c;
 
 
-
-        this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
-        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
+		this._type                  = `${instruccion.type}`;
 		this._name                  = `${instruccion.name}`;	
-		this._element.name          = nameInterno;
+		this._value                 = `${instruccion.value}`;
+		this._element.name          = `${instruccion.name}`;	
     	this._element.my_indice     = my_indice;
 
     	
@@ -72,7 +71,7 @@ class Arreglo extends Element{
 
 	}
 	in(instruccion){
-		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let type          = `${instruccion.type}`;
 		let nombre        = `${instruccion.name}`;
 
 		let _this = this;
@@ -103,7 +102,7 @@ class Arreglo extends Element{
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
-			    _this.setTextType(tipoDeDato+"[]");
+			    _this.setTextType(type+"[]");
 			    _this.setTextName(nombre+"=",siguientePaso);
 	        	
 	        });

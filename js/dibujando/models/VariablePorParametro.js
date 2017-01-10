@@ -1,41 +1,13 @@
-class VariablePorParametro extends Element{
+class VariablePorParametro extends Variable{
 	constructor(instruccion){
-		super();
+		super(instruccion);
 
-
-
-
-	    let my_indice     = lstElements.getChildrenById(lstIDsRamas[lstIDsRamas.length-1]).sons.children.length;
-
-
-        this._idPadre               = lstIDsRamas[lstIDsRamas.length-1];
-        this._idContenedor          = lstIDsMetodos[lstIDsMetodos.length-1];
-		
-		this._type                  = `${instruccion.tipoDeDato}`;
-		this._name                  = `${instruccion.name}`;	
-		this._value                 = `${instruccion.valor}`;
-		this._element.name          = `${instruccion.name}`;	
-    	this._element.my_indice     = my_indice;
-
-    	
-    	this._cube.material.visible = true; 
-    	this._cube.material.opacity = 1;	    
-
-  
 	}
-	get name(){
-		return this._name;
-	}
-	get value(){
-		return this._value;
-	}
-	get typeData(){
-		return this._typeData;
-	}
+
 	in(instruccion,elementoOrigen){
-		let tipoDeDato    = `${instruccion.tipoDeDato}`;
+		let type    = `${instruccion.type}`;
 		let name3D        = `${instruccion.name}`;
-	    let valor         = `${instruccion.valor}`;
+	    let value         = `${instruccion.value}`;
 
 		let _this = this;
         let graphics =this._graphics;
@@ -64,9 +36,9 @@ class VariablePorParametro extends Element{
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
-	        	_this.setTextType(tipoDeDato);
+	        	_this.setTextType(type);
 	        	_this.setTextName(name3D+"=");
-			    _this.setTextValue(elementoOrigen, valor,siguientePaso);
+			    _this.setTextValueParam(value, elementoOrigen, siguientePaso);
 	        	
 	        });
 
@@ -76,90 +48,7 @@ class VariablePorParametro extends Element{
 		
 	
 	}
-	setTextValue(elementoOrigen, txt, siguientePaso=false, animar=true){
-        let valorAnterior = this._text.getObjectByName("value");
-        this._mysetText(elementoOrigen,"value", 3, txt, siguientePaso, animar, valorAnterior);
-    }
-	_mysetText(elementoOrigen, name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
-
-        let element = this._element;
-        let cube = this._cube;
-        let texto = this._text;
-        let loader = new THREE.FontLoader();
-        let textMesh1;
-        loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
 
 
-                let material = new THREE.MultiMaterial( [
-                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
-                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
-                ] );
-                let textGeo = new THREE.TextGeometry( txt, {
-                    font: response,
-                    size: TAM_GRAL/8,
-                    height: 2,
-                });
-
-                textGeo.computeBoundingBox();
-                textGeo.computeVertexNormals();
-
-                textMesh1 = new THREE.Mesh( textGeo, material );
-                textMesh1.name=name;
-                texto.add(textMesh1);  
-
-                let tam = cube.geometry.parameters;//depth,height,width
-                let scale = cube.scale;//x, y , z
-                let x = tam.width*scale.x;
-                let y = tam.height*scale.y; 
-                let z = tam.depth*scale.z; 
-
-                textMesh1.visible = true;
-
-                if( ! animar){
-                    textMesh1.position.set(
-                    -(x/2)+TAM_GRAL/25, 
-                    (y/2)-(TAM_GRAL/5)*indice,
-                    z/2
-                    );
-                    if(siguientePaso){
-                        if(esAnimacionFluida)btn_pasoApaso();
-                    }
-                }else{
-
-                    textMesh1.position.set(
-                        0 - TAM_GRAL*2 ,
-                        0 - element.position.y - TAM_GRAL*2 + elementoOrigen.position.y,
-                        0 - TAM_GRAL*2 
-                        );     
-                    let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                        .to({ x: -(x/2)+TAM_GRAL/25, 
-                              y: (y/2)-(TAM_GRAL/5)*indice, 
-                              z: z/2 
-                          },velocidad)
-                        .easing(TWEEN.Easing.Quadratic.In)
-                        .onStart(function (){
-
-                        })
-                        .onUpdate(function () {
-                            
-                        })
-                        .onComplete(function () {
-                            if(valorAnterior){
-                                texto.remove(valorAnterior);
-                            }
-                            
-                            if(siguientePaso){
-                                if(esAnimacionFluida)btn_pasoApaso();
-                            }
-                        });
-
-                    
-                    tween.start();
-                
-                }
-
-                                          
-            } );
-    }
 
 }

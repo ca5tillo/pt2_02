@@ -1,51 +1,49 @@
 
+var as_arbol            = null;
+var as_generateID       = GenerateID();
+var as_ids              = [];
 
-var as_nivelAnidamiento = 0;
-
-var as_generateID = GenerateID();
-
-class ModelArgumento{
-    constructor(type, value){
-        this.instruccion = "argumento";
+class ASArgumento{
+    constructor(type, value, name){
+        this.reglaP      = "argumento";
         this.type        = type;
         this.value       = value;
+        this.namePadre   = name; 
     }
 }
-class ModelParametro{
+class ASParametro{
 	constructor(type,nombre){
-        this.instruccion = "parametro";
-		this.type = type;
-        this.name = nombre;
+        this.reglaP    = "parametro";
+		this.type      = type;
+        this.name      = nombre;
 	}
 
 }
-class ModelMetodo {
-    constructor(){
-        
-    }
-}
-class ModelArbol  {
+class ASElemento  {
 	constructor(
-		nivelAnidamiento = 0,
-		tipo             = "ElementoRaiz"
 
 		){
 
-        this.instruccion               = "";
+        this.reglaP                     = null;
         this.id                         = as_generateID.next().value;
         this.idPadre                    = 0;
 		this.padre						= {};
 		this.hijos                      = [];
 
-        this.name                       = "";
+        this.type                       = null;
+        this.name                       = null;
+        this.value                      = null;
+        this.valueType                  = null;
 
+        this.destinoCreate              = false; //existe o no 
+        this.destinoName                = null;
         this.argumentos                 = []; // Se refiere al valor que se envia
-		this.parametros                 = []; // sE refiere a la variable en la declaración del método
+        this.parametros                 = []; // Se refiere a la variable en la declaración del método
+        this.arrays                     = []; // Seran sol sub elementos de un array
 
-        this.tipo = tipo;//defClase, defMetodo, defVariable, asignarValor,llamadaAmetodos
+
         this.tipoDeDato = "";// si es variable
         this.valor = "";// si es variable
-        this.valor_tipoDeDato="";
 		this.static = false;
 		this.retorno =""
 		this.restriccion="";//private, public ...
@@ -59,22 +57,23 @@ class ModelArbol  {
 
 
 
-        this.nivelAnidamiento_temporal  = nivelAnidamiento;
-        this.nivelAnidamiento           = nivelAnidamiento;
         this.isNodoFinal                = true; // los q no son finales tiene sub elementos Ej. un metodo o un for
 
 		
 	}
 }
-function analisisSintactico_getArbol(){
-	let tokens = javaEditor_analisisLexico();
+function analisisSintactico(){
+	let tokens           = javaEditor_analisisLexico();
 
-	let lst_token      = [];
-	let str            = "";
-	let isFor          = false;
-	let isArray        = false;
-	let raiz           = new ModelArbol();
-        raiz.name      = "ElementoRaiz";
+	let lst_token        = [];
+	let str              = "";
+	let isFor            = false;
+	let isArray          = false;
+    
+    as_arbol             = new ASElemento();
+    as_arbol.name        = "ElementoRaiz";
+    as_arbol.isNodoFinal = false;
+    as_ids.push(as_arbol.id);
 
 	for(let i of tokens){
 	    lst_token.push(i);
@@ -87,11 +86,9 @@ function analisisSintactico_getArbol(){
 	        ||(i.symbol == "SEMICOLON" && !isFor)
 	        ){
 
-	        let obj = _reglasProduccion(str, lst_token,as_nivelAnidamiento+1);    
-        	_addNodo(raiz,obj,as_nivelAnidamiento);
-        	if(! obj.isNodoFinal){
-        		as_nivelAnidamiento += 1;
-        	}
+	        let obj = _reglasProduccion(str, lst_token);  
+            _addNodo(obj);
+            if(! obj.isNodoFinal){as_ids.push(obj.id);}
 	       
 	        
 	        lst_token = [];
@@ -107,7 +104,7 @@ function analisisSintactico_getArbol(){
                 error.lineaInicial = lst_token[0].line;
                 _addNodo(raiz,error,as_nivelAnidamiento);
             }
-	        _as_finalizarRama(raiz,as_nivelAnidamiento,i);// tambien disminuye en uno al as_nivelAnidamiento
+	        _as_finalizarRama(i);// tambien disminuye en uno al as_nivelAnidamiento
 
             lst_token = [];
             isFor = false;
@@ -119,11 +116,11 @@ function analisisSintactico_getArbol(){
 
 	}
 	//*/
-    //as_imprimirArbol(raiz);
-	return raiz;
+    as_imprimirArbol(as_arbol);
+	return as_arbol;
 
 }
-function _reglasProduccion(str, arr, nivel){
+function _reglasProduccion(str, arr){
     //console.log("*********************************************************");
     //console.log(str_dev);
     //console.log(str);
@@ -157,15 +154,20 @@ function _reglasProduccion(str, arr, nivel){
 
      /*    RECONOCIENDO DEFINICION DE CLASE                                    */
     if( _RE_ = str.match(RE_DEF_CLASE) ){
-        let obj             = new ModelArbol(nivel,"defClase");
+        let obj             = new ASElemento();
+        obj.reglaP          = "clase";
+
         obj.name            = strmap.NAME;
         obj.lineaInicial    = arr[0].line;
+
         obj.isNodoFinal     = false;
         return obj; 
     }
     /*    RECONOCIENDO DEFINICION DE METODO                                    */
     if( _RE_ = str.match(RE_DEF_METODO)              ){
-    	let obj             = new ModelArbol(nivel,"defMetodo");
+    	let obj             = new ASElemento();
+        obj.reglaP          = "metodo";
+
     	obj.name            = strmap.NAME;
     	obj.parametros      = _as_getParametros(arr);    	
 
@@ -179,99 +181,116 @@ function _reglasProduccion(str, arr, nivel){
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                  */
     if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
-    	let obj = new ModelArbol(-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-    	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-    	obj.tipoDeDato = _RE_[1] || "";
-    	obj.name = strmap.NAME;
-		obj.valor = strmap[_RE_[3]];
-		obj.valor_tipoDeDato = _RE_[3];
-        obj.lineaInicial = arr[0].line;
+    	let obj              = new ASElemento();
+        obj.reglaP           = "variable";
 
+    	obj.type             = _RE_[1] || "";
+    	obj.name             = strmap.NAME;
+		obj.value            = strmap[_RE_[3]];
+		obj.valueType        = _RE_[3];
 
+        obj.lineaInicial     = arr[0].line;
     	return obj; 
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS               */
     if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
-        let obj = new ModelArbol(-1,"defVariable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.tipoDeDato = _RE_[1] || "";
-        obj.name = strmap.NAME;
-        obj.valor = "?";
-        obj.valor_tipoDeDato = "?";
+        let obj              = new ASElemento();
+        obj.reglaP           = "variable";
+
+        obj.type             = _RE_[1] || "";
+        obj.name             = strmap.NAME;
+        obj.value            = "?";
+
         obj.lineaInicial = arr[0].line;
         return obj; 
     }
     /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                       */
     if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
-    	let obj = new ModelArbol(-1,"asignacionDeValor");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-    	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-		obj.valor = strmap[_RE_[1]];
-		obj.valor_tipoDeDato = _RE_[1];
-    	obj.name = strmap.NAME;
-        obj.lineaInicial = arr[0].line;
-        return obj; 
-    }
-    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
-    if( _RE_ = str.match(RE_ARREGLO)                 ){
-        let obj = new ModelArbol(-1,"defArreglo");
-        obj.nivelAnidamiento = nivel;
-        obj.tipoDeDato = _RE_[2];
-        obj.name = strmap.NAME;
-        obj.valor_tipoDeDato = _RE_[2];
-        obj.lineaInicial = arr[0].line;
-        obj.hijos = _getContenidoArreglo(arr,obj,nivel+1,obj.tipoDeDato,obj.name);
-        return obj; 
-    }
-    /*    RECONOCIENDO LLAMADA A METODO*/
-    if( _RE_ = str.match(RE_LLAMADA_FUNCION_SIN_PARAMETROS_SIN_RETORNO)){
-        let obj = new ModelArbol(-1,"llamada_funcion_sinparametros_sinretorno");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.name = strmap.NAME;
-        obj.lineaInicial = arr[0].line;
-        return obj; 
-    }
-    /*    RECONOCIENDO LLAMADA A METODO*/
-    if( _RE_ = str.match(RE_LLAMADA_FUNCION_CON_PARAMETROS_SIN_RETORNO)){
-        let obj = new ModelArbol(-1,"llamada_funcion_conparametros_sinretorno");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        obj.name = strmap.NAME;
-        obj.argumentos=_as_getArgumentos(arr);
-        
+    	let obj              = new ASElemento();
+        obj.reglaP           = "asignacion";
+    	
+        obj.name             = strmap.NAME;
+        obj.valor            = strmap[_RE_[1]];
+        obj.valueType        = _RE_[1];
 
-        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.lineaInicial = arr[0].line;
+        obj.lineaInicial     = arr[0].line;
+        return obj; 
+    }
+
+    /*    RECONOCIENDO LLAMADA A METODO*/
+    if( _RE_ = str.match(RE_LLAMADA_FUNCION)){
+        let obj              = new ASElemento();
+        obj.reglaP           = "llamada";
+
+        obj.name             = strmap.NAME;
+        obj.argumentos       = _as_getArgumentos(arr, obj.name);
+        
+        obj.lineaInicial     = arr[0].line;
         
         return obj; 
     }
-    /*    RECONOCIENDO RETURN VARIABLE*/
-    if( _RE_ = str.match(RE_RETURN_VARIABLE)){
-        let obj = new ModelArbol(-1,"return_variable");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.name = strmap.NAME;
-        obj.lineaInicial = arr[0].line;
-        
-        return obj; 
-    }
-    /* RE_ASIGNARAVARIALEDESDEMETODO */
-    if( _RE_ = str.match(RE_ASIGNARAVARIALEDESDEMETODO)){
-        console.log(_RE_)
-        let obj = new ModelArbol(-1,"ASIGNARAVARIALEDESDEMETODO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-        obj.nameDestino      = strmap.NAME; // destino al hacer return 
+    /* RECONOCIENDO LLAMADA A METODO CON ASIGNACION */
+    if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN)){
+        let obj              = new ASElemento();
+        obj.reglaP           = "llamada";
+
+        obj.destinoName      = strmap.NAME; // destino al hacer return 
         obj.name             = strmap.NAME_0;
-        obj.argumentos       = _as_getArgumentos(arr);
+        obj.argumentos       = _as_getArgumentos(arr, obj.name);
         obj.lineaInicial     = arr[0].line;
 
         return obj; 
     }
+    /* RECONOCIENDO LLAMADA A METODO CON ASIGNACION Y DECLARACION DE VARIABLE*/
+    if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN_1)){
+        let obj              = new ASElemento();
+        obj.reglaP           = "llamada";
+
+        obj.destinoCreate    = true;
+        obj.type             = _RE_[1] || "";
+        obj.destinoName      = strmap.NAME; // destino al hacer return 
+        obj.name             = strmap.NAME_0;
+        obj.argumentos       = _as_getArgumentos(arr, obj.name);
+        obj.lineaInicial     = arr[0].line;
+
+        return obj; 
+    }
+    /*    RECONOCIENDO RETURN VARIABLE*/
+    if( _RE_ = str.match(RE_RETURN_VARIABLE)){
+        let obj              = new ASElemento();
+        obj.reglaP           = "return_variable";
+
+        obj.name             = strmap.NAME;
+        
+        obj.lineaInicial     = arr[0].line;
+        return obj; 
+    }
+
+
+    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
+    if( _RE_ = str.match(RE_ARREGLO)                 ){
+        let obj              = new ASElemento();
+        obj.reglaP           = "arreglo";
+
+        obj.type             = _RE_[2];
+        obj.name             = strmap.NAME;
+        obj.hijos            = _getContenidoArreglo(arr, obj, obj.type, obj.name);
+
+        obj.lineaInicial = arr[0].line;
+        return obj; 
+    }
+    
 
 
 
     /*    RECONOCIENDO UN CICLO FOR    */
     if(RE_FOR.test(str)){
-    	let obj = new ModelArbol(nivel,"defFor");
+        /*
+    	let obj = new ASElemento();
     	obj.parametros = lstParametros;    	
         obj.lineaInicial = arr[0].line;
-        return obj; 
+        return obj;
+        */ 
     }
 
     
@@ -281,9 +300,8 @@ function _reglasProduccion(str, arr, nivel){
 
 		let RE_Txt = str.match(RE_ASIGNACION_DE_VALOR_ARRAY);
 		//console.log(str,RE_Txt,strmap[RE_Txt[1]],strmap)
-    	let obj = new ModelArbol(-1,"asignacionDeValorArray");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-    	obj.nivelAnidamiento = nivel;//se asigna nivel de anidamiento para que al imprimirlo en consola saber cuanto espacio separarlo
-		obj.valor = strmap["NAME_1"];
+    	let obj = new ASElemento(-1,"asignacionDeValorArray");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+    	obj.valor = strmap["NAME_1"];
 		obj.valor_tipoDeDato = RE_Txt[1];
     	obj.name = strmap.NAME;
     	obj.indice = strmap["NAME_0"];// esta propiedad no se ecncuentra en el modelo 
@@ -294,15 +312,18 @@ function _reglasProduccion(str, arr, nivel){
 
 
     /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
-    let error = new ModelArbol(-1,"ERROR_SINTACTICO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-    error.nivelAnidamiento=nivel;
-    error.lineaInicial = arr[0].line;
+    let error = new ASElemento();
+        error.reglaP           = "ERROR_SINTACTICO";
+        error.lineaInicial = arr[0].line;
 
     console.log(str);
     return error;
 }
 
-function _as_getArgumentos(arr){
+/*
+    return un array basio o con argumentos
+*/
+function _as_getArgumentos(arr, name){
 
     let strmap            = {};
     let insertinparam = false;
@@ -323,7 +344,7 @@ function _as_getArgumentos(arr){
             if( _re = str.match(/^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING|NAME|NUM|CADENA|BOOLEAN_LITERAL)(COMMA|RPAREN)/)){
 
 
-                let modelArgumento = new ModelArgumento(_re[1],strmap[_re[1]]);
+                let modelArgumento = new ASArgumento(_re[1], strmap[_re[1]], name);
                 lstArgumentos.push(modelArgumento);
                 str="";
                 strmap={};
@@ -358,7 +379,7 @@ function _as_getParametros(arr){
                 if( _re = str.match(/^(VOID|BOOLEAN|INT|FLOAT|DOUBLE|STRING)NAME$/)){
 
 
-                    let modelParametro = new ModelParametro(_re[1],strmap.NAME);
+                    let modelParametro = new ASParametro(_re[1],strmap.NAME);
                     lstParametros.push(modelParametro);
                     str="";
                     strmap={};
@@ -372,7 +393,7 @@ function _as_getParametros(arr){
 
     return lstParametros;
 }
-function _getContenidoArreglo(arr,padre,nivel,tipoDeDato,nombre){
+function _getContenidoArreglo(arr,padre,type,nombre){
 	let str = "";
 	let parametros = [];
     let insertinparam = false;
@@ -392,10 +413,10 @@ function _getContenidoArreglo(arr,padre,nivel,tipoDeDato,nombre){
        
 
         
-        let hijo = new ModelArbol(-1,"defVariable");
-    	hijo.nivelAnidamiento = nivel;
-        hijo.tipoDeDato = tipoDeDato;
-        hijo.valor = i;
+        let hijo = new ASElemento();
+  
+        hijo.type = type;
+        hijo.value = i;
         hijo.name = nombre+`[${y}]`;
         hijo.idPadre = padre.id;
         hijo.padre=padre;
@@ -410,37 +431,29 @@ function _getContenidoArreglo(arr,padre,nivel,tipoDeDato,nombre){
     return hijos;
 }
 
-function _addNodo(padre,hijo,nivel){
-    if(padre.nivelAnidamiento_temporal == nivel){
-        hijo.idPadre = padre.id;
-    	hijo.padre=padre;
-        padre.hijos.push(hijo);
-    }else{
-        for(let i of padre.hijos){
-            _addNodo(i,hijo,nivel);
-        }
-    }
+function _addNodo(hijo){
+    let u        = as_ids.length-1;
+    let padre    = as_GetElementById(as_ids[u]);
+
+    hijo.idPadre = padre.id;
+    hijo.padre   = padre;
+    padre.hijos.push(hijo);
+
 }
-function _as_finalizarRama(padre,nivels,rbrace){
+function _as_finalizarRama(rbrace){
+    let u        = as_ids.length-1;
+    let padre    = as_GetElementById(as_ids[u]);
 
-    if(padre.nivelAnidamiento_temporal == nivels){
-
-        padre.nivelAnidamiento_temporal = -1;
-        padre.lineaFinal = rbrace.line;
-        as_nivelAnidamiento -= 1;
-    }else{
-        for(let i of padre.hijos){
-            _as_finalizarRama(i,nivels,rbrace);
-        }
-    }
+    padre.lineaFinal = rbrace.line;
+    as_ids.pop();
+    
 }
 
 function as_imprimirArbol(nodo){
-    $('#representacion_arbolSintactico').empty();
 
     _createLista = function (nodo){
         let li    = document.createElement("li");        
-        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}]${nodo.name}`); 
+        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
         li.setAttribute("data-value", `${nodo.id}`); 
         li.appendChild(texto);  
 
@@ -457,9 +470,9 @@ function as_imprimirArbol(nodo){
     ul.setAttribute("id", "arbol");       
     ul.setAttribute("data-name", "arbolSintactico"); 
     ul.addEventListener("change", as_infoNodo);
-
     ul.appendChild(_createLista(nodo));   
 
+    document.getElementById("representacion_arbolSintactico").innerHTML="";
     document.getElementById("representacion_arbolSintactico").appendChild(ul);  
 
     $('#representacion_arbolSintactico ul#arbol').bonsai({
@@ -475,11 +488,12 @@ function as_infoNodo(ev){
     let nodo = as_GetElementById(id);
     let textito = "<table border='1'>";
     for(let i in nodo){
-        textito += `<tr><td>${i}</td><td> ${nodo[i]}</td></tr>`;
+        if(nodo[i] && i != "hijos" && i != "padre")
+        textito += `<tr><td>${i}</td><td> ${nodo[i]||""}</td></tr>`;
     }
     textito += `</table>`;
     $('#infonodo_as').html(textito);
-    console.log(nodo)
+
 }
 function as_GetElementById(id){
     //http://jsfiddle.net/dystroy/MDsyr/
@@ -495,7 +509,7 @@ function as_GetElementById(id){
         }
     };
 
-    let searchedItem = getSubMenuItem([arbolSintactico], id) || null;
+    let searchedItem = getSubMenuItem([as_arbol], id) || null;
     return searchedItem;
 }
 

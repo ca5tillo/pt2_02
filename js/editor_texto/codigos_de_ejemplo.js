@@ -67,16 +67,24 @@ var ejemploDeCodigo_04 =`public class MyClass {
 `;
 var ejemploDeCodigo_05 =`
     public class MyClass {
+        public static void metodo(){
+            int a = 9;
+        }
         public static int otroMetodo(int a, int b,int c){
             int w = 100;
+            a = 69;
             return w;
         }
         public static void main() {
-            int[] edad = {45, 23, 11, 9};    
+            
+            int[] edad = {45, 23, 11, 9}; 
+            metodo();
             int a = 5;
+            metodo();
             int b = 1;
-            b = otroMetodo(a, b, b);
-            a = otroMetodo(a, b, b);
+            b = 7;
+
+            int e = otroMetodo(a, b, "envio");
         }
     }
 `;

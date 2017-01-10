@@ -4,7 +4,7 @@ class Element{
         this._id            = dibujando_generateID.next().value;
         this._idPadre       = null; // Es el padre directo Ej. si declaro una variable dentro de un for el for es el padre directo
         this._idContenedor  = null; // EJ. si es una variable a que metodo pertenece sin importa si antes pertenece a un for 
-        this._subElements   = [];
+        this._children      = [];
         this._name          = "";
 
         this._element       = new THREE.Group();
@@ -42,8 +42,8 @@ class Element{
     set idContenedor(idContenedor){
         this._idContenedor = idContenedor;
     }
-    get subElements(){
-        return this._subElements; 
+    get children(){
+        return this._children; 
     }
     get name(){
         return this._name;  
@@ -119,9 +119,14 @@ class Element{
                 // Cambiamos la posicion del texto
                 if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
                     textMesh1.position.set(xi, yi, zi);    
-                    if(siguientePaso){
-                        if(esAnimacionFluida)btn_pasoApaso();
-                    }
+                    new TWEEN.Tween({x:0})
+                        .to         ({ x:2000 },velocidad)
+                        .easing     (TWEEN.Easing.Quadratic.In)
+                        .onComplete ( function (){                    
+                            if(siguientePaso){
+                                if(esAnimacionFluida)btn_pasoApaso();
+                            }
+                        }).start(); 
                 }else{
                     textMesh1.position.set(
                         -element.position.x,
@@ -149,6 +154,71 @@ class Element{
                                           
             });// ./loader.load({})
     }
+    _setText2( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null, elementoOrigen = null){
+        let element   = this._element;
+        let cube      = this._cube;
+        let texto     = this._text;
+        let loader    = new THREE.FontLoader();
+        let textMesh1;
+
+        loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
+                let material = new THREE.MultiMaterial( [
+                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
+                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
+                ] );
+                let textGeo = new THREE.TextGeometry( txt, {
+                    font: response,
+                    size: TAM_GRAL/8,
+                    height: 2,
+                });
+                textGeo.computeBoundingBox();
+                textGeo.computeVertexNormals();
+
+                textMesh1         = new THREE.Mesh( textGeo, material );
+                textMesh1.name    = name;
+                textMesh1.visible = true;
+
+                texto.add(textMesh1);  
+
+                // Es el tamaño real del cubo operando por su escala 
+                let tam   = cube.geometry.parameters;//depth,height,width
+                let scale = cube.scale;//x, y , z
+                let x     = tam.width*scale.x;
+                let y     = tam.height*scale.y; 
+                let z     = tam.depth*scale.z; 
+
+                // Destino del texto sobre su cubo (realizo x/2 para obtener la distancia del centro a la orilla despues le sumo un margen para q no quede al raz del cubo)
+                let xi = -(x/2)+TAM_GRAL/25;
+                let yi = (y/2)-(TAM_GRAL/5)*indice;
+                let zi = z/2;
+
+               
+                textMesh1.position.set(
+                    0 - TAM_GRAL*2 ,
+                    0 - element.position.y - TAM_GRAL*2 + elementoOrigen.position.y,
+                    0 - TAM_GRAL*2 
+                    );     // lo envio al centro del metodo o padre
+
+                let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
+                    .to         ({ x:xi, y:yi, z:zi },velocidad)
+                    .easing     (TWEEN.Easing.Quadratic.In)
+                    .onStart    ( function (){} )
+                    .onUpdate   ( function (){} )
+                    .onComplete ( function (){
+                        if(valorAnterior){
+                            texto.remove(valorAnterior);
+                        }                            
+                        if(siguientePaso){
+                            if(esAnimacionFluida)btn_pasoApaso();
+                        }
+                    });                    
+                tween.start();
+                
+          
+
+                                          
+            });// ./loader.load({})
+    }
     getSonByIndex(index){
 
         return this._sons.children[index];    
@@ -165,6 +235,10 @@ class Element{
         let valorAnterior = this._text.getObjectByName("value");
         this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
     }
+    setTextValueParam(txt, origen, siguientePaso=false, animar=true){
+        let valorAnterior = this._text.getObjectByName("value");
+        this._setText2("value", 3, txt, siguientePaso, animar, valorAnterior, origen);
+    }
     getChildrenByName(name, profundidad = false){
         // http://jsfiddle.net/dystroy/MDsyr/
         // Retorna la primera coincidencia
@@ -175,14 +249,14 @@ class Element{
                         return subMenuItems[i];
                     };
                     if(profundidad){
-                        let found = getSubMenuItem(subMenuItems[i].subElements, name);
+                        let found = getSubMenuItem(subMenuItems[i].children, name);
                         if (found) return found;
                     }
                 }
             }
         };
 
-        let searchedItem = getSubMenuItem(this._subElements, name) || null;
+        let searchedItem = getSubMenuItem(this._children, name) || null;
         return searchedItem;
     }
     getChildrenById(id){
@@ -194,13 +268,13 @@ class Element{
                     if (subMenuItems[i].id == id) {
                         return subMenuItems[i];
                     };
-                    let found = getSubMenuItem(subMenuItems[i].subElements, id);
+                    let found = getSubMenuItem(subMenuItems[i].children, id);
                     if (found) return found;
                 
                 }
             }
         };
-        let searchedItem = getSubMenuItem(this._subElements, id) || null;
+        let searchedItem = getSubMenuItem(this._children, id) || null;
         return searchedItem;
     }
 

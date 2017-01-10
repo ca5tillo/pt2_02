@@ -13,7 +13,7 @@ class MetodoMain extends Element{
 	_getLibBy_idAS(idAS){
 		/*Ya que son metodos estaticos necesito conoser la posicion de la libreria*/
 		let x = null;
-	    for(let i of lstElements.subElements){
+	    for(let i of lstElements.children){
 	        if (i.idAS == idAS)
 	            x = i;
 	    }
@@ -57,15 +57,14 @@ class MetodoMain extends Element{
 	
 
 	}
-	out(instruccion){
+	out(){
 
 
 	    let padre    = lstElements.getChildrenById(this.idPadre);
 	    let metodo   = this;
-	    let hijos    = metodo.subElements;
+	    let hijos    = metodo.children;
 	    let cube     = metodo.cube;
-	    let index    = padre.subElements.findIndex(nodo => nodo.id == metodo.id);
-	    let index2   = lstIDsRamas.findIndex(nodo => nodo == metodo.id);
+	    let index    = padre.children.findIndex(nodo => nodo.id == metodo.id);
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
@@ -86,10 +85,10 @@ class MetodoMain extends Element{
 	    .onComplete(function () {  
 
 	        padre.sons.remove(metodo.element);
-	        padre.subElements.splice(index, 1);
-	        lstIDsRamas.splice(index2, 1);
-	        lstIDsMetodos.pop();
-	        pintarArbolDe();
+	        padre.children.splice(index, 1);
+
+
+	        pintarArbolDeLlamadas();
 	        if(esAnimacionFluida)btn_pasoApaso();
 
 	    });
