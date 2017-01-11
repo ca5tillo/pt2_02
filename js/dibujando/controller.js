@@ -77,9 +77,6 @@ function setupSuelo(){
 
     scene.add(plane);
 }
-
-
-
 function setupGroupBase(){
     groupBase      = new THREE.Group();
     groupBase.name = "group_general";
@@ -90,7 +87,6 @@ function setupGroupBase(){
     lstElements.idPadre = lstElements.id;
     lstElements.idContenedor = lstElements.id;
 }
-
 function setupZonaLibrerias(){
     var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
     var mat = new THREE.MeshPhongMaterial({color: 'red', transparent:false, opacity:1,visible:true});
@@ -107,14 +103,12 @@ function setupZonaLibrerias(){
 
     scene.add(zonaLibrerias);
 }
-
 function crearLibreria(instruccion){
     let element   = new Libreria(instruccion);
     let libreria  = element.element;
     
     lstElements.children.push(element);
     groupBase.add(libreria);
-
     element.in();
 }
 function crearMetodoMain(declaracion){
@@ -131,7 +125,6 @@ function crearMetodoMain(declaracion){
     element.in(declaracion);
     return element.id;
 }
-
 function llamarMetodo(llamada, declaracion, destino){
     javaEditor_markClean();
     javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
@@ -192,7 +185,6 @@ function crearParametros(argumento, parametros){
 	    element.in(ins);
     }
 }
-
 function returnVariable(instruccion){
     if(instruccion.lineaInicial){
         javaEditor_markClean();
@@ -224,7 +216,6 @@ function MethodOut(){
     	main_LstPasos.children.pop();
     }
 }
-
 function crearVariable(instruccion){
     if(instruccion.lineaInicial){
         javaEditor_markClean();

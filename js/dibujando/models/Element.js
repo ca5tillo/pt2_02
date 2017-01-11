@@ -16,6 +16,7 @@ class Element{
         this._element.name  = "";
         this._graphics.name = "graphics";
         this._sons.name     = "sons";
+        this._text.name     = "text";
 
         this._graphics.add(this._cube);
         this._graphics.add(this._text);
@@ -95,6 +96,7 @@ class Element{
                     size: TAM_GRAL/8,
                     height: 2,
                 });
+                //textGeo.center();
                 textGeo.computeBoundingBox();
                 textGeo.computeVertexNormals();
 
@@ -119,14 +121,7 @@ class Element{
                 // Cambiamos la posicion del texto
                 if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
                     textMesh1.position.set(xi, yi, zi);    
-                    new TWEEN.Tween({x:0})
-                        .to         ({ x:2000 },velocidad)
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){                    
-                            if(siguientePaso){
-                                if(esAnimacionFluida)btn_pasoApaso();
-                            }
-                        }).start(); 
+                    if(siguientePaso)if(esAnimacionFluida)btn_pasoApaso();
                 }else{
                     textMesh1.position.set(
                         -element.position.x,
