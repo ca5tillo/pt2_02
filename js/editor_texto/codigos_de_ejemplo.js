@@ -1,18 +1,17 @@
-var ejemploDeCodigo_01 = `
-    public class Clase{
-        public static void main(String[] args){
-  
-            String cadena = "texto";
-            int numero;
-            numero =5;
-            String cadena2 = "texto texto texto texto ";
-            cadena = "nuevo contenido";
-            int i;
+var ejemploDeCodigo_01 = 
+`public class Clase{
+    public static void main(String[] args){
+        int     a;
+        String  cadena = "texto";
+        int     b      = 10;
+        boolean c      = true;
 
-     
-        }
+        a              = 10;
+        cadena         = "nuevo";
+        b              = 0;
+        c              = false;            
     }
-`;
+}`;
 
 
 var ejemploDeCodigo_02 =`

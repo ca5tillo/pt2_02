@@ -116,7 +116,6 @@ function analisisSintactico(){
 
 	}
 	//*/
-    as_imprimirArbol(as_arbol);
 	return as_arbol;
 
 }

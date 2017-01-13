@@ -1,13 +1,13 @@
 /*      Constantes para la camara    */
 const FOV = 45;
 const ASPECT = window.innerWidth / window.innerHeight;
-const NEAR = 1e-6;
-const FAR = 1e27;
+const NEAR = 0.1;
+const FAR = 1000;
 
 /*      constantes unidades de medida   */
-const TAM_GRAL3 = 9.4605284e15;
-const TAM_GRAL = 100;
-const NUM_LOSETAS = 15;
+
+const TAM_GRAL = 4;
+const NUM_LOSETAS = 12;
 
 /*      Variables globales del mundo*/
 var scene;
@@ -28,39 +28,57 @@ const METODO_SCALE_Z = 5;
 
 var groupBase;
 var zonaLibrerias;
-var lstElements = null; //nodo raiz
+var lstElements   = null; //nodo raiz
 var lstIDsMetodos = {id:0,  children:[], descripcion:"lstIDsMetodos"};
+var idNodoFinal   = null;
 
 
 function setupThreeJS(){
 
     /*ESCENA*/
-    scene = new THREE.Scene();
+    scene             = new THREE.Scene();
     //scene.fog = new THREE.FogExp2(0xdcf7e7, 0.001); // efecto neblina, no funciona con logarithmicDepthBuffer
 
     /*CAMARA*/
-    camera = new THREE.PerspectiveCamera( FOV, ASPECT, NEAR, FAR );
+    camera            = new THREE.PerspectiveCamera( FOV, ASPECT, NEAR, FAR );
     //camera.position.set(0,TAM_GRAL*16,TAM_GRAL*22);
     //camera.lookAt(scene.position);
-    camera.position.x = 1.310480405193;
-    camera.position.y = 550.2232636098454;
-    camera.position.z = 1242.453572914064;
+    camera.position.x = -30;
+    camera.position.y = 40;
+    camera.position.z = 30;
 
     camera.lookAt(scene.position);
 
     /*RENDER*/
-    renderer = new THREE.WebGLRenderer({antialias: true,logarithmicDepthBuffer: true});//antialias: true, mejora los bordes | logarithmicDepthBuffer: true , es para soportar grandes distancias
+    renderer          = new THREE.WebGLRenderer();//antialias: true, mejora los bordes | logarithmicDepthBuffer: true , es para soportar grandes distancias
     renderer.setSize( window.innerWidth, window.innerHeight );
-    //renderer.setClearColor(0x000000, 1.0);
+    renderer.setClearColor(0x000000, 1.0);
     renderer.shadowMap.enabled = true;
     //renderer.setClearColor( scene.fog.color );
+
+
 
 
     document.getElementById("representacion_3D").appendChild(renderer.domElement);
 }
 var      setupAxis = () => scene.add( new THREE.AxisHelper( 1e19 ) );
 
-var      setupLuz  = () => scene.add( new THREE.AmbientLight( 0xffffff ) );// Luz blanca suave
+var      ambientLight  = () => scene.add( new THREE.AmbientLight( 0xffffff ) );// Luz blanca suave
+
+function spotLight(){
+    var spotLight = new THREE.SpotLight( 0xffffff );
+        spotLight.position.set( 0, 60, 60 );
+        spotLight.name = 'Spot Light';
+        spotLight.angle = Math.PI / 5;
+        spotLight.penumbra = 0.3;
+        spotLight.castShadow = true;
+        spotLight.shadow.camera.near = 8;
+        spotLight.shadow.camera.far = 30;
+        spotLight.shadow.mapSize.width = 1024;
+        spotLight.shadow.mapSize.height = 1024;
+        scene.add( spotLight );
+        scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
+} 
 
 function setupSuelo(){
     var materiales = [
@@ -76,16 +94,6 @@ function setupSuelo(){
 
 
     scene.add(plane);
-}
-function setupGroupBase(){
-    groupBase      = new THREE.Group();
-    groupBase.name = "group_general";
-    scene.add(groupBase);
-
-    lstElements = new Element();
-    lstElements.name = "Elemento Raiz";
-    lstElements.idPadre = lstElements.id;
-    lstElements.idContenedor = lstElements.id;
 }
 function setupZonaLibrerias(){
     var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
@@ -103,13 +111,24 @@ function setupZonaLibrerias(){
 
     scene.add(zonaLibrerias);
 }
-function crearLibreria(instruccion){
+function setupGroupBase(){
+    groupBase      = new THREE.Group();
+    groupBase.name = "group_general";
+    scene.add(groupBase);
+
+    lstElements = new Element();
+    lstElements.name = "Elemento Raiz";
+    lstElements.idPadre = lstElements.id;
+    lstElements.idContenedor = lstElements.id;
+}
+
+function crearLibreria(instruccion,minum,numLibs){
     let element   = new Libreria(instruccion);
     let libreria  = element.element;
     
     lstElements.children.push(element);
     groupBase.add(libreria);
-    element.in();
+    element.in(minum,numLibs);
 }
 function crearMetodoMain(declaracion){
     javaEditor_markClean();

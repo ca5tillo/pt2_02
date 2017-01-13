@@ -19,25 +19,35 @@ var velocidad          = 200;
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_05);
-
+    javaEditor_setText(ejemploDeCodigo_01);
+setupControls();
     setupThreeJS();
     //setupGroupBase();
-    setupLuz();
+    spotLight();
     setupAxis();
     setupSuelo();
     setupZonaLibrerias();
     //setupGroupEjecucion();
     cameraControl = new THREE.OrbitControls(camera);
 
+
+    
+
+
     render();
-       
+    
+
 }
 
-function render(){
-    
+function render(){   
+    velocidad = Controls.velocidad;
     cameraControl.update();
     TWEEN.update();
+
+    if(lstElements){    
+        //https://github.com/mrdoob/three.js/issues/434
+        camera.lookAt(lstElements.getChildrenById(idNodoFinal).graphics.children[0].matrixWorld.getPosition());
+    }
 
     requestAnimationFrame(render);
     renderer.render(scene, camera);
@@ -54,9 +64,10 @@ el ** guionDePreCompilacion **
 function crearGuionPrecompilacion(){
     //http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
     _run = function (){
-        for(let i of _guion){
-            self[   i.metodo    ] (i.parametro);
+        for(let i = 0; i < _guion.length; i++){
+            self[   _guion[i].metodo    ] (_guion[i].parametro,i,_guion.length-1);
         }
+
     }
     _add = function (O_o){
         if(O_o.reglaP == "clase"){
@@ -77,16 +88,8 @@ function crearGuionPrecompilacion(){
 
 function btn_Compilar(){
     analisisSintactico();
-
+    as_imprimirArbol(as_arbol);
     crearGuionPrecompilacion();
-    pintarArbolDeLlamadas();
-
-
-    $("#Compilar").addClass("desactivado");
-    $("#Ejecutar").removeClass("desactivado");
-    $("#PorPasos").removeClass("desactivado");  
-
-
 }
 
 function btn_Ejecutar(){
@@ -94,13 +97,33 @@ function btn_Ejecutar(){
     btn_pasoApaso();
 }
 
-function btn_camara (){
+function btn_pausa(){
     esAnimacionFluida = false;
+}
+function btn_reiniciar(){
+    scene.remove(groupBase);
+    main_LstPasos      = {id:0, generador:null, children:[], descripcion:"main_LstPasos"};
+    esAnimacionFluida  = false;
+    ejecutado          = false;
+    as_arbol            = null;
+    as_ids              = [];
+
+    lstElements = null; //nodo raiz
+    lstIDsMetodos = {id:0,  children:[], descripcion:"lstIDsMetodos"};
+
+    document.getElementById("representacion_arbolSintactico").innerHTML="";
+    document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
+    document.getElementById("representacionarreglo1").innerHTML="";//pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
+    document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", main_LstPasos, ["id","descripcion"]);
+
 }
 function btn_pasoApaso(){
     let instruccion = null;
     let tipo        = null;
 
+    ctrl_fun_desactiva__PorPaso   ();
+
+    Controls.pasos += 1;
     
     if(main_LstPasos.children.length > 0){
         instruccion = getInstruccion();
@@ -116,10 +139,15 @@ function btn_pasoApaso(){
         main_LstPasos.children.push({id:id, generador:MainGenerador(main.hijos), children:[], descripcion:"metodo"});
     }
 
+    
+
     pintarArbolDeLlamadas();
     pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
     pintarArbol("representacionarreglo2", main_LstPasos, ["id","descripcion"]);
+
+   
 }
+
 function ejecutarDibujado(instruccion){
     O_o = instruccion.reglaP
 

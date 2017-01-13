@@ -97,7 +97,14 @@ class Metodo extends Element{
 
 
 	        pintarArbolDeLlamadas();
-	        if(esAnimacionFluida)btn_pasoApaso();
+
+	  
+            if(esAnimacionFluida){
+                btn_pasoApaso();
+            }else{
+                ctrl_fun_Activa__PorPaso();
+            }
+        
 
 	    });
 	    tweenB.start();   

@@ -24,7 +24,7 @@ class Libreria extends Element{
 		return this._idAS;
 	}
 
-    in(){
+    in(minum,numLibs){
         var cubo = this._cube;
         var graphics =this._graphics;
         var element = this._element;
@@ -51,7 +51,9 @@ class Libreria extends Element{
 	   	}, velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onComplete(function () {
-
+	    	if(minum == numLibs){
+	    		ctrl_fun_ActivaControles();
+	    	}
 	    }).start();
 
 

@@ -6,6 +6,7 @@ class Element{
         this._idContenedor  = null; // EJ. si es una variable a que metodo pertenece sin importa si antes pertenece a un for 
         this._children      = [];
         this._name          = "";
+        idNodoFinal         = this._id;
 
         this._element       = new THREE.Group();
         this._graphics      = new THREE.Group();
@@ -88,13 +89,14 @@ class Element{
 
         loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
                 let material = new THREE.MultiMaterial( [
-                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading } ), // front
+                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading   } ), // front
                     new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
                 ] );
+
                 let textGeo = new THREE.TextGeometry( txt, {
                     font: response,
-                    size: TAM_GRAL/8,
-                    height: 2,
+                    size: TAM_GRAL/6,
+                    height: TAM_GRAL/20
                 });
                 //textGeo.center();
                 textGeo.computeBoundingBox();
@@ -121,7 +123,13 @@ class Element{
                 // Cambiamos la posicion del texto
                 if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
                     textMesh1.position.set(xi, yi, zi);    
-                    if(siguientePaso)if(esAnimacionFluida)btn_pasoApaso();
+                    if(siguientePaso){
+                        if(esAnimacionFluida){
+                            btn_pasoApaso();
+                        }else{                            
+                            ctrl_fun_Activa__PorPaso();                            
+                        }
+                    }
                 }else{
                     textMesh1.position.set(
                         -element.position.x,
@@ -139,7 +147,11 @@ class Element{
                                 texto.remove(valorAnterior);
                             }                            
                             if(siguientePaso){
-                                if(esAnimacionFluida)btn_pasoApaso();
+                                if(esAnimacionFluida){
+                                    btn_pasoApaso();
+                                }else{
+                                    ctrl_fun_Activa__PorPaso();
+                                }
                             }
                         });                    
                     tween.start();
@@ -150,6 +162,7 @@ class Element{
             });// ./loader.load({})
     }
     _setText2( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null, elementoOrigen = null){
+        // _setText2 NACE PARA AGREGAR EL VALUE A LAS VARIABLES Q SE PASAN COMO PARAMETROS
         let element   = this._element;
         let cube      = this._cube;
         let texto     = this._text;
@@ -163,8 +176,8 @@ class Element{
                 ] );
                 let textGeo = new THREE.TextGeometry( txt, {
                     font: response,
-                    size: TAM_GRAL/8,
-                    height: 2,
+                    size: TAM_GRAL/6,
+                    height: TAM_GRAL/20
                 });
                 textGeo.computeBoundingBox();
                 textGeo.computeVertexNormals();
@@ -204,7 +217,11 @@ class Element{
                             texto.remove(valorAnterior);
                         }                            
                         if(siguientePaso){
-                            if(esAnimacionFluida)btn_pasoApaso();
+                            if(esAnimacionFluida){
+                                btn_pasoApaso();
+                            }else{
+                                ctrl_fun_Activa__PorPaso();
+                            }
                         }
                     });                    
                 tween.start();

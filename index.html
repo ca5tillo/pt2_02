@@ -29,6 +29,8 @@
 
 
 
+    <script src="lib/data.gui/dat.gui.js"></script> 
+    <link rel="stylesheet" href="lib/data.gui/dat.gui.css"> 
 
 
 <!-- JS --> 
@@ -45,8 +47,10 @@
     <script src="lib/codemirror/addon/hint/show-hint.js"></script>              <!-- addons show-hint --> 
             <!-- ./codemirror --> 
 
+
             <!-- THREE.JS --> 
     <script src="lib/three-js/build/three.min.js"></script>
+    <script src="lib/three-js/examples/js/libs/stats.min.js"></script> 
     <script src="lib/three-js/examples/js/controls/OrbitControls.js"></script>           
             <!-- ./THREE.JS --> 
 
@@ -55,6 +59,7 @@
             <!-- ./Tween.JS --> 
 
     <script src="js/helpers.js"></script>
+    <script src="js/controles.js"></script>
 
     <script src="js/editor_texto/codigos_de_ejemplo.js"></script>
     <script src="js/editor_texto/analisis_lexico/tabla_de_simbolos.js"></script>
@@ -92,13 +97,7 @@
     <div id="representacion_3D"></div>
 
 
-    <div id="menu">
-        <button id="Compilar" onclick="btn_Compilar()"  class="">Compilar</button>
-        <button id="Ejecutar" onclick="btn_Ejecutar()"  class="desactivado">Ejecutar</button>
-        <button id="PorPasos" onclick="btn_pasoApaso()" class="" >Por Pasos</button>
-        <button id="PorPasos" onclick="btn_camara()" class="" >Camara</button>
-        
-    </div>
+
 
     <div id="representacion_arbolDeLlamadas" ></div>
     <div id="representacion_arbolSintactico" ></div>

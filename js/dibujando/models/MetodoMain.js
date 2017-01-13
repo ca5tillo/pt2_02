@@ -89,7 +89,9 @@ class MetodoMain extends Element{
 
 
 	        pintarArbolDeLlamadas();
-	        if(esAnimacionFluida)btn_pasoApaso();
+	         if(main_LstPasos.children.length == 0 && ejecutado ){//si el programa termino 
+		        ctrl_fun_Reiniciar();
+		    }
 
 	    });
 	    tweenB.start();   

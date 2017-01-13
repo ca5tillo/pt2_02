@@ -14,9 +14,9 @@ function setup_javaEditor(){
         styleSelectedText: true,
         mode: {name: "text/x-java",number:/^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)/i},
         theme: 'monokai',
-        autofocus:true,
+        autofocus:false,
     });
-    $(".CodeMirror").css({ "background":'rgba(0,0,0,.3)' });
+    $(".CodeMirror").css({ "background":'rgba(0,0,0,0.3)' });
 
     javaEditor_extraKeys();
 
