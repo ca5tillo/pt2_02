@@ -204,6 +204,10 @@ function setupControls(){
 	    ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_01'));
 	    ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_02'));
 
+    for(let i of ctrl_Ejemplos){
+        i.__li.setAttribute       ("style", "border-left: 3px solid green;");
+    }
+
 
 
 /***************************************************************************************************/
