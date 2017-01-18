@@ -33,7 +33,7 @@ class MetodoMain extends Element{
 	    .to({ x: -libreria.position.x, 
 	          y: -libreria.position.y, 
 	          z: -libreria.position.z 
-	      }, velocidad)
+	      }, Controls.velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
 	        cubo.material.opacity = 1;
@@ -44,7 +44,7 @@ class MetodoMain extends Element{
 	    });
 
 	    var tweenB = new TWEEN.Tween(cubo.scale)
-	    .to({ x:METODO_SCALE_X,Y:METODO_SCALE_Y,z: METODO_SCALE_Z,}, velocidad/2)
+	    .to({ x:METODO_SCALE_X,Y:METODO_SCALE_Y,z: METODO_SCALE_Z,}, Controls.velocidad/2)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onComplete(function () {    
 	        let siguientePaso = true;
@@ -68,7 +68,7 @@ class MetodoMain extends Element{
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
-	            .to({ x:0.001,Y:0.001,z: 0.001,}, velocidad)
+	            .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
 	            .easing(TWEEN.Easing.Quadratic.In)
 	            .onStart(function (){
 	                i.graphics.remove(i.text);  
@@ -77,7 +77,7 @@ class MetodoMain extends Element{
 	            }).start(); 
 	    }
 	    var tweenB = new TWEEN.Tween(cube.scale)
-	    .to({ x:0.001,Y:0.001,z: 0.001,}, velocidad)
+	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
 	        metodo.graphics.remove(metodo.text);  

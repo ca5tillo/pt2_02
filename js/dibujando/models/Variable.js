@@ -59,7 +59,7 @@ class Variable extends Element{
 					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
 					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
 					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
-	          	}, velocidad)
+	          	}, Controls.velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){
 	        })
@@ -99,7 +99,7 @@ class Variable extends Element{
 					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
 					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
 					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
-	          	}, velocidad)
+	          	}, Controls.velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){
 	        })

@@ -1,4 +1,5 @@
 var javaEditor;
+var javaEditor_lineasError = [];
 var marcatextos_1 = null;
 var marcatextos_2 = null;
 
@@ -15,6 +16,7 @@ function setup_javaEditor(){
         mode: {name: "text/x-java",number:/^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)/i},
         theme: 'monokai',
         autofocus:false,
+        gutters: ["CodeMirror-my-markers"],
     });
     $(".CodeMirror").css({ "background":'rgba(0,0,0,0.3)' });
 
@@ -45,7 +47,35 @@ function javaEditor_addHintWords(){
         );
     //*/
 }
+function javaEditor_markError(lineaInicial,lineaFinal){
+    function _makeMarker() {
+        var marker        = document.createElement("div");
+        let tooltip       = document.createElement("div");
+        let tooltiptext   = document.createTextNode("Aun no Implementado"); 
 
+        marker.className  = "CodeMirror-my-mark-error fa fa-times";
+        tooltip.className = "CodeMirror-my-mark-tooltiptext";
+
+        tooltip.appendChild(tooltiptext);  
+        marker.appendChild(tooltip);  
+
+        return marker;
+    }
+    if(lineaInicial < lineaFinal){
+        for (var i = lineaInicial; i <= lineaFinal; i++) {
+            javaEditor.setGutterMarker(i, "CodeMirror-my-markers", _makeMarker());
+            javaEditor_lineasError.push(i);
+        }
+    }else{
+        javaEditor.setGutterMarker(lineaInicial, "CodeMirror-my-markers", _makeMarker());
+        javaEditor_lineasError.push(lineaInicial);
+    }
+}
+function javaEditor_clearMarkError(){
+    for(let i of javaEditor_lineasError){
+        javaEditor.setGutterMarker(i, "CodeMirror-my-markers", null);
+    }
+}
 function javaEditor_markText(lineaI,lineaF = null){
     let _lineaF = lineaF ? lineaF : lineaI;
     //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});

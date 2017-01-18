@@ -138,7 +138,7 @@ class Element{
                         );     // lo envio al centro del metodo o padre
 
                     let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                        .to         ({ x:xi, y:yi, z:zi },velocidad)
+                        .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
                         .easing     (TWEEN.Easing.Quadratic.In)
                         .onStart    ( function (){} )
                         .onUpdate   ( function (){} )
@@ -208,7 +208,7 @@ class Element{
                     );     // lo envio al centro del metodo o padre
 
                 let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                    .to         ({ x:xi, y:yi, z:zi },velocidad)
+                    .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
                     .easing     (TWEEN.Easing.Quadratic.In)
                     .onStart    ( function (){} )
                     .onUpdate   ( function (){} )

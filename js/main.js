@@ -14,22 +14,25 @@ window.addEventListener('load',init);
 var main_LstPasos      = {id:0, generador:null, children:[], descripcion:"main_LstPasos"};
 var esAnimacionFluida  = false;
 var ejecutado          = false;
-var velocidad          = 200;
+var existenErrores     = false;
+
 
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_01);
-setupControls();
+    javaEditor_setText(ejemploDeCodigo_03);
+
+    setupControls();
     setupThreeJS();
-    //setupGroupBase();
+
     spotLight();
     setupAxis();
     setupSuelo();
     setupZonaLibrerias();
-    //setupGroupEjecucion();
+
     cameraControl = new THREE.OrbitControls(camera);
 
+    cameraControl.minDistance = TAM_GRAL*6;
 
     
 
@@ -40,56 +43,31 @@ setupControls();
 }
 
 function render(){   
-    velocidad = Controls.velocidad;
     cameraControl.update();
     TWEEN.update();
 
     if(lstElements){    
         //https://github.com/mrdoob/three.js/issues/434
-        camera.lookAt(lstElements.getChildrenById(idNodoFinal).graphics.children[0].matrixWorld.getPosition());
+        //camera.lookAt(lstElements.getChildrenById(idNodoFinal).graphics.children[0].matrixWorld.getPosition());
     }
 
     requestAnimationFrame(render);
     renderer.render(scene, camera);
 }
 
-/*
-Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
-Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
-que FUNCIONES usaran de los helpers de dibujado
 
-Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
-el ** guionDePreCompilacion **
-*/
-function crearGuionPrecompilacion(){
-    //http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
-    _run = function (){
-        for(let i = 0; i < _guion.length; i++){
-            self[   _guion[i].metodo    ] (_guion[i].parametro,i,_guion.length-1);
-        }
-
-    }
-    _add = function (O_o){
-        if(O_o.reglaP == "clase"){
-            _guion.push({parametro:O_o, metodo:"crearLibreria"});
-        }
-        for(let i of O_o.hijos){
-            _add(i);
-        }
-    };
-    let _guion = [];  //guionDePreCompilacion
-    _guion.push({parametro:{},                               metodo:"setupGroupBase"});
-    _guion.push({parametro:{name:"System",tipo: "defClase"}, metodo:"crearLibreria" });
-
-    _add(as_arbol);
-    _run();
-}
 
 
 function btn_Compilar(){
+    existenErrores = false;
+    javaEditor_clearMarkError();
     analisisSintactico();
     as_imprimirArbol(as_arbol);
-    crearGuionPrecompilacion();
+    
+    if(as_arbol.hijos.length > 0 && !existenErrores){
+        ctrl_fun__Preparar();
+        crearGuionPrecompilacion();        
+    }
 }
 
 function btn_Ejecutar(){
@@ -102,14 +80,14 @@ function btn_pausa(){
 }
 function btn_reiniciar(){
     scene.remove(groupBase);
-    main_LstPasos      = {id:0, generador:null, children:[], descripcion:"main_LstPasos"};
-    esAnimacionFluida  = false;
-    ejecutado          = false;
+    main_LstPasos       = {id:0, generador:null, children:[], descripcion:"main_LstPasos"};
+    esAnimacionFluida   = false;
+    ejecutado           = false;
     as_arbol            = null;
     as_ids              = [];
 
-    lstElements = null; //nodo raiz
-    lstIDsMetodos = {id:0,  children:[], descripcion:"lstIDsMetodos"};
+    lstElements         = null; //nodo raiz
+    lstIDsMetodos       = {id:0,  children:[], descripcion:"lstIDsMetodos"};
 
     document.getElementById("representacion_arbolSintactico").innerHTML="";
     document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();

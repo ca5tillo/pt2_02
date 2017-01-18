@@ -32,7 +32,7 @@ class Libreria extends Element{
 
 
         new TWEEN.Tween(cubo.material)
-        .to({ opacity: 1 }, velocidad)
+        .to({ opacity: 1 }, Controls.velocidad)
         .easing(TWEEN.Easing.Quadratic.In)
         .onStart(function (){
             cubo.material.visible = true; 
@@ -48,7 +48,7 @@ class Libreria extends Element{
 	        x: zonaLibrerias.position.x, 
 	        y:(TAM_GRAL*LIB_SCALE_Y)*this._element.my_indice + TAM_GRAL/4*this._element.my_indice,
 	        z: zonaLibrerias.position.z 
-	   	}, velocidad)
+	   	}, Controls.velocidad)
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onComplete(function () {
 	    	if(minum == numLibs){

@@ -7,7 +7,7 @@ const FAR = 1000;
 /*      constantes unidades de medida   */
 
 const TAM_GRAL = 4;
-const NUM_LOSETAS = 12;
+const NUM_LOSETAS = 22;
 
 /*      Variables globales del mundo*/
 var scene;
@@ -105,7 +105,7 @@ function setupZonaLibrerias(){
 
     zonaLibrerias = new THREE.Group();
 
-    zonaLibrerias.position.x= -((TAM_GRAL*NUM_LOSETAS)/2+(TAM_GRAL*LIB_SCALE_X));
+    zonaLibrerias.position.x= -((TAM_GRAL*METODO_SCALE_X)/2+(TAM_GRAL*LIB_SCALE_X));
     zonaLibrerias.position.y= 0;
     zonaLibrerias.position.z= 0;
 
@@ -220,7 +220,8 @@ function returnVariable(instruccion){
 
 	    let value           = contenedor.getChildrenByName(instruccion.name,true).value;
 	    let destino         = lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
-	    destino.setTextValue(value,siguientePaso);
+	    destino.value       = value;
+        destino.setTextValue(value,siguientePaso);
 
     }
     MethodOut();

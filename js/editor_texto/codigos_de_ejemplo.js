@@ -5,6 +5,7 @@ var ejemploDeCodigo_01 =
         String  cadena = "texto";
         int     b      = 10;
         boolean c      = true;
+        int[]   edad   = {45, 23, 11, 9};
 
         a              = 10;
         cadena         = "nuevo";
@@ -14,32 +15,30 @@ var ejemploDeCodigo_01 =
 }`;
 
 
-var ejemploDeCodigo_02 =`
-    public class MyClass {
-        public static void main() {
-            String cadena = "texto";
-            int[] edad = {45, 23, 11, 9};    
-            int numero;    
-            String cadena2 = "valor";  
-            String[] alumnos = {
-                "Miguel", 
-                "Castillo", 
-                "Cortes"};  
-
-            numero =5;
-        }
+var ejemploDeCodigo_02 =
+`public class MyClass {
+    public static void metodo(){
+        int a = 9;
     }
-`;
-var ejemploDeCodigo_03 =`
-    public class MyClass {
-        public static void otroMetodo(){}
-        public static void main() {
-            int i = 0;
-            otroMetodo();  
-
-        }
+    public static int pasoParametros(int a, int b,String txt){
+        a = 69;
+        metodo();
+        return a;
     }
-`;
+    public static void main() {
+        int a = 10; int b = 20;
+        int e = pasoParametros(a, b, "envio");
+            a = pasoParametros(a, e, "texto");
+    }
+}`;
+
+var ejemploDeCodigo_03 =
+`public class MyClass {
+    public static void main() {
+        int i = 0;
+            i = 5+8;
+    }
+}`;
 var ejemploDeCodigo_04 =`public class MyClass {
         public static void otroMetodo2(){
             int i = 9;
@@ -64,29 +63,7 @@ var ejemploDeCodigo_04 =`public class MyClass {
         }
     }
 `;
-var ejemploDeCodigo_05 =`
-    public class MyClass {
-        public static void metodo(){
-            int a = 9;
-        }
-        public static int otroMetodo(int a, int b,int c){
-            int w = 100;
-            a = 69;
-            return w;
-        }
-        public static void main() {
-            
-            int[] edad = {45, 23, 11, 9}; 
-            metodo();
-            int a = 5;
-            metodo();
-            int b = 1;
-            b = 7;
 
-            int e = otroMetodo(a, b, "envio");
-        }
-    }
-`;
 
 
 

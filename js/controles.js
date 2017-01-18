@@ -51,7 +51,7 @@ var Controls = {
         Ejemplo_02:function (){
             if(isActive_ctrl_Ejemplos){                
                 ctrl_fun_Reiniciar();
-                javaEditor_setText(ejemploDeCodigo_05);
+                javaEditor_setText(ejemploDeCodigo_02);
             }
         },
 
@@ -69,7 +69,9 @@ message: 'Hello World',
     };
 
 function ctrl_fun_ActivaControles() {
-    // Despues de prepara el AS y mostrar en pantalla las librerias se puede ejecutar esta funcion
+    // Despues de prepara el AnalisadorSintactico y 
+    // mostrar en pantalla las librerias se puede ejecutar esta funcion
+    // js\dibujando\models\Libreria.js:
 
 
     ctrl_fun_Activa__PorPaso();
@@ -113,10 +115,10 @@ function ctrl_fun_Activa__PorPaso(){
 
 
 function ctrl_fun_desactiva__Animar(){
-    isActive_ctrl_Animar       = false;
+    isActive_ctrl_Animar        = false;
     ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid red;"  );
     if(esAnimacionFluida){
-        isActive_ctrl_Pausa        = true;
+        isActive_ctrl_Pausa     = true;
         ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid green;");
     }
 }
@@ -145,10 +147,17 @@ function ctrl_fun_Activa__Ejemplos(){
         i.__li.setAttribute ("style", "border-left: 3px solid green;"  );
     }
 }
+function ctrl_fun__Preparar(){
+    if(isActive_ctrl_Preparar){                
+        Controls.pasos = 0;
+        isActive_ctrl_Preparar = false;
+        ctrl_Preparar.__li.setAttribute    ("style", "border-left: 3px solid red;"  );  
+    }
+}
 function setupControls(){
 	
     let gui = new dat.GUI();
-    
+    $(".dg.ac").css( "z-index", "9" );
 
 
 
@@ -163,21 +172,15 @@ function setupControls(){
     let ctrl_velocidad   = f1.add(Controls, 'velocidad').min(100).max(5000).step(100);
     					   f1.add(Controls, 'pasos').listen();
 
-    	/*eventos*/
+    	
 	    ctrl_Preparar.__li.setAttribute        ("style", "border-left: 3px solid green;"); 
 	    ctrl_Animar.__li.setAttribute          ("style", "border-left: 3px solid red;"  ); 
 	    ctrl_Animar_Paso.__li.setAttribute     ("style", "border-left: 3px solid red;"  ); 
 	    ctrl_Pausa.__li.setAttribute           ("style", "border-left: 3px solid red;"  );
         ctrl_Reiniciar.__li.setAttribute       ("style", "border-left: 3px solid red;"  );  
 
-	    ctrl_Preparar.onChange(function(value) {});
-	    ctrl_Preparar.onFinishChange(function(value) {
-            if(isActive_ctrl_Preparar){                
-                Controls.pasos = 0;
-    	    	isActive_ctrl_Preparar = false;
-    			ctrl_Preparar.__li.setAttribute    ("style", "border-left: 3px solid red;"  );  
-            }
-	    });
+
+        /*eventos*/
 
 	    ctrl_Animar.onFinishChange(function(value) {
             if(isActive_ctrl_Animar){            
@@ -190,18 +193,8 @@ function setupControls(){
             }
 	    });
 	    ctrl_Pausa.onFinishChange(function(value) {
-            
-                isActive_ctrl_Pausa        = false;
-
-                ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
-            /*if(isActive_ctrl_Pausa){                
-                isActive_ctrl_Animar       = true;
-                isActive_ctrl_Animar_Paso  = true;
-                isActive_ctrl_Pausa        = false;
-                ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid green;"); 
-                ctrl_Animar_Paso.__li.setAttribute ("style", "border-left: 3px solid green;"); 
-                ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
-            }//*/
+            isActive_ctrl_Pausa        = false;
+            ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
 	    });
 
 	    f1.open();
@@ -220,7 +213,7 @@ function setupControls(){
     let ctrl_Opacidad   = f3.add(Controls, 'Opacidad').min(0).max(1).step(.1);
 
 	    ctrl_fullScreen.onFinishChange(function(value) {
-	    	javaEditor.setOption("fullScreen", !this.__prev)
+	    	javaEditor.setOption("fullScreen", Controls.fullScreen)
 	    });
 	    ctrl_Opacidad.onChange(function(value) {
 	    	$(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
@@ -230,14 +223,14 @@ function setupControls(){
 	    });
 
 /***************************************************************************************************/
-	let f4 = gui.addFolder('Informacion');
+	let f4         = gui.addFolder('Informacion');
 
-    let ctrl_as = f4.add(Controls,'Arbol Sintactico');
+    let ctrl_as    = f4.add(Controls,'Arbol Sintactico');
     let ctrl_aCall = f4.add(Controls, 'Arbol de LLamadas');
 
-    let ctrl_a1 = f4.add(Controls, 'a1');
-    let ctrl_a2 = f4.add(Controls, 'a2');
-    let ctrl_a3 = f4.add(Controls, 'a3');
+    let ctrl_a1    = f4.add(Controls, 'a1');
+    let ctrl_a2    = f4.add(Controls, 'a2');
+    let ctrl_a3    = f4.add(Controls, 'a3');
 
 	$('#representacion_arbolSintactico').css({'visibility': 'hidden'});
 	$('#representacion_arbolDeLlamadas').css({'visibility': 'hidden'});
@@ -245,19 +238,18 @@ function setupControls(){
 	$('#representacionarreglo1').css({'visibility': 'hidden'});
 	$('#representacionarreglo2').css({'visibility': 'hidden'});
 	$('#infonodo_as').css({'visibility': 'hidden'});
+
     ctrl_as.onFinishChange(function(value) {
-    	if(!this.__prev){
+    	if(Controls['Arbol Sintactico']){
     		$('#representacion_arbolSintactico').css({'visibility': 'visible'});
     	}else{
-
     		$('#representacion_arbolSintactico').css({'visibility': 'hidden'});
     	}
     });
     ctrl_aCall.onFinishChange(function(value) {
-    	if(!this.__prev){
+    	if(Controls['Arbol de LLamadas']){
     		$('#representacion_arbolDeLlamadas').css({'visibility': 'visible'});
     	}else{
-
     		$('#representacion_arbolDeLlamadas').css({'visibility': 'hidden'});
     	}
     });
@@ -269,7 +261,6 @@ function setupControls(){
     	if(!this.__prev){
     		$('#representacionarreglo1').css({'visibility': 'visible'});
     	}else{
-
     		$('#representacionarreglo1').css({'visibility': 'hidden'});
     	}
     });
@@ -277,7 +268,6 @@ function setupControls(){
     	if(!this.__prev){
     		$('#representacionarreglo2').css({'visibility': 'visible'});
     	}else{
-
     		$('#representacionarreglo2').css({'visibility': 'hidden'});
     	}
     });
@@ -294,5 +284,5 @@ function setupControls(){
 
 
 /***************************************************************************************************/
-    $(".dg.ac").css( "z-index", "9" );
+    
 }

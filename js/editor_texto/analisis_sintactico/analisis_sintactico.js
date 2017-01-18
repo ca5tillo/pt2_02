@@ -99,10 +99,12 @@ function analisisSintactico(){
 
 	    }else if(i.symbol == "RBRACE"  && !isArray){
             if(! /^RBRACE/.test(str) ){ // Si str contiene algo mas que RBRACE se concidera error 
-                let error = new ModelArbol(-1,"ERROR_SINTACTICO");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-                error.nivelAnidamiento=as_nivelAnidamiento+1;
-                error.lineaInicial = lst_token[0].line;
-                _addNodo(raiz,error,as_nivelAnidamiento);
+
+                let error = new ASElemento();
+                    error.reglaP             = "ERROR_SINTACTICO";
+                    error.lineaInicial       = lst_token[0].line;
+                    error.lineaFinal         = lst_token[lst_token.length-1].line;
+                _addNodo(error);
             }
 	        _as_finalizarRama(i);// tambien disminuye en uno al as_nivelAnidamiento
 
@@ -189,6 +191,7 @@ function _reglasProduccion(str, arr){
 		obj.valueType        = _RE_[3];
 
         obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
     	return obj; 
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS               */
@@ -312,10 +315,11 @@ function _reglasProduccion(str, arr){
 
     /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
     let error = new ASElemento();
-        error.reglaP           = "ERROR_SINTACTICO";
-        error.lineaInicial = arr[0].line;
+        error.reglaP             = "ERROR_SINTACTICO";
+        error.lineaInicial       = arr[0].line;
+        error.lineaFinal         = arr[arr.length-1].line;
 
-    console.log(str);
+
     return error;
 }
 
@@ -451,6 +455,10 @@ function _as_finalizarRama(rbrace){
 function as_imprimirArbol(nodo){
 
     _createLista = function (nodo){
+        if(nodo.reglaP == "ERROR_SINTACTICO"){
+            javaEditor_markError(nodo.lineaInicial,nodo.lineaFinal);
+            existenErrores = true;
+        }
         let li    = document.createElement("li");        
         let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
         li.setAttribute("data-value", `${nodo.id}`); 
