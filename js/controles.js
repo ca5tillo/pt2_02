@@ -56,8 +56,8 @@ var Controls = {
         },
 
 
-        fullScreen: false,
-        Opacidad:0.3,
+        fullScreen: true,
+        Opacidad:0,
 
 
         'Arbol Sintactico':false,
@@ -197,7 +197,7 @@ function setupControls(){
             ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
 	    });
 
-	    f1.open();
+	    
 
 /***************************************************************************************************/
     let f2 = gui.addFolder('Ejemplos');
@@ -258,9 +258,6 @@ function setupControls(){
     	}
     });
 
-
-
-
     ctrl_a1.onFinishChange(function(value) {
     	if(!this.__prev){
     		$('#representacionarreglo1').css({'visibility': 'visible'});
@@ -283,6 +280,15 @@ function setupControls(){
     	}
     });
     
+    let f5          = gui.addFolder("Movimiento");
+    
+    let f6          = gui.addFolder("dev");
+
+
+
+    f1.open();
+    f2.open();
+    f3.open();
     f4.open();
 
 

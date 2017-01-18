@@ -18,9 +18,10 @@ function setup_javaEditor(){
         autofocus:false,
         gutters: ["CodeMirror-my-markers"],
     });
-    $(".CodeMirror").css({ "background":'rgba(0,0,0,0.3)' });
-
+    
     javaEditor_extraKeys();
+    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
+    javaEditor.setOption("fullScreen", Controls.fullScreen)
 
 
     //  Evento inputRead que se desencadena con nuevas entradas 
