@@ -35,34 +35,32 @@ var ejemploDeCodigo_02 =
 var ejemploDeCodigo_03 =
 `public class MyClass {
     public static void main() {
-        int i = 0;
-            i = 5+8;
+        int a = 0;
+            a = ((5+8-3)*(2+1+(0*(52552+7))))/2;
+            a = 5;
+            a = 100*2;
+        double b;
+            b = 5/2;
     }
 }`;
-var ejemploDeCodigo_04 =`public class MyClass {
-        public static void otroMetodo2(){
-            int i = 9;
-            i=100;
-            int[] edad = {45, 23, 11, 9};   
+var ejemploDeCodigo_04 =
+`public class MyClass {
+    public static int factorial (int numero) {
+        boolean a;
+        if (numero == 0){
+            a = true;
+            //return 1;
         }
-        public static void otroMetodo(){
-            int i = 9;
-            i=100;
-            int[] edad = {45, 23, 11, 9};  
-            otroMetodo2();  
-        }
-        public static void main() {
-            int[] edad = {45, 23, 11, 9};    
-            otroMetodo();  
-            int i = 0;
-            otroMetodo();  
-            int b;
-            otroMetodo(); 
-            i=55;
-            otroMetodo(); 
+        else{
+            a = false; 
+            //return numero * factorial(numero-1);
         }
     }
-`;
+    public static void main() {
+        int resultado = factorial(5);
+        
+    }
+}`;
 
 
 

@@ -7,7 +7,7 @@ const FAR = 1000;
 /*      constantes unidades de medida   */
 
 const TAM_GRAL = 4;
-const NUM_LOSETAS = 22;
+const NUM_LOSETAS = 202;
 
 /*      Variables globales del mundo*/
 var scene;
@@ -43,9 +43,9 @@ function setupThreeJS(){
     camera            = new THREE.PerspectiveCamera( FOV, ASPECT, NEAR, FAR );
     //camera.position.set(0,TAM_GRAL*16,TAM_GRAL*22);
     //camera.lookAt(scene.position);
-    camera.position.x = -30;
-    camera.position.y = 40;
-    camera.position.z = 30;
+    camera.position.x = 0;
+    camera.position.y = 20;
+    camera.position.z = 80;
 
     camera.lookAt(scene.position);
 
@@ -77,13 +77,13 @@ function spotLight(){
         spotLight.shadow.mapSize.width = 1024;
         spotLight.shadow.mapSize.height = 1024;
         scene.add( spotLight );
-        scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
+        //scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
 } 
 
 function setupSuelo(){
     var materiales = [
         new THREE.MeshPhongMaterial({color: "#ccc", side: THREE.DoubleSide}),
-        new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } )
+      //  new THREE.MeshBasicMaterial( { color: 0x000000, wireframe: true } )
     ];
     var geometria = new THREE.PlaneGeometry(NUM_LOSETAS*TAM_GRAL,NUM_LOSETAS*TAM_GRAL,NUM_LOSETAS,NUM_LOSETAS);
     var plane = THREE.SceneUtils.createMultiMaterialObject(geometria,materiales);
@@ -226,10 +226,37 @@ function returnVariable(instruccion){
     }
     MethodOut();
 }
+function asignacion2(instruccion){
+    if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }
+
+
+    let siguientePaso   = true;
+    let idPadre         = getIdsAncestros().p;
+    let idContenedor    = getIdsAncestros().c;
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let padre           = lstElements.getChildrenById(idPadre);
+
+    let value           = instruccion.resultado;
+    let destino         = lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
+
+    destino.value       = value;
+    destino.setTextValue(value,siguientePaso);
+
+  
+}
 function MethodOut(){
-    javaEditor_markClean();
     let idMetodoActual   = getIdsAncestros().c;
     let metodo           = lstElements.getChildrenById(idMetodoActual);
+    let as_metodo        = as_GetFunctionByName(metodo.name);
+
+    if(as_metodo.lineaFinal){
+        javaEditor_markClean();
+        javaEditor_markText(as_metodo.lineaFinal);
+    }
+
     if(metodo){
     	metodo.out();
     	lstIDsMetodos.children.pop();

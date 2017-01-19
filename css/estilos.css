@@ -97,7 +97,9 @@ body {
 }
 
 
-
+.CodeMirror-my-markers{
+    width: 6px;
+}
 .CodeMirror-my-mark-error {
     position: relative;
     display: inline-block;

@@ -1,5 +1,4 @@
-var javaEditor;
-var javaEditor_lineasError = [];
+var javaEditor    = null;
 var marcatextos_1 = null;
 var marcatextos_2 = null;
 
@@ -31,6 +30,16 @@ function setup_javaEditor(){
         if(javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(' ') == -1 && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(';') == -1){
             javaEditor.showHint({completeSingle: false});
         }
+    });
+    //  Evento change 
+    javaEditor.on("change", function(javaEditor, inputRead) {
+        
+/*
+        javaEditor_clearMarkError();
+        analisisSintactico();
+        as_imprimirArbol(as_arbol);
+//*/
+
     });
 }
 function javaEditor_setText(value){
@@ -65,15 +74,13 @@ function javaEditor_markError(lineaInicial,lineaFinal){
     if(lineaInicial < lineaFinal){
         for (var i = lineaInicial; i <= lineaFinal; i++) {
             javaEditor.setGutterMarker(i, "CodeMirror-my-markers", _makeMarker());
-            javaEditor_lineasError.push(i);
         }
     }else{
         javaEditor.setGutterMarker(lineaInicial, "CodeMirror-my-markers", _makeMarker());
-        javaEditor_lineasError.push(lineaInicial);
     }
 }
 function javaEditor_clearMarkError(){
-    for(let i of javaEditor_lineasError){
+    for (var i = 0; i < javaEditor.lineCount(); i++) {
         javaEditor.setGutterMarker(i, "CodeMirror-my-markers", null);
     }
 }

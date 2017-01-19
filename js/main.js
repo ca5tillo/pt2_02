@@ -20,19 +20,20 @@ var existenErrores     = false;
 
 function init(){
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_03);
+    javaEditor_setText(ejemploDeCodigo_04);
 
     setupControls();
     setupThreeJS();
 
     spotLight();
-    setupAxis();
+    //setupAxis();
     setupSuelo();
     setupZonaLibrerias();
 
     cameraControl = new THREE.OrbitControls(camera);
 
     cameraControl.minDistance = TAM_GRAL*6;
+    cameraControl.maxPolarAngle = Math.PI * 0.5;
 
     
 
@@ -99,9 +100,6 @@ function btn_pasoApaso(){
     let instruccion = null;
     let tipo        = null;
 
-    ctrl_fun_desactiva__PorPaso   ();
-
-    Controls.pasos += 1;
     
     if(main_LstPasos.children.length > 0){
         instruccion = getInstruccion();
@@ -131,6 +129,8 @@ function ejecutarDibujado(instruccion){
 
     if(      (O_o) == "ERROR_SINTACTICO"){}
     else if( (O_o) == "llamada"         ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;
+
         if(instruccion.destinoCreate){
             crearVariable_2({
                 lineaInicial:instruccion.lineaInicial, 
@@ -152,24 +152,34 @@ function ejecutarDibujado(instruccion){
         }
     }
     else if( (O_o) == "argumento"       ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
 
         crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
     }
     else if( (O_o) == "return_variable" ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
 
         returnVariable(instruccion);
     }
     else if( (O_o) == "variable"        ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
 
         crearVariable(instruccion);
     }
     else if( (O_o) == "asignacion"      ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
 
         asignarValorVariable(instruccion);  
     }
     else if( (O_o) == "arreglo"         ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
 
         crearArreglo(instruccion);  
+    }
+    else if( (O_o) == "asignacion2"         ){
+        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+
+        asignacion2(instruccion);  
     }
 
 }

@@ -1,7 +1,7 @@
 
+var as_generateID       = null;
+var as_ids              = null;
 var as_arbol            = null;
-var as_generateID       = GenerateID();
-var as_ids              = [];
 
 class ASArgumento{
     constructor(type, value, name){
@@ -41,12 +41,15 @@ class ASElemento  {
         this.parametros                 = []; // Se refiere a la variable en la declaración del método
         this.arrays                     = []; // Seran sol sub elementos de un array
 
+        this.expresion                  = ""; //para las operaciones matematicas Ej.i = 5+92;
+        this.resultado                  = ""; //para las operaciones matematicas Ej.i = 5+92;
 
         this.tipoDeDato = "";// si es variable
         this.valor = "";// si es variable
-		this.static = false;
-		this.retorno =""
-		this.restriccion="";//private, public ...
+        this.static = false;
+        this.retorno =""
+        this.restriccion="";//private, public ...
+
 		
 		this.lineaInicial               = 0;
 		this.lineaFinal                 = 0;
@@ -70,6 +73,8 @@ function analisisSintactico(){
 	let isFor            = false;
 	let isArray          = false;
     
+    as_generateID        = GenerateID();
+    as_ids               = [];
     as_arbol             = new ASElemento();
     as_arbol.name        = "ElementoRaiz";
     as_arbol.isNodoFinal = false;
@@ -85,7 +90,6 @@ function analisisSintactico(){
 	    if(   (i.symbol == "LBRACE"    && !isArray)
 	        ||(i.symbol == "SEMICOLON" && !isFor)
 	        ){
-
 	        let obj = _reglasProduccion(str, lst_token);  
             _addNodo(obj);
             if(! obj.isNodoFinal){as_ids.push(obj.id);}
@@ -148,9 +152,9 @@ function _reglasProduccion(str, arr){
     	}	
     }
     
-    //console.log("*********************************************************");
-    //console.log(dev_frase);
-    //console.log(str);
+    console.log("*********************************************************");
+    console.log(dev_frase);
+    console.log(str);
 
 
      /*    RECONOCIENDO DEFINICION DE CLASE                                    */
@@ -239,7 +243,9 @@ function _reglasProduccion(str, arr){
         obj.destinoName      = strmap.NAME; // destino al hacer return 
         obj.name             = strmap.NAME_0;
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
+
         obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
 
         return obj; 
     }
@@ -267,8 +273,6 @@ function _reglasProduccion(str, arr){
         obj.lineaInicial     = arr[0].line;
         return obj; 
     }
-
-
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
     if( _RE_ = str.match(RE_ARREGLO)                 ){
         let obj              = new ASElemento();
@@ -279,6 +283,68 @@ function _reglasProduccion(str, arr){
         obj.hijos            = _getContenidoArreglo(arr, obj, obj.type, obj.name);
 
         obj.lineaInicial = arr[0].line;
+        return obj; 
+    }
+    /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;*/
+    if( _RE_ = str.match(RE_SUMARESTADIVMULT)                ){
+        let obj              = new ASElemento();
+        let expresion        = dev_frase.split(";")[0].split("=")[1]; 
+        let resultado        = null;
+        try{
+            resultado = eval(expresion);
+        }catch(err){
+            let error = new ASElemento();
+                error.reglaP             = "ERROR_SINTACTICO";
+                error.lineaInicial       = arr[0].line;
+                error.lineaFinal         = arr[arr.length-1].line;
+            return error;
+        }
+
+        obj.reglaP           = "asignacion2";
+        obj.name             = strmap.NAME;
+        obj.destinoName      = strmap.NAME; // destino al hacer return 
+        obj.expresion        = expresion;
+        obj.resultado        = resultado;
+    
+
+        obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
+        return obj; 
+    }
+    /*    RECONOCIENDO IF*/
+    if( _RE_ = str.match(RE_IF)                 ){
+        let obj              = new ASElemento();
+        console.log(_RE_)
+        console.log(strmap)
+      
+
+        obj.reglaP           = "Condicional_if";
+        obj.name             = strmap.IF;
+    
+
+
+        obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
+
+        obj.isNodoFinal     = false;
+        return obj; 
+    }
+    /*    RECONOCIENDO ELSE*/
+    if( _RE_ = str.match(RE_ELSE)                 ){
+        let obj              = new ASElemento();
+        console.log(_RE_)
+        console.log(strmap)
+      
+
+        obj.reglaP           = "Condicional_if";
+        obj.name             = strmap.ELSE;
+    
+
+
+        obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
+
+        obj.isNodoFinal     = false;
         return obj; 
     }
     
