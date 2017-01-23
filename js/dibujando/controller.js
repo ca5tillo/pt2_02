@@ -258,6 +258,28 @@ function returnVariable(instruccion){
     }
     MethodOut();
 }
+function returnNum(instruccion){
+    if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }
+
+    let siguientePaso   = false; // es false ya que el  MethodOut() ara el siguiente paso
+    let idPadre         = getIdsAncestros().p;
+    let idContenedor    = getIdsAncestros().c;
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let padre           = lstElements.getChildrenById(idPadre);
+
+    if(contenedor.returnA){
+
+        let value           = instruccion.num;
+        let destino         = lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
+        destino.value       = value;
+        destino.setTextValue(value,siguientePaso);
+
+    }
+    MethodOut();
+}
 function asignacion2(instruccion){
     if(instruccion.lineaInicial){
         javaEditor_markClean();
@@ -271,7 +293,27 @@ function asignacion2(instruccion){
     let contenedor      = lstElements.getChildrenById(idContenedor);
     let padre           = lstElements.getChildrenById(idPadre);
 
-    let value           = instruccion.resultado;
+    let expresion = "";
+    let resultado = "?";
+    
+    for(let i of instruccion.expresion){
+        if(i.symbol == 'NAME'){
+            expresion += " "+contenedor.getChildrenByName(i.string).value;
+        }else{
+            expresion += " "+i.string;
+        }
+    }
+
+    try{
+        resultado = eval(expresion);
+    }catch(err){
+        alert("Error en tiempo de ejecucion");
+    }
+
+
+
+
+    let value           = resultado;
     let destino         = lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
 
     destino.value       = value;
@@ -369,7 +411,7 @@ function drawIF(instruccion){
             condicional += " "+i.string;
         }
     }
-    console.log(condicional)
+
     try{
         return eval(condicional);
     }catch(err){

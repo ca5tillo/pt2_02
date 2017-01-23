@@ -154,6 +154,10 @@ function ejecutarDibujado(instruccion){
 
         returnVariable(instruccion);
     }
+    else if( (O_o) == "return_num" ){    
+
+        returnNum(instruccion);
+    }
     else if( (O_o) == "variable"        ){    
 
         crearVariable(instruccion);

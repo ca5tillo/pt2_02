@@ -128,10 +128,6 @@ function analisisSintactico(){
 	return as_arbol;
 }
 function _as_reglasProduccion(str, arr){
-    //console.log("*********************************************************");
-    //console.log(str_dev);
-    //console.log(str);
-
 
 
 	let RE_FOR = /^FOR\s?LPAREN.*SEMICOLON.*SEMICOLON.*RPAREN/;
@@ -153,7 +149,7 @@ function _as_reglasProduccion(str, arr){
     		temporalcontador+=1;
     	}	
     }
-    /*    
+    /*
     console.log("*********************************************************");
     console.log(dev_frase);
     console.log(str);
@@ -275,6 +271,15 @@ function _as_reglasProduccion(str, arr){
         obj.lineaInicial     = arr[0].line;
         return obj; 
     }
+    if( _RE_ = str.match(RE_RERUEN_NUM)){
+        let obj              = new ASElemento();
+        obj.reglaP           = "return_num";
+
+        obj.num             = strmap.NUM;
+        
+        obj.lineaInicial     = arr[0].line;
+        return obj; 
+    }
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
     if( _RE_ = str.match(RE_ARREGLO)                 ){
         let obj              = new ASElemento();
@@ -290,25 +295,16 @@ function _as_reglasProduccion(str, arr){
     /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;*/
     if( _RE_ = str.match(RE_SUMARESTADIVMULT)                ){
         let obj              = new ASElemento();
-        let expresion        = dev_frase.split(";")[0].split("=")[1]; 
+
         let resultado        = null;
-        try{
-            resultado = eval(expresion);
-        }catch(err){
-            let error = new ASElemento();
-                error.reglaP             = "ERROR_SINTACTICO";
-                error.lineaInicial       = arr[0].line;
-                error.lineaFinal         = arr[arr.length-1].line;
-            return error;
-        }
+
 
         obj.reglaP           = "asignacion2";
         obj.name             = strmap.NAME;
         obj.destinoName      = strmap.NAME; // destino al hacer return 
-        obj.expresion        = expresion;
+        obj.expresion        = _as_getExpresionMatematica(arr);
         obj.resultado        = resultado;
     
-
         obj.lineaInicial     = arr[0].line;
         obj.lineaFinal       = arr[arr.length-1].line;
         return obj; 
@@ -530,6 +526,21 @@ function _as_getCondicionales(arr){
             lstParametros.push(i);
         }
         if(i.symbol == "LPAREN")insertinparam=true;
+    }
+    
+
+    return lstParametros;
+}
+function _as_getExpresionMatematica(arr){
+    let insertinparam = false;
+    let lstParametros = [];
+
+    for(let i of arr){
+        if(i.symbol == "SEMICOLON")insertinparam=false;
+        if(insertinparam){
+            lstParametros.push(i);
+        }
+        if(i.symbol == "EQ")insertinparam=true;
     }
     
 

@@ -46,26 +46,22 @@ var ejemploDeCodigo_03 =
 var ejemploDeCodigo_04 =
 `public class MyClass {
     public static int factorial (int numero) {
-        boolean a;
+        int temp;
+        int temp2;
+        int temp3;
         if (numero == 0){
-            a = true;
-            //return 1;
-            if (numero == 0){
-                a = true;
-                //return 1;
-            }
-            else{
-                a = false; 
-                //return numero * factorial(numero-1);
-            }
+            return 1;
         }
         else{
-            a = false; 
-            //return numero * factorial(numero-1);
+            temp  = numero-1; 
+            temp2 = factorial(temp);
+            temp3 = numero * temp2;
+            return temp3;
+            // return numero * factorial(numero-1);
         }
     }
     public static void main() {
-        int resultado = factorial(5);
+        int resultado = factorial(3);
         
     }
 }`;
