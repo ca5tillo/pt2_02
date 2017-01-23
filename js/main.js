@@ -191,7 +191,7 @@ function ejecutarDibujado(instruccion){
         }else{
 
         }
-        ctrl_fun_Activa__PorPaso();
+        btn_pasoApaso();
     }else{        
         alert("Error en tiempo de ejecucion");
         btn_reiniciar()

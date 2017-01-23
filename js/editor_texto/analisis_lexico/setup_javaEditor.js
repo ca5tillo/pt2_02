@@ -1,5 +1,5 @@
 var javaEditor    = null;
-var marcatextos   = null;
+var marcatextos   = null; // es un arreglo de marcadores
 
 function setup_javaEditor(){
 	javaEditor = CodeMirror.fromTextArea(document.getElementById("javaEditor"), {
@@ -33,7 +33,7 @@ function setup_javaEditor(){
     //  Evento change 
     javaEditor.on("change", function(javaEditor, inputRead) {
         
-    /*
+    ///*
     javaEditor_clearMarkError();
     analisisSintactico();
     as_imprimirArbol(as_arbol);
