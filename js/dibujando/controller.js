@@ -45,13 +45,13 @@ function setupThreeJS(){
     //camera.lookAt(scene.position);
     camera.position.x = 0;
     camera.position.y = 20;
-    camera.position.z = 80;
+    camera.position.z = 60;
 
     camera.lookAt(scene.position);
 
     /*RENDER*/
     renderer          = new THREE.WebGLRenderer();//antialias: true, mejora los bordes | logarithmicDepthBuffer: true , es para soportar grandes distancias
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize( $("#representacion_3D").width() ,  $("#representacion_3D").height() );
     renderer.setClearColor(0x000000, 1.0);
     renderer.shadowMap.enabled = true;
     //renderer.setClearColor( scene.fog.color );
@@ -63,9 +63,18 @@ function setupThreeJS(){
 }
 var      setupAxis = () => scene.add( new THREE.AxisHelper( 1e19 ) );
 
-var      ambientLight  = () => scene.add( new THREE.AmbientLight( 0xffffff ) );// Luz blanca suave
+var      ambientLight  = () => scene.add( new THREE.AmbientLight( 0xffffff , 0.6 ) );// Luz blanca suave
+
+function onResize() {
+    camera.aspect = ASPECT;
+    camera.updateProjectionMatrix();
+    renderer.setSize( $("#representacion_3D").width() ,  $("#representacion_3D").height() );
+}
 
 function spotLight(){
+  ambientLight()
+  //  addHemisphereLight() 
+    ///*
     var spotLight = new THREE.SpotLight( 0xffffff );
         spotLight.position.set( 0, 60, 60 );
         spotLight.name = 'Spot Light';
@@ -78,7 +87,30 @@ function spotLight(){
         spotLight.shadow.mapSize.height = 1024;
         scene.add( spotLight );
         //scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
+        //*/
 } 
+function addHemisphereLight() {
+    var hemiLight = new THREE.HemisphereLight(0xffffff, 0xffffff, 0.6);
+    hemiLight.position.copy(new THREE.Vector3(0, 500, 0));
+
+    hemiLight.name = 'hemiLight';
+    scene.add(hemiLight);
+}
+
+function addFloor() {
+    var floorGeometry = new THREE.PlaneGeometry(100, 100, 20, 20);
+    var floorMaterial = new THREE.MeshPhongMaterial();
+    floorMaterial.map = THREE.ImageUtils.loadTexture("img/textures/floor_2-1024x1024.png");
+
+    floorMaterial.map.wrapS = floorMaterial.map.wrapT = THREE.RepeatWrapping;
+    floorMaterial.map.repeat.set(8, 8);
+    var floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+    floorMesh.receiveShadow = true;
+    floorMesh.rotation.x = -0.5 * Math.PI;
+    floorMesh.position.y = -TAM_GRAL/2;// bajo el piso para no tener q recalcular cada elemento a la altura del piso
+    scene.add(floorMesh);
+
+}
 
 function setupSuelo(){
     var materiales = [
@@ -147,7 +179,7 @@ function crearMetodoMain(declaracion){
 function llamarMetodo(llamada, declaracion, destino){
     javaEditor_markClean();
     javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
-    javaEditor_markText2(llamada.lineaInicial);
+    javaEditor_markText(llamada.lineaInicial);
 
 
     let idPadre         = getIdsAncestros().p;
@@ -251,12 +283,12 @@ function MethodOut(){
     let idMetodoActual   = getIdsAncestros().c;
     let metodo           = lstElements.getChildrenById(idMetodoActual);
     let as_metodo        = as_GetFunctionByName(metodo.name);
-
+    ///*
     if(as_metodo.lineaFinal){
         javaEditor_markClean();
         javaEditor_markText(as_metodo.lineaFinal);
     }
-
+    //*/
     if(metodo){
     	metodo.out();
     	lstIDsMetodos.children.pop();
@@ -313,6 +345,37 @@ function asignarValorVariable(instruccion){
 		variable.setTextValue(valor,siguientePaso);	
 		variable.value = valor;
     }
+}
+
+function drawIF(instruccion){
+    if(instruccion.lineaInicial){
+        javaEditor_markClean();
+        javaEditor_markText(instruccion.lineaInicial);
+    }
+
+
+    let siguientePaso   = true;
+    let idPadre         = getIdsAncestros().p;
+    let idContenedor    = getIdsAncestros().c;
+    let contenedor      = lstElements.getChildrenById(idContenedor);
+    let padre           = lstElements.getChildrenById(idPadre);
+
+    let condicional = "";
+    
+    for(let i of instruccion.condicionales){
+        if(i.symbol == 'NAME'){
+            condicional += " "+contenedor.getChildrenByName(i.string).value;
+        }else{
+            condicional += " "+i.string;
+        }
+    }
+    console.log(condicional)
+    try{
+        return eval(condicional);
+    }catch(err){
+        return false;
+    }
+
 }
 function crearArreglo(instruccion){
     javaEditor_markClean();

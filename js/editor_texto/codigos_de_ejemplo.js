@@ -50,6 +50,14 @@ var ejemploDeCodigo_04 =
         if (numero == 0){
             a = true;
             //return 1;
+            if (numero == 0){
+                a = true;
+                //return 1;
+            }
+            else{
+                a = false; 
+                //return numero * factorial(numero-1);
+            }
         }
         else{
             a = false; 

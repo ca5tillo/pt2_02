@@ -1,6 +1,5 @@
 var javaEditor    = null;
-var marcatextos_1 = null;
-var marcatextos_2 = null;
+var marcatextos   = null;
 
 function setup_javaEditor(){
 	javaEditor = CodeMirror.fromTextArea(document.getElementById("javaEditor"), {
@@ -17,7 +16,7 @@ function setup_javaEditor(){
         autofocus:false,
         gutters: ["CodeMirror-my-markers"],
     });
-    
+    marcatextos = [];
     javaEditor_extraKeys();
     $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
     javaEditor.setOption("fullScreen", Controls.fullScreen)
@@ -34,18 +33,18 @@ function setup_javaEditor(){
     //  Evento change 
     javaEditor.on("change", function(javaEditor, inputRead) {
         
-/*
-        javaEditor_clearMarkError();
-        analisisSintactico();
-        as_imprimirArbol(as_arbol);
-//*/
+    /*
+    javaEditor_clearMarkError();
+    analisisSintactico();
+    as_imprimirArbol(as_arbol);
+    //*/
 
     });
 }
 function javaEditor_setText(value){
+
 	javaEditor.setValue(value);
 }
-
 function javaEditor_addHintWords(){
 	/*Con esta linea reescribe el hintWords que hereda del mode */
     //CodeMirror.registerHelper("hintWords", "text/x-java",["for(int i = 0; i<10; i++){\n\n}","for"]);
@@ -87,21 +86,18 @@ function javaEditor_clearMarkError(){
 function javaEditor_markText(lineaI,lineaF = null){
     let _lineaF = lineaF ? lineaF : lineaI;
     //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
-    marcatextos_1 = javaEditor.markText({line: lineaI, ch: 0}, {line: _lineaF, ch: 200}, {className: "styled-background"});
-}
-function javaEditor_markText2(lineaI,lineaF = null){
-    let _lineaF = lineaF ? lineaF : lineaI;
-    //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
-    marcatextos_2 = javaEditor.markText({line: lineaI, ch: 0}, {line: _lineaF, ch: 200}, {className: "styled-background"});
+    let tem = javaEditor.markText(
+                                        {line: lineaI, ch: 0}, 
+                                        {line: _lineaF, ch: 200}, 
+                                        {className: "styled-background"});
+    marcatextos.push(tem);
 }
 function javaEditor_markClean(){
-    if(marcatextos_1 != null)
-        marcatextos_1.clear();
-    if(marcatextos_2 != null)
-        marcatextos_2.clear();
-   // javaEditor.clear ({line: linea, ch: 0}, {line: linea, ch: 200})
+    for(let i of marcatextos){
+        i.clear();
+    }
+    marcatextos = [];
 }
-
 function javaEditor_extraKeys(){
 	//  Nuevas funciones de teclado
     javaEditor.setOption("extraKeys", {
@@ -151,8 +147,6 @@ function javaEditor_extraKeys(){
         }
     });
 }
-
-
 function javaEditor_analisisLexico(){
 
     var tokens = [];

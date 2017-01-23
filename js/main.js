@@ -10,13 +10,12 @@
 \**************************************************************/
 
 window.addEventListener('load',init);
+window.addEventListener('resize', onResize, false);
 
 var main_LstPasos      = {id:0, generador:null, children:[], descripcion:"main_LstPasos"};
 var esAnimacionFluida  = false;
 var ejecutado          = false;
 var existenErrores     = false;
-
-
 
 function init(){
     setup_javaEditor();
@@ -27,7 +26,8 @@ function init(){
 
     spotLight();
     //setupAxis();
-    setupSuelo();
+    //setupSuelo();
+    addFloor();
     setupZonaLibrerias();
 
     cameraControl = new THREE.OrbitControls(camera);
@@ -39,8 +39,6 @@ function init(){
 
 
     render();
-    
-
 }
 
 function render(){   
@@ -75,8 +73,8 @@ function btn_Ejecutar(){
     esAnimacionFluida = true;
     btn_pasoApaso();
 }
-
 function btn_pausa(){
+
     esAnimacionFluida = false;
 }
 function btn_reiniciar(){
@@ -86,6 +84,7 @@ function btn_reiniciar(){
     ejecutado           = false;
     as_arbol            = null;
     as_ids              = [];
+    javaEditor_markClean();
 
     lstElements         = null; //nodo raiz
     lstIDsMetodos       = {id:0,  children:[], descripcion:"lstIDsMetodos"};
@@ -94,13 +93,12 @@ function btn_reiniciar(){
     document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
     document.getElementById("representacionarreglo1").innerHTML="";//pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
     document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", main_LstPasos, ["id","descripcion"]);
-
 }
 function btn_pasoApaso(){
     let instruccion = null;
     let tipo        = null;
+    ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;   
 
-    
     if(main_LstPasos.children.length > 0){
         instruccion = getInstruccion();
         if(instruccion){
@@ -112,16 +110,14 @@ function btn_pasoApaso(){
         ejecutado   = true;
         let main    = as_GetFunctionByName("main");
         let id      = crearMetodoMain(main);
-        main_LstPasos.children.push({id:id, generador:MainGenerador(main.hijos), children:[], descripcion:"metodo"});
+        main_LstPasos.children.push({id:id, generador:appCreateGenerador(main.hijos), children:[], descripcion:"metodo"});
     }
 
     
 
     pintarArbolDeLlamadas();
     pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
-    pintarArbol("representacionarreglo2", main_LstPasos, ["id","descripcion"]);
-
-   
+    pintarArbol("representacionarreglo2", main_LstPasos, ["id","descripcion"]);   
 }
 
 function ejecutarDibujado(instruccion){
@@ -129,7 +125,6 @@ function ejecutarDibujado(instruccion){
 
     if(      (O_o) == "ERROR_SINTACTICO"){}
     else if( (O_o) == "llamada"         ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;
 
         if(instruccion.destinoCreate){
             crearVariable_2({
@@ -144,44 +139,63 @@ function ejecutarDibujado(instruccion){
         let declaracion = as_GetFunctionByName(instruccion.name);
         let id          = llamarMetodo(instruccion, declaracion, destino);
 
-        main_LstPasos.children.push({id:id, generador:MainGenerador(declaracion.hijos),children:[], descripcion:"metodo"});
+        main_LstPasos.children.push({id:id, generador:appCreateGenerador(declaracion.hijos),children:[], descripcion:"metodo"});
 
         if(instruccion.argumentos.length > 0 ){
-            let as = {generador:MainGenerador(instruccion.argumentos),children:[], descripcion:"argumentos"}
+            let as = {generador:appCreateGenerador(instruccion.argumentos),children:[], descripcion:"argumentos"}
             main_LstPasos.children[main_LstPasos.children.length-1].children.push(as)
         }
     }
-    else if( (O_o) == "argumento"       ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "argumento"       ){    
 
         crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
     }
-    else if( (O_o) == "return_variable" ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "return_variable" ){    
 
         returnVariable(instruccion);
     }
-    else if( (O_o) == "variable"        ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "variable"        ){    
 
         crearVariable(instruccion);
     }
-    else if( (O_o) == "asignacion"      ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "asignacion"      ){    
 
         asignarValorVariable(instruccion);  
     }
-    else if( (O_o) == "arreglo"         ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "arreglo"         ){    
 
         crearArreglo(instruccion);  
     }
-    else if( (O_o) == "asignacion2"         ){
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;        
+    else if( (O_o) == "asignacion2"         ){    
 
         asignacion2(instruccion);  
     }
+    else if( (O_o) == "Condicional_if"         ){    
+        let resultado = drawIF(instruccion);
+        if(resultado){
+            
+            instruccion.evaluadoEn = true;
+            let as = {generador:appCreateGenerador(instruccion.hijos),children:[], descripcion:"if"}
+            main_LstPasos.children[main_LstPasos.children.length-1].children.push(as)
+        }else{
+            instruccion.evaluadoEn = false;
+        }
+        ctrl_fun_Activa__PorPaso();
+        
+    }
+    else if( (O_o) == "Condicional_else"         ){    
 
+        if( ! instruccion.hermanoMayor.evaluadoEn){
+            let as = {generador:appCreateGenerador(instruccion.hijos),children:[], descripcion:"else"}
+            main_LstPasos.children[main_LstPasos.children.length-1].children.push(as)
+        }else{
+
+        }
+        ctrl_fun_Activa__PorPaso();
+    }else{        
+        alert("Error en tiempo de ejecucion");
+        btn_reiniciar()
+    }
 }
 function getInstruccion(){
     let i = null;
@@ -206,33 +220,6 @@ function getInstruccion(){
     }
     return i;
 }
-
-
-
-
-
-//PARA BUSCAR UNA FUNCION EN EL ARBOL SINTACTICO
-
-function as_GetFunctionByName(nodoNombre){
-    //http://jsfiddle.net/dystroy/MDsyr/
-    let getSubMenuItem = function (subMenuItems, nodoNombre) {
-        if (subMenuItems) {
-            for (let i = 0; i < subMenuItems.length; i++) {
-                if (subMenuItems[i].reglaP == "metodo" && subMenuItems[i].name == nodoNombre ){
-                    return subMenuItems[i];
-                };
-                let found = getSubMenuItem(subMenuItems[i].hijos, nodoNombre);
-                if (found) return found;
-            }
-        }
-    };
-
-    let searchedItem = getSubMenuItem([as_arbol], nodoNombre) || null;
-    return searchedItem;
-}
-
-
-
 
 
 
@@ -307,3 +294,17 @@ function pintarArbol(destino, arbol, items){
 
     }
 }
+
+
+
+
+
+
+var yakarta = {};
+yakarta.name = "Miguel";
+class test {
+    static te(){
+        return yakarta.name;
+    }
+}
+

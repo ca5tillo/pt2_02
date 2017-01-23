@@ -1,6 +1,6 @@
 
 
-function *MainGenerador(arr){ for(let i of arr){ yield i; } }
+function *appCreateGenerador(arr){ for(let i of arr){ yield i; } }
 function *GenerateID   (){var i = 0;while(true){yield i;i++;}}
 
 
@@ -14,16 +14,18 @@ function getElementLibByName(name){
     return x;
 }
 
-/*
-Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
-Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
-que FUNCIONES usaran de los helpers de dibujado
 
-Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
-el ** guionDePreCompilacion **
-*/
 function crearGuionPrecompilacion(){
     //http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
+
+    /*
+    Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
+    Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
+    que FUNCIONES usaran de los helpers de dibujado
+
+    Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
+    el ** guionDePreCompilacion **
+    */
     _run = function (){
         for(let i = 0; i < _guion.length; i++){
             self[   _guion[i].metodo    ] (_guion[i].parametro,i,_guion.length-1);

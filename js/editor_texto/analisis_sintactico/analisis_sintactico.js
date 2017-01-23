@@ -44,6 +44,9 @@ class ASElemento  {
         this.expresion                  = ""; //para las operaciones matematicas Ej.i = 5+92;
         this.resultado                  = ""; //para las operaciones matematicas Ej.i = 5+92;
 
+        this.condicionales              = null; // para los if
+        this.evaluadoEn                 = null; //para los if 
+
         this.tipoDeDato = "";// si es variable
         this.valor = "";// si es variable
         this.static = false;
@@ -90,8 +93,8 @@ function analisisSintactico(){
 	    if(   (i.symbol == "LBRACE"    && !isArray)
 	        ||(i.symbol == "SEMICOLON" && !isFor)
 	        ){
-	        let obj = _reglasProduccion(str, lst_token);  
-            _addNodo(obj);
+	        let obj = _as_reglasProduccion(str, lst_token);  
+            _as_addNodo(obj);
             if(! obj.isNodoFinal){as_ids.push(obj.id);}
 	       
 	        
@@ -108,7 +111,7 @@ function analisisSintactico(){
                     error.reglaP             = "ERROR_SINTACTICO";
                     error.lineaInicial       = lst_token[0].line;
                     error.lineaFinal         = lst_token[lst_token.length-1].line;
-                _addNodo(error);
+                _as_addNodo(error);
             }
 	        _as_finalizarRama(i);// tambien disminuye en uno al as_nivelAnidamiento
 
@@ -123,9 +126,8 @@ function analisisSintactico(){
 	}
 	//*/
 	return as_arbol;
-
 }
-function _reglasProduccion(str, arr){
+function _as_reglasProduccion(str, arr){
     //console.log("*********************************************************");
     //console.log(str_dev);
     //console.log(str);
@@ -151,11 +153,11 @@ function _reglasProduccion(str, arr){
     		temporalcontador+=1;
     	}	
     }
-    
+    /*    
     console.log("*********************************************************");
     console.log(dev_frase);
     console.log(str);
-
+    //*/
 
      /*    RECONOCIENDO DEFINICION DE CLASE                                    */
     if( _RE_ = str.match(RE_DEF_CLASE) ){
@@ -280,7 +282,7 @@ function _reglasProduccion(str, arr){
 
         obj.type             = _RE_[2];
         obj.name             = strmap.NAME;
-        obj.hijos            = _getContenidoArreglo(arr, obj, obj.type, obj.name);
+        obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
 
         obj.lineaInicial = arr[0].line;
         return obj; 
@@ -314,14 +316,10 @@ function _reglasProduccion(str, arr){
     /*    RECONOCIENDO IF*/
     if( _RE_ = str.match(RE_IF)                 ){
         let obj              = new ASElemento();
-        console.log(_RE_)
-        console.log(strmap)
-      
-
         obj.reglaP           = "Condicional_if";
         obj.name             = strmap.IF;
     
-
+        obj.condicionales    = _as_getCondicionales(arr);
 
         obj.lineaInicial     = arr[0].line;
         obj.lineaFinal       = arr[arr.length-1].line;
@@ -329,24 +327,47 @@ function _reglasProduccion(str, arr){
         obj.isNodoFinal     = false;
         return obj; 
     }
-    /*    RECONOCIENDO ELSE*/
+     /*    RECONOCIENDO ELSE*/
     if( _RE_ = str.match(RE_ELSE)                 ){
+        /*  Else solo es valido se es precedido de un if  */
         let obj              = new ASElemento();
-        console.log(_RE_)
-        console.log(strmap)
+
+
+        let padre            = as_GetElementById(as_ids[as_ids.length-1]);
+        let nodoAnterior     = padre.hijos[padre.hijos.length-1];
+        ///*
+        if(nodoAnterior.reglaP == "Condicional_if"){
+
+            obj.reglaP           = "Condicional_else";
+            obj.name             = strmap.ELSE;
+            obj.hermanoMayor     = nodoAnterior;
+        
+            obj.lineaInicial     = arr[0].line;
+            obj.lineaFinal       = arr[arr.length-1].line;
+
+            obj.isNodoFinal     = false;
+            return obj; 
+
+
+        }else{
+            /* si este ELSE no precede de un if se crea un error 
+               se deja en nodoNOfinal ya que el analizador continua y 
+               al encontrar } (llave de cierre) Cerraria el ultimo
+               nodo no final */
+            let error = new ASElemento();
+                error.reglaP             = "ERROR_SINTACTICO";
+                error.lineaInicial       = arr[0].line;
+                error.lineaFinal         = arr[arr.length-1].line;
+
+                error.isNodoFinal        = false;
+            return error;
+        }
+        //*/      
       
 
-        obj.reglaP           = "Condicional_if";
-        obj.name             = strmap.ELSE;
+    }
     
 
-
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
-
-        obj.isNodoFinal     = false;
-        return obj; 
-    }
     
 
 
@@ -388,12 +409,10 @@ function _reglasProduccion(str, arr){
 
     return error;
 }
-
-/*
-    return un array basio o con argumentos
-*/
 function _as_getArgumentos(arr, name){
-
+    /*
+ los argumentos aparecen en los llamados a procedimientos.
+    */
     let strmap            = {};
     let insertinparam = false;
 
@@ -428,7 +447,9 @@ function _as_getArgumentos(arr, name){
     return lstArgumentos;
 }
 function _as_getParametros(arr){
-
+    /*
+ los parámetros aparecen en la definición del procedimiento.
+    */
     let strmap            = {};
     let insertinparam = false;
 
@@ -462,7 +483,7 @@ function _as_getParametros(arr){
 
     return lstParametros;
 }
-function _getContenidoArreglo(arr,padre,type,nombre){
+function _as_getContenidoArreglo(arr,padre,type,nombre){
 	let str = "";
 	let parametros = [];
     let insertinparam = false;
@@ -499,15 +520,28 @@ function _getContenidoArreglo(arr,padre,type,nombre){
     }
     return hijos;
 }
+function _as_getCondicionales(arr){
+    let insertinparam = false;
+    let lstParametros = [];
 
-function _addNodo(hijo){
+    for(let i of arr){
+        if(i.symbol == "RPAREN")insertinparam=false;
+        if(insertinparam){
+            lstParametros.push(i);
+        }
+        if(i.symbol == "LPAREN")insertinparam=true;
+    }
+    
+
+    return lstParametros;
+}
+function _as_addNodo(hijo){
     let u        = as_ids.length-1;
     let padre    = as_GetElementById(as_ids[u]);
 
     hijo.idPadre = padre.id;
     hijo.padre   = padre;
     padre.hijos.push(hijo);
-
 }
 function _as_finalizarRama(rbrace){
     let u        = as_ids.length-1;
@@ -515,9 +549,7 @@ function _as_finalizarRama(rbrace){
 
     padre.lineaFinal = rbrace.line;
     as_ids.pop();
-    
 }
-
 function as_imprimirArbol(nodo){
 
     _createLista = function (nodo){
@@ -553,8 +585,6 @@ function as_imprimirArbol(nodo){
         createInputs: "radio",
         idAttribute: 'id'
     });
-
-
 }
 function as_infoNodo(ev){
     let id = ev.target.value;
@@ -566,7 +596,6 @@ function as_infoNodo(ev){
     }
     textito += `</table>`;
     $('#infonodo_as').html(textito);
-
 }
 function as_GetElementById(id){
     //http://jsfiddle.net/dystroy/MDsyr/
@@ -585,22 +614,22 @@ function as_GetElementById(id){
     let searchedItem = getSubMenuItem([as_arbol], id) || null;
     return searchedItem;
 }
+function as_GetFunctionByName(nodoNombre){
+    //http://jsfiddle.net/dystroy/MDsyr/
+    let getSubMenuItem = function (subMenuItems, nodoNombre) {
+        if (subMenuItems) {
+            for (let i = 0; i < subMenuItems.length; i++) {
+                if (subMenuItems[i].reglaP == "metodo" && subMenuItems[i].name == nodoNombre ){
+                    return subMenuItems[i];
+                };
+                let found = getSubMenuItem(subMenuItems[i].hijos, nodoNombre);
+                if (found) return found;
+            }
+        }
+    };
 
-function as_imprimirArbolConsola(O_o){
-    console.log(
-
-        O_o.id,
-        ",",
-        O_o.idPadre,
-    	"    ".repeat(O_o.nivelAnidamiento),
-    	O_o.tipo,
-    	O_o.name,
-    	O_o.valor,
-    	O_o.parametros
-    	);
-    for(let i of O_o.hijos){
-        as_imprimirArbol(i);
-    }
+    let searchedItem = getSubMenuItem([as_arbol], nodoNombre) || null;
+    return searchedItem;
 }
 
 

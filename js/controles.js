@@ -54,6 +54,18 @@ var Controls = {
                 javaEditor_setText(ejemploDeCodigo_02);
             }
         },
+        Ejemplo_03:function (){
+            if(isActive_ctrl_Ejemplos){                
+                ctrl_fun_Reiniciar();
+                javaEditor_setText(ejemploDeCodigo_03);
+            }
+        },
+        Ejemplo_04:function (){
+            if(isActive_ctrl_Ejemplos){                
+                ctrl_fun_Reiniciar();
+                javaEditor_setText(ejemploDeCodigo_04);
+            }
+        },
 
 
         fullScreen: true,
@@ -65,7 +77,10 @@ var Controls = {
         a1:false,
         a2:false,
         a3:false,
-message: 'Hello World',
+message: function (){
+console.log(test.te())
+
+},
     };
 
 function ctrl_fun_ActivaControles() {
@@ -160,7 +175,7 @@ function setupControls(){
     $(".dg.ac").css( "z-index", "9" );
 
 
-
+gui.add(Controls,'message');
 
 /***************************************************************************************************/
     let f1               = gui.addFolder('Animacion');
@@ -202,7 +217,9 @@ function setupControls(){
 /***************************************************************************************************/
     let f2 = gui.addFolder('Ejemplos');
 	    ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_01'));
-	    ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_02'));
+        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_02'));
+        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_03'));
+        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_04'));
 
     for(let i of ctrl_Ejemplos){
         i.__li.setAttribute       ("style", "border-left: 3px solid green;");
