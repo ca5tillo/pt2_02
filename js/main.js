@@ -185,6 +185,9 @@ function ejecutarDibujado(instruccion){
             instruccion.evaluadoEn = false;
         }
         ctrl_fun_Activa__PorPaso();
+        if(esAnimacionFluida){
+            btn_pasoApaso();
+        }
         
     }
     else if( (O_o) == "Condicional_else"         ){    

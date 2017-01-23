@@ -96,7 +96,7 @@ class Element{
                 let textGeo = new THREE.TextGeometry( txt, {
                     font: response,
                     size: TAM_GRAL/6,
-                    height: TAM_GRAL/20
+                    height: (TAM_GRAL/20)/2
                 });
                 //textGeo.center();
                 textGeo.computeBoundingBox();
@@ -177,7 +177,7 @@ class Element{
                 let textGeo = new THREE.TextGeometry( txt, {
                     font: response,
                     size: TAM_GRAL/6,
-                    height: TAM_GRAL/20
+                    height: (TAM_GRAL/20)/2
                 });
                 textGeo.computeBoundingBox();
                 textGeo.computeVertexNormals();
