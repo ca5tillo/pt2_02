@@ -33,7 +33,9 @@ class MetodoMain extends Element{
 
 				    });
 	    let scale = new TWEEN.Tween(_this.cube.scale)
-				    .to({ x:R01.METODO_SCALE_X,Y:R01.METODO_SCALE_Y,z: R01.METODO_SCALE_Z,}, Controls.velocidad/2)
+				    .to({ x: R01.METODO_SCALE_X,
+				    	  y: R01.METODO_SCALE_Y,
+				    	  z: R01.METODO_SCALE_Z,}, Controls.velocidad/2)
 				    .easing(TWEEN.Easing.Quadratic.In)
 				    .onComplete(function () {    
 				        let siguientePaso = true;

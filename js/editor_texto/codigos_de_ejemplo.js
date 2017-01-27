@@ -14,8 +14,24 @@ var ejemploDeCodigo_01 =
     }
 }`;
 
-
 var ejemploDeCodigo_02 =
+`public class MyClass {
+    public static void metodo3(){
+        
+    }
+    public static void metodo(){
+        metodo3();
+    }
+    public static int pasoParametros(){
+
+        metodo();
+    }
+    public static void main() {
+        pasoParametros();
+         
+    }
+}`;
+var ejemploDeCodigo_02e =
 `public class MyClass {
     public static void metodo(){
         int a = 9;

@@ -37,6 +37,7 @@ var MyThreeJS = {
 	    this.camera.lookAt(this.scene.position);
 
 	    this.cameraControl = new THREE.OrbitControls(this.camera);
+	    this.cameraControl.enabled = false;   // Inicia desactivado
 	    /*
 	    this.cameraControl.minDistance = TAM_GRAL*6;
 	    this.cameraControl.maxPolarAngle = Math.PI * 0.5;
@@ -50,6 +51,14 @@ var MyThreeJS = {
 	    this.renderer.setPixelRatio( window.devicePixelRatio );
 
 	    document.getElementById("representacion_3D").appendChild(this.renderer.domElement);
+	},
+	'enableCameraControl' : function(){
+		this.cameraControl.enabled = true;
+	},
+	'disableCameraControl' : function(){
+		//http://stackoverflow.com/questions/16525043/reset-camera-using-orbitcontrols-js
+	    this.cameraControl.enabled = false;
+		this.cameraControl.reset();	 
 	},
 	'loadFont' 		: function(){
 		let loader = new THREE.FontLoader();

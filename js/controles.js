@@ -68,7 +68,7 @@ var Controls = {
         },
 
 
-        fullScreen: false,
+        fullScreen: true,
         Opacidad:0,
 
 

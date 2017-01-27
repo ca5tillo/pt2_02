@@ -2,24 +2,21 @@ class Metodo extends Element{
 	constructor(llamada,declaracion){
 		super();	
 
-
-        this._idPadre               =  getIdsAncestros().p;
-		this._idContenedor          =  getIdsAncestros().c;
+        this._idPadre               =  R01.getIdsAncestros().p;
+		this._idContenedor          =  R01.getIdsAncestros().c;
 		this._name                  = `${declaracion.name}`;	
 		this._returnA				= `${declaracion.returnA}`;	
 
-		
+		this.cube.material.opacity = 1;
+        this.cube.material.visible = true;
 	}
-	get returnA(){
-		return this._returnA;
-	}
-	set returnA(destino){
-		this._returnA = destino;
-	}
+	set returnA(d){ this._returnA = d;    }
+	get returnA( ){ return this._returnA; }
+
 	_getLibBy_idAS(idAS){
 		/*Ya que son metodos estaticos necesito conoser la posicion de la libreria*/
 		let x = null;
-	    for(let i of lstElements.children){
+	    for(let i of R01.lstElements.children){
 	        if (i.idAS == idAS)
 	            x = i;
 	    }
@@ -28,47 +25,57 @@ class Metodo extends Element{
 	in(declaracion){
 			
 		let _this    = this;
-	    let cubo     = _this.cube;
-	    let element  = _this.element;
-	    let libreria = _this._getLibBy_idAS(declaracion.idPadre).element;
-	
+		/*
+			https://github.com/mrdoob/three.js/issues/2967
+			http://stackoverflow.com/questions/22881676/what-is-the-equivalent-of-camera-matrixworld-getposition-x-using-the-getpositi
+		*/
+		let libreria_WorldPosition   = new THREE.Vector3();
+		let contenedor_WorldPosition = new THREE.Vector3();
+		let Yopli__ = new THREE.Vector3();
+
+		libreria_WorldPosition.setFromMatrixPosition  ( _this._getLibBy_idAS(declaracion.idPadre).element.matrixWorld )
+    	contenedor_WorldPosition.setFromMatrixPosition( R01.lstElements.getChildrenById(this._idContenedor).element.matrixWorld )
+    	Yopli__.setFromMatrixPosition(_this.element.matrixWorld);
+    	console.log("libreria_WorldPosition",libreria_WorldPosition);
+    	console.log("contenedor_WorldPosition",contenedor_WorldPosition);
+    	console.log("Yopli__",Yopli__);
+    
+		let xi = (this.element.position.x - contenedor_WorldPosition.x)+(libreria_WorldPosition.x);
+		let yi = (this.element.position.y - contenedor_WorldPosition.y)+(libreria_WorldPosition.y);
+		let zi = (this.element.position.z - contenedor_WorldPosition.z)+(libreria_WorldPosition.z);
 
 	    // cambiamos el punto de origen ya que son metodos estaticos que se llaman desde su libreria
-	    element.position.set(libreria.position.x,libreria.position.y,libreria.position.z);
+	    this.element.position.set(xi,yi,zi);
 
-	    //solo si es main se encuentra en el area de las librerias ya q se genera la instancia en el metodo q lo llama 
-	    var tweenA = new TWEEN.Tween(element.position)
-	    .to({ x: 0 + TAM_GRAL*2, 
-	          y: 0 + TAM_GRAL*2, 
-	          z: 0 + TAM_GRAL*2 
-	      }, Controls.velocidad)
-	    .easing(TWEEN.Easing.Quadratic.In)
-	    .onStart(function (){
-	        cubo.material.opacity = 1;
-	        cubo.material.visible = true;
-	    })
-	    .onComplete(function () {
+	    var position = new TWEEN.Tween(this.element.position)
+		    .to({ x: 0, 
+		          y: 0 + Config_R01.TAM_GRAL*2, 
+		          z: 0 + Config_R01.TAM_GRAL*2 
+		      }, Controls.velocidad)
+		    .easing(TWEEN.Easing.Quadratic.In)
+		    .onStart(function (){})
+		    .onComplete(function () {});
 
-	    });
+	    var scale = new TWEEN.Tween(this.cube.scale)
+		    .to({ x: R01.METODO_SCALE_X,
+		    	  y: R01.METODO_SCALE_Y,
+		    	  z: R01.METODO_SCALE_Z,}, Controls.velocidad/2)
+		    .easing(TWEEN.Easing.Quadratic.In)
+		    .onComplete(function () {    
+		        let siguientePaso = true;
+		        let animar        = false;
+		        _this.setTextName(_this.name, siguientePaso, animar); 
+		    });
 
-	    var tweenB = new TWEEN.Tween(cubo.scale)
-	    .to({ x:METODO_SCALE_X,Y:METODO_SCALE_Y,z: METODO_SCALE_Z,}, Controls.velocidad/2)
-	    .easing(TWEEN.Easing.Quadratic.In)
-	    .onComplete(function () {    
-	        let siguientePaso = true;
-	        let animar        = false;
-	        _this.setTextName(_this.name, siguientePaso, animar);   
-	    });
-
-	    tweenA.chain(tweenB);
-	    tweenA.start();   
+	    position.chain(scale);
+	    position.start();   
 	
 
 	}
 	out(){
 
 
-	    let padre    = lstElements.getChildrenById(this.idPadre);
+	    let padre    = R01.lstElements.getChildrenById(this.idPadre);
 	    let metodo   = this;
 	    let hijos    = metodo.children;
 	    let cube     = metodo.cube;
@@ -99,11 +106,7 @@ class Metodo extends Element{
 	        pintarArbolDeLlamadas();
 
 	  
-            if(Main.esAnimacionFluida){
-                Main.pasoApaso();
-            }else{
-                ctrl_fun_Activa__PorPaso();
-            }
+            Main.TriggerNextStep();
         
 
 	    });

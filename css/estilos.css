@@ -76,12 +76,15 @@ body {
 
 
 #editor{
-    position : absolute;
-    width    : 400px;
+    position : absolute;   
     height   : 100%;
     border   : solid 1px #fff;
 }
 
+
+.CodeMirror-selected  { background-color:transparent !important;}/*Remplazando el estilo original*/
+
+.CodeMirror-selectedtext { background-color: #49483E !important;}/*Clase nueva, estilo para este tema*/
 
 /**************************************************
 *  CodeMirror Base
@@ -93,6 +96,9 @@ body {
 /*  icono de error y tooltop sobre el icono  */
     .CodeMirror-my-markers{
         width: 6px;
+    }
+    .CodeMirror-my-mark-error.lock{
+        color: orange;
     }
     .CodeMirror-my-mark-error {
         position: relative;

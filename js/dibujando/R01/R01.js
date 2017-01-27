@@ -80,6 +80,29 @@ var R01 = {
         element.in(declaracion);
         return element.id;
     },
+    llamarMetodo           : function(llamada, declaracion, destino){
+        /*javaEditor_markText_Clean();
+        javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
+        javaEditor_markText(llamada.lineaInicial);*/
+
+
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let element         = new Metodo(llamada,declaracion);
+            element.returnA = destino;
+
+        this._lstIDsMetodos.children.push({id:element.id, children:[], descripcion:"metodo"});
+
+        padre.children.push(element);
+        padre.sons.add(element.element);
+
+        element.in(declaracion);
+
+        return element.id;
+    },
     crearVariable          : function(instruccion){
         /*  Para Representar :
             int     a;
@@ -109,7 +132,7 @@ var R01 = {
             // Error en tiempo de ejecucion
         }
     },
-    crearArreglo  :function(instruccion){
+    crearArreglo           :function(instruccion){
         let _crearArregloValor = function(instruccion, TriggerNextStep = false){
             
             let idPadre         = R01.getIdsAncestros().p;
@@ -144,7 +167,7 @@ var R01 = {
         }
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
     },
-    MethodOut  : function(){
+    MethodOut              : function(){
         let idMetodoActual   = this.getIdsAncestros().c;
         let metodo           = this.lstElements.getChildrenById(idMetodoActual);
 
@@ -152,6 +175,61 @@ var R01 = {
             metodo.out();
             this._lstIDsMetodos.children.pop();
             Main.lstPasos.children.pop();
+        }
+    },
+    crearVariable_2        : function(instruccion){
+        /*
+            existe ya que en la exppresion 
+                int e = otroMetodo(a, b, b);
+            se crea una variable y al mismo tiempo se llama al metodo 
+            en modo fluido las dos llamaban al siguiente paso y eso creaba conflicto 
+            con esta funcion el crear la variable ya no llama al siguiente paso 
+        */       
+        let idPadre         = this.getIdsAncestros().p;
+        let padre           = this.lstElements.getChildrenById(idPadre);
+        let element         = new Variable(instruccion);
+        let TriggerNextStep = false;
+
+        padre.children.push(element);
+        padre.sons.add(element.element);
+
+        element.in(TriggerNextStep);
+    },
+    crearParametros        : function(argumento, parametros){
+        /*if(instruccion.lineaInicial){
+            javaEditor_markText_Clean();
+            javaEditor_markText(instruccion.lineaInicial);
+        }//*/
+
+
+        let idContenedor    = this.getIdsAncestros().c;
+
+        let metodoDestino   = this.lstElements.getChildrenById(idContenedor);
+        let metodoOrigen    = this.lstElements.getChildrenById(metodoDestino.idContenedor);
+        let elementoOrigen  = null;
+        let valor           = "";
+        let indice          = metodoDestino.children.length;
+        let element         = null;
+
+        if(argumento.type == "NAME"){
+            elementoOrigen  = metodoOrigen.getChildrenByName(argumento.value,true);
+        }else{
+            valor = argumento.value;
+        }
+
+        if(elementoOrigen){
+            let ins = {name:parametros[indice].name,value:elementoOrigen.value, type:parametros[indice].type};
+            element  = new VariablePorParametro(ins);
+            metodoDestino.children.push(element);
+            metodoDestino.sons.add(element.element);
+            element.in(ins,elementoOrigen.element);
+
+        }else{
+            let ins = {name:parametros[indice].name,value:valor, type:parametros[indice].type};
+            element  = new Variable(ins);
+            metodoDestino.children.push(element);
+            metodoDestino.sons.add(element.element);
+            element.in();
         }
     }
 
@@ -279,69 +357,11 @@ function createText(sa) {
 
 
 
-function llamarMetodo(llamada, declaracion, destino){
-    javaEditor_markClean();
-    javaEditor_markText(declaracion.lineaInicial, declaracion.lineaFinal);
-    javaEditor_markText(llamada.lineaInicial);
 
 
-    let idPadre         = getIdsAncestros().p;
-    let idContenedor    = getIdsAncestros().c;
-    let contenedor      = lstElements.getChildrenById(idContenedor);
-    let padre           = lstElements.getChildrenById(idPadre);
-
-    let element   = new Metodo(llamada,declaracion);
-        element.returnA = destino;
-
-    lstIDsMetodos.children.push({id:element.id, children:[], descripcion:"metodo"});
-
-    padre.children.push(element);
-    padre.sons.add(element.element);
-
-    element.in(declaracion);
-
-    return element.id;
-}
-function crearParametros(argumento, parametros){
-    /*if(instruccion.lineaInicial){
-        javaEditor_markClean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }//*/
-
-
-    let idContenedor    = getIdsAncestros().c;
-
-    let metodoDestino   = lstElements.getChildrenById(idContenedor);
-    let metodoOrigen    = lstElements.getChildrenById(metodoDestino.idContenedor);
-    let elementoOrigen  = null;
-    let valor           = "";
-    let indice          = metodoDestino.children.length;
-    let element         = null;
-
-    if(argumento.type == "NAME"){
-        elementoOrigen  = metodoOrigen.getChildrenByName(argumento.value,true);
-    }else{
-        valor = argumento.value;
-    }
-
-    if(elementoOrigen){
-        let ins = {name:parametros[indice].name,value:elementoOrigen.value, type:parametros[indice].type};
-        element  = new VariablePorParametro(ins);
-        metodoDestino.children.push(element);
-        metodoDestino.sons.add(element.element);
-        element.in(ins,elementoOrigen.element);
-
-    }else{
-        let ins = {name:parametros[indice].name,value:valor, type:parametros[indice].type};
-        element  = new Variable(ins);
-        metodoDestino.children.push(element);
-        metodoDestino.sons.add(element.element);
-        element.in(ins);
-    }
-}
 function returnVariable(instruccion){
     if(instruccion.lineaInicial){
-        javaEditor_markClean();
+        javaEditor_markText_Clean();
         javaEditor_markText(instruccion.lineaInicial);
     }
 
@@ -363,7 +383,7 @@ function returnVariable(instruccion){
 }
 function returnNum(instruccion){
     if(instruccion.lineaInicial){
-        javaEditor_markClean();
+        javaEditor_markText_Clean();
         javaEditor_markText(instruccion.lineaInicial);
     }
 
@@ -385,7 +405,7 @@ function returnNum(instruccion){
 }
 function asignacion2(instruccion){
     if(instruccion.lineaInicial){
-        javaEditor_markClean();
+        javaEditor_markText_Clean();
         javaEditor_markText(instruccion.lineaInicial);
     }
 
@@ -426,32 +446,12 @@ function asignacion2(instruccion){
 }
 
 
-function crearVariable_2(instruccion){
-    /*existe ya que en la exppresion 
-            int e = otroMetodo(a, b, b);
-      se crea una variable y al mismo tiempo se llama al metodo 
-      en modo fluido las dos llamaban al siguiente paso y eso creaba conflicto 
-      con esta funcion el crear la variable ya no llama al siguiente paso 
-    */
-    if(instruccion.lineaInicial){
-        javaEditor_markClean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }
 
-    let idPadre  = getIdsAncestros().p;
-    let padre    = lstElements.getChildrenById(idPadre);
-    let element  = new Variable(instruccion);
-
-    padre.children.push(element);
-    padre.sons.add(element.element);
-
-    element.in2(instruccion);
-}
 
 
 function drawIF(instruccion){
     if(instruccion.lineaInicial){
-        javaEditor_markClean();
+        javaEditor_markText_Clean();
         javaEditor_markText(instruccion.lineaInicial);
     }
 
@@ -481,7 +481,7 @@ function drawIF(instruccion){
 }
 
 function crearArregloValor(instruccion){
-    //javaEditor_markClean();
+    //javaEditor_markText_Clean();
     //javaEditor_markText(instruccion.lineaInicial);
 
 }
@@ -531,7 +531,7 @@ function crearFOR(my_padre,lineaInicial){
     setupText(dibujitos,"for()",true,false);
 
 
-    javaEditor_markClean();
+    javaEditor_markText_Clean();
     javaEditor_markText(lineaInicial);
 }
 function eliminarFor(my_padre){
@@ -549,7 +549,7 @@ function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
     dibujitos.remove(textito);
     setupText(dibujitos,valor,true,true);
 
-    javaEditor_markClean();
+    javaEditor_markText_Clean();
     javaEditor_markText(lineaInicial);
    // console.log(A_quien,valor,dibujitos,textito);
 }

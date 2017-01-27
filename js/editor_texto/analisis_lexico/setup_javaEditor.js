@@ -11,13 +11,12 @@ function setup_javaEditor(){
         lineNumbers: true,
         matchBrackets: true,
         autoCloseBrackets: true,
-        //styleActiveLine: true,
-        styleSelectedText: true,
+        styleActiveLine: true,//Resalta la linea activa (solo donde esta el prom o puntero)
+        styleSelectedText: "CodeMirror-selectedtext",
         mode: {name: "text/x-java",number:/^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)/i},
         theme: 'monokai',
         autofocus:false,
         gutters: ["CodeMirror-my-markers"],
-        resetSelectionOnContextMenu:false,
         readOnly:false,
     });
     /*
@@ -26,6 +25,9 @@ function setup_javaEditor(){
         onContextMenu  :   Es presionar el boton derecho del mouse
 
         Codemirror valida este evento para un uso posterior, no se cual   
+
+        https://codemirror.net/mode/htmlmixed/index.html
+        selecciona parte del texto y da clic derecho y muestra un menu para copiar cortar ...
 
         Estoy sobrescribiendo el metodo a una funcion vacia, ya que 
         causaba conflicto con orbilControl de THREE.JS,
@@ -37,22 +39,17 @@ function setup_javaEditor(){
     
     javaEditor_extraKeys();
 
-
-
     //  Evento inputRead que se desencadena con nuevas entradas 
     javaEditor.on("inputRead", function(javaEditor, inputRead) {
         //console.log(javaEditor.getTokenAt(javaEditor.getCursor()));
         //  Si no existen espacios en blanco muestra el autocompletador
         if(javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(' ') == -1 && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(';') == -1){
-            javaEditor.showHint({completeSingle: false});
+            javaEditor.showHint({completeSingle: true});
         }
     });
     //  Evento change 
     javaEditor.on("change", function(javaEditor, inputRead) {    
         Main.analizarCodigoFuente();
-    });
-    javaEditor.on("contextmenu", function(javaEditor, inputRead) {    
-        console.log("contextmenu")
     });
 
     
@@ -60,11 +57,34 @@ function setup_javaEditor(){
     $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
 }
 function javaEditor_setText(value){
-
 	javaEditor.setValue(value);
-    //javaEditor.setOption("readOnly","nocursor")
+}
+function javaEditor_enableReadOnly(){
+    function _makeMarker() {
+        var marker        = document.createElement("div");
+        let tooltip       = document.createElement("div");
+        let tooltiptext   = document.createTextNode("Modo Solo Lectura"); 
+
+        marker.className  = "CodeMirror-my-mark-error lock fa fa-lock";
+        tooltip.className = "CodeMirror-my-mark-tooltiptext";
+
+        tooltip.appendChild(tooltiptext);  
+        marker.appendChild(tooltip);  
+
+        return marker;
+    }
+    javaEditor.setOption("readOnly","nocursor");
+    javaEditor.setGutterMarker(0, "CodeMirror-my-markers", _makeMarker());
+    javaEditor.setOption("styleActiveLine",false);
+    javaEditor.setOption("styleSelectedText",false);
 
     
+
+}
+function javaEditor_disableReadOnly(){
+    javaEditor.setOption("readOnly",false);
+    javaEditor.setOption("styleActiveLine",true);
+    javaEditor.setOption("styleSelectedText","CodeMirror-selectedtext");
 }
 function javaEditor_addHintWords(){
 	/*Con esta linea reescribe el hintWords que hereda del mode */
@@ -110,7 +130,7 @@ function javaEditor_markText_InstuccionSiguiente(lineaI,lineaF = null){
                                     {line: lineaI, ch: 0}, 
                                     {line: _lineaF, ch: 200}, 
                                     {className: "EditorTooltipMarcatexto siguiente_instruccion",
-                                     css:"color: #fe3; background: #314151;",
+                                     css:"background: #ffa2ab; color: #000; ",
                                      title:"Se ejecutara en el siguiente paso.",
                                     });
 
@@ -124,13 +144,13 @@ function javaEditor_markText_InstuccionActual(lineaI,lineaF = null){
                                     {line: lineaI, ch: 0}, 
                                     {line: _lineaF, ch: 200}, 
                                     {className: "EditorTooltipMarcatexto",
-                                     css:"color: #000; background: red;",
+                                     css:"background: orange; color: #000; ",
                                      title:"Instruccion ejecutada.",
                                     });
 
     _marcatextos.push(tem);
 }
-function javaEditor_markClean(){
+function javaEditor_markText_Clean(){
     for(let i of _marcatextos){
         i.clear();
     }

@@ -235,7 +235,6 @@ function _as_reglasProduccion(str, arr){
         obj.lineaFinal       = arr[arr.length-1].line;
         return obj; 
     }
-
     /*    RECONOCIENDO LLAMADA A METODO*/
     if( _RE_ = str.match(RE_LLAMADA_FUNCION)){
         let obj              = new ASElemento();
@@ -245,6 +244,7 @@ function _as_reglasProduccion(str, arr){
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
         
         obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
         
         return obj; 
     }
@@ -272,10 +272,15 @@ function _as_reglasProduccion(str, arr){
         obj.destinoName      = strmap.NAME; // destino al hacer return 
         obj.name             = strmap.NAME_0;
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
+
         obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
 
         return obj; 
     }
+
+
+
     /*    RECONOCIENDO RETURN VARIABLE*/
     if( _RE_ = str.match(RE_RETURN_VARIABLE)){
         let obj              = new ASElemento();
@@ -410,7 +415,7 @@ function _as_reglasProduccion(str, arr){
 }
 function _as_getArgumentos(arr, name){
     /*
- los argumentos aparecen en los llamados a procedimientos.
+ los argumentos aparecen en las llamados a procedimientos.
     */
     let strmap            = {};
     let insertinparam = false;
@@ -432,6 +437,10 @@ function _as_getArgumentos(arr, name){
 
 
                 let modelArgumento = new ASArgumento(_re[1], strmap[_re[1]], name);
+                /*
+                modelArgumento.lineaInicial       = arr[0].line;
+                modelArgumento.lineaFinal         = arr[arr.length-1].line;
+                */
                 lstArgumentos.push(modelArgumento);
                 str="";
                 strmap={};

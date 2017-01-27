@@ -28,26 +28,24 @@ var Main = {
     },
     analizarCodigoFuente   : function(){
         javaEditor_clearMarkError();
-        javaEditor_markClean();
+        javaEditor_markText_Clean();
         analisisSintactico();
         as_imprimirArbol(as_arbol);
     },
     precompilacion         : function(){
         //http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
-
         /*
-        Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
-        Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
-        que FUNCIONES usaran de los helpers de dibujado
+            Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
+            Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
+            que FUNCIONES usaran de los helpers de dibujado
 
-        Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
-        el ** guionDePreCompilacion **
+            Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
+            el ** guionDePreCompilacion **
         */
         let _run = function (){
             for(let i = 0; i < _guion.length; i++){
                 R01[   _guion[i].metodo    ] (_guion[i].parametro,i,_guion.length-1);
             }
-
         }
         let _add = function (O_o){
             if(O_o.reglaP == "clase"){
@@ -65,7 +63,7 @@ var Main = {
         _add(as_arbol);
         _run();
     },
-    preparar               : function(){
+    preparar               : function(){//BTN
         this.existenErrores = false;
         this.analizarCodigoFuente();    
 
@@ -76,20 +74,22 @@ var Main = {
 
             this.ejecutado       = true;
             this.nextInstruccion = main;      
-            javaEditor_markClean();
+            javaEditor_markText_Clean();
             javaEditor_markText_InstuccionSiguiente(main.lineaInicial);  
+            javaEditor_enableReadOnly();
+            MyThreeJS.enableCameraControl();
         }
     },
-    animacionFluida        : function(){
+    animacionFluida        : function(){// BTN
         this.esAnimacionFluida = true;
         this.pasoApaso();
     },
-    pausa                  : function(){
+    pausa                  : function(){// BTN
 
         this.esAnimacionFluida = false;
     },
-    pasoApaso              : function(){
-        javaEditor_markClean();
+    pasoApaso              : function(){// BTN
+        javaEditor_markText_Clean();
         let instruccion = null;
         let tipo        = null;
         ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;   
@@ -98,20 +98,35 @@ var Main = {
             
             this.dibujar(this.nextInstruccion);
 
-
-
-
             instruccion =  this.getInstruccion();
             if(instruccion){
                 instruccion = instruccion.value; // esto es porq aun era el obj del generador
-                this.nextInstruccion = instruccion; 
-                javaEditor_markText_InstuccionSiguiente(instruccion.lineaInicial, instruccion.lineaFinal); 
+                this.nextInstruccion = instruccion;
+                if(instruccion.lineaInicial && instruccion.lineaFinal ){
+                    javaEditor_markText_InstuccionSiguiente(instruccion.lineaInicial, instruccion.lineaFinal); 
+                }
             }
         }
 
         pintarArbolDeLlamadas();
         pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
         pintarArbol("representacionarreglo2", this.lstPasos, ["id","descripcion"]);   
+    },    
+    reiniciar              : function(){// BTN
+        R01.reset();
+        this.reset();
+
+        as_arbol            = null;
+        as_ids              = [];
+        javaEditor_markText_Clean();
+        javaEditor_clearMarkError();
+        javaEditor_disableReadOnly();
+        MyThreeJS.disableCameraControl();
+
+        document.getElementById("representacion_arbolSintactico").innerHTML="";
+        document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
+        document.getElementById("representacionarreglo1").innerHTML="";//pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
+        document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);
     },
     TriggerNextStep        : function(){
         if(Main.esAnimacionFluida){
@@ -120,18 +135,23 @@ var Main = {
             ctrl_fun_Activa__PorPaso();                            
         }
     },
-    reiniciar              : function(){
-        R01.reset();
-        this.reset();
-
-        as_arbol            = null;
-        as_ids              = [];
-        javaEditor_markClean();
-
-        document.getElementById("representacion_arbolSintactico").innerHTML="";
-        document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
-        document.getElementById("representacionarreglo1").innerHTML="";//pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
-        document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);
+    _addlstPasos_Level_1     : function(padre, id_3D){
+        this.lstPasos.children.push(
+            {
+                id:id_3D, 
+                generador:appCreateGenerador(padre.hijos),
+                children:[], 
+                descripcion:"metodo", 
+                obj:padre
+            });
+    },
+    _addlstPasos_Level_2     : function(padre, des){
+        let as = {
+            generador:appCreateGenerador(padre),
+            children:[], 
+            descripcion: des,
+        }
+        this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
     },
     dibujar                : function(instruccion){
         let O_o = instruccion.reglaP
@@ -140,13 +160,17 @@ var Main = {
             javaEditor_markText_InstuccionActual(instruccion.lineaInicial);
             
             let id           = R01.llamarMetodoMain(instruccion);
-            this.lstPasos.children.push({id:id, generador:appCreateGenerador(instruccion.hijos), children:[], descripcion:"metodo", obj:instruccion});        
+            this._addlstPasos_Level_1(instruccion, id);
         }
         else if( (O_o) == "finDeGenerador"  ){
             javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
             R01.MethodOut();
         }
         else if( (O_o) == "variable"        ){
+            /*  Para Representar :
+                int     a;
+                String  cadena = "texto";
+            */
             javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
             R01.crearVariable(instruccion);
         }
@@ -159,10 +183,14 @@ var Main = {
             R01.crearArreglo(instruccion);  
         }
         else if( (O_o) == "llamada"         ){
-
-
-            if(instruccion.destinoCreate){
-                crearVariable_2({
+            /*  Para Representar :
+                int e = pasoParametros(a, b, "envio");
+                    e = pasoParametros(a, e, "texto");
+                    metodo();
+            */
+            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
+            if(instruccion.destinoCreate){// Para int e = pasoParametros(a, b, "envio");
+                R01.crearVariable_2({
                     lineaInicial:instruccion.lineaInicial, 
                     type:instruccion.type,
                     name:instruccion.destinoName,
@@ -172,18 +200,19 @@ var Main = {
 
             let destino     = instruccion.destinoName;
             let declaracion = as_GetFunctionByName(instruccion.name);
-            let id          = llamarMetodo(instruccion, declaracion, destino);
+            let id          = R01.llamarMetodo(instruccion, declaracion, destino);
 
-            Main.lstPasos.children.push({id:id, generador:appCreateGenerador(declaracion.hijos),children:[], descripcion:"metodo"});
+            this._addlstPasos_Level_1(declaracion, id);
+
+            javaEditor_markText_InstuccionSiguiente(declaracion.lineaInicial, declaracion.lineaFinal);
 
             if(instruccion.argumentos.length > 0 ){
-                let as = {generador:appCreateGenerador(instruccion.argumentos),children:[], descripcion:"argumentos"}
-                Main.lstPasos.children[Main.lstPasos.children.length-1].children.push(as)
+                this._addlstPasos_Level_2(instruccion.argumentos,"argumentos");
             }
         }
         else if( (O_o) == "argumento"       ){    
 
-            crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
+            R01.crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
         }
         else if( (O_o) == "return_variable" ){    
 
@@ -203,7 +232,7 @@ var Main = {
                 
                 instruccion.evaluadoEn = true;
                 let as = {generador:appCreateGenerador(instruccion.hijos),children:[], descripcion:"if"}
-                Main.lstPasos.children[Main.lstPasos.children.length-1].children.push(as)
+                Main.lstPasos.children[Main.lstPasos.children.length-1].children.push(as);//level2
             }else{
                 instruccion.evaluadoEn = false;
             }
@@ -261,7 +290,7 @@ function init(){
     MyThreeJS.init();
 
     setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_01);
+    javaEditor_setText(ejemploDeCodigo_02);
 
     setupControls();
 
@@ -273,6 +302,7 @@ function render(){
 
     MyThreeJS.renderer.render(MyThreeJS.scene, MyThreeJS.camera);
     MyThreeJS.cameraControl.update();    
+
 
     /*
     if(lstElements){    
