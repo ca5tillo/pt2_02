@@ -5,11 +5,11 @@ class Variable extends Element{
 
 
 
-	    let my_indice     = lstElements.getChildrenById(getIdsAncestros().p).sons.children.length;
+	    let my_indice               = R01.lstElements.getChildrenById(R01.getIdsAncestros().p).sons.children.length;
 
 
-        this._idPadre               =  getIdsAncestros().p;
-		this._idContenedor          =  getIdsAncestros().c;
+        this._idPadre               =  R01.getIdsAncestros().p;
+		this._idContenedor          =  R01.getIdsAncestros().c;
 		
 		this._type                  = `${instruccion.type}`;
 		this._name                  = `${instruccion.name}`;	
@@ -21,59 +21,44 @@ class Variable extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
+
+    	this.setTextType(this._type    );
+    	this.setTextName(this._name+"=");
+	    this.setTextValue(this._value  );
+
   
 	}
-	get name(){
-		return this._name;
-	}
-	get value(){
-		return this._value;
-	}
-	set value(v){
-		this._value = v;
-	}
-	get type(){
-		return this._type;
-	}
-	in(instruccion){
-		let tipoDeDato    = `${instruccion.type}`;
-		let name3D        = `${instruccion.name}`;
-	    let valor         = `${instruccion.value}`;
+	set value(v){ this._value = v;    }
+	get name ( ){ return this._name;  }
+	get value( ){ return this._value; }
+	get type ( ){ return this._type;  }
 
-		let _this = this;
-        let graphics =this._graphics;
+	in(){		
         let element = this._element;
 
 		let thisCubo = this._cube;
         let thisCuboTamano = thisCubo.geometry.parameters;//depth,height,width
         let thisCuboScale = thisCubo.scale;//x, y , z
         
-
-        let padreCube = lstElements.getChildrenById(_this.idPadre).cube;
+        let padreCube = R01.lstElements.getChildrenById(this.idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  
 		
-		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
+		let position = new TWEEN.Tween(this._element.position)// se usa obj para mover todo el grupo
 	        .to({ 
 					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
-					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
+					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+Config_R01.TAM_GRAL/3)*element.my_indice), 
 					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
 	          	}, Controls.velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
-	        .onStart(function (){
-	        })
-	        .onUpdate(function () {
-            })
+	        .onStart(function (){})
+	        .onUpdate(function () {})
 	        .onComplete(function () {
-	        	let siguientePaso = true;
-	        	_this.setTextType(tipoDeDato);
-	        	_this.setTextName(name3D+"=");
-			    _this.setTextValue(valor,siguientePaso);
-	        	
+	        	Main.TriggerNextStep();
 	        });
 
-		tween.start();		
+		position.start();		
 	}
 	in2(instruccion){
 		let tipoDeDato    = `${instruccion.type}`;
@@ -89,7 +74,7 @@ class Variable extends Element{
         let thisCuboScale = thisCubo.scale;//x, y , z
         
 
-        let padreCube = lstElements.getChildrenById(_this.idPadre).cube;
+        let padreCube = R01.lstElements.getChildrenById(_this.idPadre).cube;
         let padreCubeTamano = padreCube.geometry.parameters;//depth,height,width
         let padreCubeScale = padreCube.scale;//x, y , z
  
@@ -97,7 +82,7 @@ class Variable extends Element{
 		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
 	        .to({ 
 					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
-					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+TAM_GRAL/3)*element.my_indice), 
+					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+Config_R01.TAM_GRAL/3)*element.my_indice), 
 					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
 	          	}, Controls.velocidad)
 	        .easing(TWEEN.Easing.Quadratic.In)
@@ -106,10 +91,6 @@ class Variable extends Element{
 	        .onUpdate(function () {
             })
 	        .onComplete(function () {
-	        	let siguientePaso = false;
-	        	_this.setTextType(tipoDeDato);
-	        	_this.setTextName(name3D+"=");
-			    _this.setTextValue(valor,siguientePaso);
 	        	
 	        });
 

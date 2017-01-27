@@ -13,22 +13,9 @@ body {
 
 
 
-#info {
-    position: absolute;
-    width: 100%;
-    color: #ffffff;
-    padding: 5px;
-    font-family: Monospace;
-    font-size: 13px;
-    font-weight: bold;
-    text-align: center;
-    z-index: 1;
-}
 
-#editor{
-    position: absolute;
-    width: 500px;
-}
+
+
 #representacion_3D{
     height: 100%;
     width: 100%;
@@ -87,42 +74,66 @@ body {
 
 
 
-/*Borde del Editor*/
-.CodeMirror{
-    border: solid white 1px;
-}
-/*Color al marcar texto*/
-.styled-background{
-    background: #314151;
+
+#editor{
+    position : absolute;
+    width    : 400px;
+    height   : 100%;
+    border   : solid 1px #fff;
 }
 
 
-.CodeMirror-my-markers{
-    width: 6px;
-}
-.CodeMirror-my-mark-error {
-    position: relative;
-    display: inline-block;
-    color: red;
-    margin-left: 5px;
-}
+/**************************************************
+*  CodeMirror Base
+***************************************************/
+/*  Abarcara en alto el 100% de su contenedor (#editor)  */
+    .CodeMirror{    
+        height   : 100%;
+    }
+/*  icono de error y tooltop sobre el icono  */
+    .CodeMirror-my-markers{
+        width: 6px;
+    }
+    .CodeMirror-my-mark-error {
+        position: relative;
+        display: inline-block;
+        color: red;
+        margin-left: 5px;
+    }
+    .CodeMirror-my-mark-error .CodeMirror-my-mark-tooltiptext {
+        visibility: hidden;
+        width: 120px;
+        background-color: black;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        /* Position the tooltip */
+        position: absolute;
+        z-index: 1;
+        top: -5px;
+        left: 105%;
+    }
+    .CodeMirror-my-mark-error:hover .CodeMirror-my-mark-tooltiptext {
+        visibility: visible;
+    }
 
-.CodeMirror-my-mark-error .CodeMirror-my-mark-tooltiptext {
-    visibility: hidden;
-    width: 120px;
-    background-color: black;
-    color: #fff;
-    text-align: center;
-    border-radius: 6px;
-    padding: 5px 0;
-    
-    /* Position the tooltip */
-    position: absolute;
-    z-index: 1;
-    top: -5px;
-    left: 105%;
-}
-
-.CodeMirror-my-mark-error:hover .CodeMirror-my-mark-tooltiptext {
-    visibility: visible;
-}
+/*  ToolTip sobre el texto marcado  (indica si esa linea ya se ejecuto o se ejecutara) */
+    .EditorTooltipMarcatexto{
+        display: inline;
+        position: relative;
+    }
+    .EditorTooltipMarcatexto:hover:after{
+        background: #333;
+        background: rgba(0,0,0,.8);
+        border-radius: 6px;
+        bottom: 10px;
+        color: #fff;
+        font-family: "Times New Roman", Times, serif;
+        font-size: 16px;
+        content: attr(title);
+        left: 20%;
+        padding: 5px 15px;
+        position: absolute;
+        z-index: 98;
+    }

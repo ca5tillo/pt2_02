@@ -1,8 +1,10 @@
 var javaEditor    = null;
-var marcatextos   = null; // es un arreglo de marcadores
+var _marcatextos   = null; // es un arreglo de marcadores
 
 function setup_javaEditor(){
-	javaEditor = CodeMirror.fromTextArea(document.getElementById("javaEditor"), {
+    _marcatextos = [];
+
+	javaEditor   = CodeMirror.fromTextArea(document.getElementById("javaEditor"), {
         indentUnit:4,
         tabSize:4,
         dragDrop:true,
@@ -15,11 +17,26 @@ function setup_javaEditor(){
         theme: 'monokai',
         autofocus:false,
         gutters: ["CodeMirror-my-markers"],
+        resetSelectionOnContextMenu:false,
+        readOnly:false,
     });
-    marcatextos = [];
+    /*
+        javaEditor.display.input.onContextMenu= function(){}; 
+
+        onContextMenu  :   Es presionar el boton derecho del mouse
+
+        Codemirror valida este evento para un uso posterior, no se cual   
+
+        Estoy sobrescribiendo el metodo a una funcion vacia, ya que 
+        causaba conflicto con orbilControl de THREE.JS,
+        Sobre el editor no podia mover el mundo con el boton derecho del mouse.
+        Al sobrescribir la funcion a un metodo vacio se a conseguido solucionar de momento 
+        el moverse sobre el mundo 3D
+    */
+    javaEditor.display.input.onContextMenu= function(){}; 
+    
     javaEditor_extraKeys();
-    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
-    javaEditor.setOption("fullScreen", Controls.fullScreen)
+
 
 
     //  Evento inputRead que se desencadena con nuevas entradas 
@@ -31,19 +48,23 @@ function setup_javaEditor(){
         }
     });
     //  Evento change 
-    javaEditor.on("change", function(javaEditor, inputRead) {
-        
-    ///*
-    javaEditor_clearMarkError();
-    analisisSintactico();
-    as_imprimirArbol(as_arbol);
-    //*/
-
+    javaEditor.on("change", function(javaEditor, inputRead) {    
+        Main.analizarCodigoFuente();
     });
+    javaEditor.on("contextmenu", function(javaEditor, inputRead) {    
+        console.log("contextmenu")
+    });
+
+    
+    javaEditor.setOption("fullScreen", Controls.fullScreen);
+    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
 }
 function javaEditor_setText(value){
 
 	javaEditor.setValue(value);
+    //javaEditor.setOption("readOnly","nocursor")
+
+    
 }
 function javaEditor_addHintWords(){
 	/*Con esta linea reescribe el hintWords que hereda del mode */
@@ -83,20 +104,37 @@ function javaEditor_clearMarkError(){
         javaEditor.setGutterMarker(i, "CodeMirror-my-markers", null);
     }
 }
-function javaEditor_markText(lineaI,lineaF = null){
+function javaEditor_markText_InstuccionSiguiente(lineaI,lineaF = null){
     let _lineaF = lineaF ? lineaF : lineaI;
-    //javaEditor.markText({line: 2, ch: 0}, {line: 2, ch: 20}, {className: "styled-background"});
     let tem = javaEditor.markText(
-                                        {line: lineaI, ch: 0}, 
-                                        {line: _lineaF, ch: 200}, 
-                                        {className: "styled-background"});
-    marcatextos.push(tem);
+                                    {line: lineaI, ch: 0}, 
+                                    {line: _lineaF, ch: 200}, 
+                                    {className: "EditorTooltipMarcatexto siguiente_instruccion",
+                                     css:"color: #fe3; background: #314151;",
+                                     title:"Se ejecutara en el siguiente paso.",
+                                    });
+
+    _marcatextos.push(tem);
+    $(".siguiente_instruccion").attr('title','Se ejecutara en el siguiente paso.');
+    
+}
+function javaEditor_markText_InstuccionActual(lineaI,lineaF = null){
+    let _lineaF = lineaF ? lineaF : lineaI;
+    let tem = javaEditor.markText(
+                                    {line: lineaI, ch: 0}, 
+                                    {line: _lineaF, ch: 200}, 
+                                    {className: "EditorTooltipMarcatexto",
+                                     css:"color: #000; background: red;",
+                                     title:"Instruccion ejecutada.",
+                                    });
+
+    _marcatextos.push(tem);
 }
 function javaEditor_markClean(){
-    for(let i of marcatextos){
+    for(let i of _marcatextos){
         i.clear();
     }
-    marcatextos = [];
+    _marcatextos = [];
 }
 function javaEditor_extraKeys(){
 	//  Nuevas funciones de teclado

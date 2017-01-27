@@ -17,22 +17,22 @@ var Controls = {
         pasos: 0,
         Preparar: function () {
         	if(isActive_ctrl_Preparar){
-				btn_Compilar();
+				Main.preparar();
         	}
         },
         Animar: function () {
             if(isActive_ctrl_Animar){
-                btn_Ejecutar();
+                Main.animacionFluida();
             }
         },
         Animar_Paso: function () {
         	if(isActive_ctrl_Animar_Paso){
-				btn_pasoApaso();				
+				Main.pasoApaso();				
         	}
         },
         Pausa:function (){
             if(isActive_ctrl_Pausa){
-                btn_pausa();                
+                Main.pausa();                
             }            
         },
         Reiniciar:function (){
@@ -68,7 +68,7 @@ var Controls = {
         },
 
 
-        fullScreen: true,
+        fullScreen: false,
         Opacidad:0,
 
 
@@ -77,10 +77,9 @@ var Controls = {
         a1:false,
         a2:false,
         a3:false,
-message: function (){
-console.log(test.te())
-
-},
+        message: function (){
+            console.log(javaEditor.getOption("fullScreen"))
+        },
     };
 
 function ctrl_fun_ActivaControles() {
@@ -93,7 +92,7 @@ function ctrl_fun_ActivaControles() {
 
 }
 function ctrl_fun_Reiniciar(){
-    btn_reiniciar();
+    Main.reiniciar();
 
     isActive_ctrl_Preparar     = true;
     isActive_ctrl_Animar       = false;
@@ -132,7 +131,7 @@ function ctrl_fun_Activa__PorPaso(){
 function ctrl_fun_desactiva__Animar(){
     isActive_ctrl_Animar        = false;
     ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid red;"  );
-    if(esAnimacionFluida){
+    if(Main.esAnimacionFluida){
         isActive_ctrl_Pausa     = true;
         ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid green;");
     }
@@ -172,7 +171,7 @@ function ctrl_fun__Preparar(){
 function setupControls(){
 	
     let gui = new dat.GUI();
-    $(".dg.ac").css( "z-index", "9" );
+    $(".dg.ac").css( "z-index", "11" );
 
 
 gui.add(Controls,'message');
@@ -297,10 +296,11 @@ gui.add(Controls,'message');
     	}
     });
     
+    /*
     let f5          = gui.addFolder("Movimiento");
     
     let f6          = gui.addFolder("dev");
-
+    //*/
 
 
     f1.open();

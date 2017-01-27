@@ -6,7 +6,7 @@ class Element{
         this._idContenedor  = null; // EJ. si es una variable a que metodo pertenece sin importa si antes pertenece a un for 
         this._children      = [];
         this._name          = "";
-        idNodoFinal         = this._id;
+        R01._idNodoFinal    = this._id;
 
         this._element       = new THREE.Group();
         this._graphics      = new THREE.Group();
@@ -26,51 +26,23 @@ class Element{
         this._element.add(this._sons);
     }
 
-    get id(){
-        return this._id; 
-    }
-    set id(id){
-        this._id = id;
-    }
-    get idPadre(){
-        return this._idPadre; 
-    }
-    set idPadre(idPadre){
-        this._idPadre = idPadre;
-    }
-    get idContenedor(){
-        return this._idContenedor;
-    }
-    set idContenedor(idContenedor){
-        this._idContenedor = idContenedor;
-    }
-    get children(){
-        return this._children; 
-    }
-    get name(){
-        return this._name;  
-    }
-    set name(name){
-        this._name = name;
-    }
-    get element(){
-        return this._element;  
-    }
-    get graphics(){
-        return this._graphics;  
-    }
-    get text(){
-        return this._text; 
-    }
-    get sons(){
-        return this._sons;    
-    }
-    get cube(){
-        return this._cube;
-    }
+    set id           (a){  this._id           = a;     }
+    set idPadre      (a){  this._idPadre      = a;     }
+    set idContenedor (a){  this._idContenedor = a;     }
+    set name         (a){  this._name         = a;     }
+    get id           ( ){  return this._id;            }
+    get idPadre      ( ){  return this._idPadre;       }
+    get idContenedor ( ){  return this._idContenedor;  }
+    get children     ( ){  return this._children;      }
+    get name         ( ){  return this._name;          }
+    get element      ( ){  return this._element;       }
+    get graphics     ( ){  return this._graphics;      }
+    get text         ( ){  return this._text;          }
+    get sons         ( ){  return this._sons;          }
+    get cube         ( ){  return this._cube;          }
 
     _setcube(){
-        var geo = new THREE.BoxGeometry(TAM_GRAL, TAM_GRAL, TAM_GRAL);
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
         var mat = new THREE.MeshPhongMaterial({color: 'green', transparent:true, opacity:0,visible:false});
         var malla = new THREE.Mesh(geo, mat);
 
@@ -81,85 +53,130 @@ class Element{
         return malla;
     }
     _setText( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
-        let element   = this._element;
-        let cube      = this._cube;
-        let texto     = this._text;
-        let loader    = new THREE.FontLoader();
-        let textMesh1;
+        let groupText       = this._text;
+        let size            = 70;
+        let height          = 20;
+        let curveSegments   = 4;
+        let bevelThickness  = 2;
+        let bevelSize       = 1.5;
+        let bevelEnabled    = false;// este valor en true para fuentes muy pequeñas (size) se distorciona el texto
 
-        loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
-                let material = new THREE.MultiMaterial( [
-                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading   } ), // front
-                    new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } ) // side
-                ] );
+        let textGeo = new THREE.TextGeometry( txt, {
+            font: MyThreeJS.font,
+            size: size,
+            height: height,
+            ///*
+            size: Config_R01.TAM_GRAL/6,
+            height: (Config_R01.TAM_GRAL/20)/2,
+            //*/
+            curveSegments: curveSegments,
+            bevelThickness: bevelThickness,
+            bevelSize: bevelSize,
+            bevelEnabled: bevelEnabled,
+            material: 0,
+            extrudeMaterial: 1
+        });
+        //textGeo.center();
+        textGeo.computeBoundingBox();
+        textGeo.computeVertexNormals();
 
-                let textGeo = new THREE.TextGeometry( txt, {
-                    font: response,
-                    size: TAM_GRAL/6,
-                    height: (TAM_GRAL/20)/2
-                });
-                //textGeo.center();
-                textGeo.computeBoundingBox();
-                textGeo.computeVertexNormals();
+        let material = new THREE.MultiMaterial([
+            new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.FlatShading   } ), // front
+            new THREE.MeshPhongMaterial( { color: 0xffffff, shading: THREE.SmoothShading } )  // side
+        ]);
+        
+        if ( ! bevelEnabled ) {
+            /*
+            "Fijar" las normales laterales eliminando la componente z de las normales 
+            para las caras laterales (esto no funciona bien para la geometría biselada 
+            ya que entonces perdemos una curvatura agradable alrededor del eje z)
+            */
 
-                textMesh1         = new THREE.Mesh( textGeo, material );
-                textMesh1.name    = name;
-                textMesh1.visible = true;
+            let triangleAreaHeuristics = 0.1 * ( height * size );
 
-                texto.add(textMesh1);  
+            for ( let i = 0; i < textGeo.faces.length; i ++ ) {
 
-                // Es el tamaño real del cubo operando por su escala 
-                let tam   = cube.geometry.parameters;//depth,height,width
-                let scale = cube.scale;//x, y , z
-                let x     = tam.width*scale.x;
-                let y     = tam.height*scale.y; 
-                let z     = tam.depth*scale.z; 
+                let face = textGeo.faces[ i ];
 
-                // Destino del texto sobre su cubo (realizo x/2 para obtener la distancia del centro a la orilla despues le sumo un margen para q no quede al raz del cubo)
-                let xi = -(x/2)+TAM_GRAL/25;
-                let yi = (y/2)-(TAM_GRAL/5)*indice;
-                let zi = z/2;
+                if ( face.materialIndex == 1 ) {
 
-                // Cambiamos la posicion del texto
-                if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
-                    textMesh1.position.set(xi, yi, zi);    
-                    if(siguientePaso){
-                        if(esAnimacionFluida){
-                            btn_pasoApaso();
-                        }else{                            
-                            ctrl_fun_Activa__PorPaso();                            
-                        }
+                    for ( let j = 0; j < face.vertexNormals.length; j ++ ) {
+
+                        face.vertexNormals[ j ].z = 0;
+                        face.vertexNormals[ j ].normalize();
+
                     }
-                }else{
-                    textMesh1.position.set(
-                        -element.position.x,
-                        -element.position.y,
-                        -element.position.z
-                        );     // lo envio al centro del metodo o padre
 
-                    let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                        .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onStart    ( function (){} )
-                        .onUpdate   ( function (){} )
-                        .onComplete ( function (){
-                            if(valorAnterior){
-                                texto.remove(valorAnterior);
-                            }                            
-                            if(siguientePaso){
-                                if(esAnimacionFluida){
-                                    btn_pasoApaso();
-                                }else{
-                                    ctrl_fun_Activa__PorPaso();
-                                }
-                            }
-                        });                    
-                    tween.start();
-                
+                    let va = textGeo.vertices[ face.a ];
+                    let vb = textGeo.vertices[ face.b ];
+                    let vc = textGeo.vertices[ face.c ];
+
+                    let s = THREE.GeometryUtils.triangleArea( va, vb, vc );
+
+                    if ( s > triangleAreaHeuristics ) {
+
+                        for ( let j = 0; j < face.vertexNormals.length; j ++ ) {
+
+                            face.vertexNormals[ j ].copy( face.normal );
+
+                        }
+
+                    }
+
                 }
 
-                                          
-            });// ./loader.load({})
+            }
+        }// ./ if ( ! bevelEnabled ) 
+
+        let textMesh1     = new THREE.Mesh( textGeo, material );
+        textMesh1.name    = name;
+
+        groupText.add(textMesh1);
+
+
+        // Es el tamaño real del cubo operando por su escala 
+        let tam   = this._cube.geometry.parameters;//depth,height,width
+        let scale = this._cube.scale;//x, y , z
+        let x     = tam.width  * scale.x;
+        let y     = tam.height * scale.y; 
+        let z     = tam.depth  * scale.z; 
+
+        // Destino del texto sobre su cubo (realizo x/2 para obtener la distancia del centro a la orilla despues le sumo un margen para q no quede al raz del cubo)
+        let xi = -(x/2)+Config_R01.TAM_GRAL/25;
+        let yi = (y/2)-(Config_R01.TAM_GRAL/5)*indice;
+        let zi = z/2;
+
+        // Cambiamos la posicion del texto
+        if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
+            textMesh1.position.set(xi, yi, zi);    
+            if(siguientePaso){
+                Main.TriggerNextStep();
+            }
+        }else{
+            textMesh1.position.set(
+                -this._element.position.x,
+                -this._element.position.y,
+                -this._element.position.z
+                );     // lo envio al centro del metodo o padre
+
+            let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
+                .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
+                .easing     (TWEEN.Easing.Quadratic.In)
+                .onStart    ( function (){} )
+                .onUpdate   ( function (){} )
+                .onComplete ( function (){
+                    if(valorAnterior){
+                        groupText.remove(valorAnterior);
+                    }                            
+                    if(siguientePaso){
+                        Main.TriggerNextStep();
+                    }
+                });                    
+            tween.start();
+        
+        }
+
+        
     }
     _setText2( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null, elementoOrigen = null){
         // _setText2 NACE PARA AGREGAR EL VALUE A LAS VARIABLES Q SE PASAN COMO PARAMETROS
@@ -176,8 +193,8 @@ class Element{
                 ] );
                 let textGeo = new THREE.TextGeometry( txt, {
                     font: response,
-                    size: TAM_GRAL/6,
-                    height: (TAM_GRAL/20)/2
+                    size: Config_R01.TAM_GRAL/6,
+                    height: (Config_R01.TAM_GRAL/20)/2
                 });
                 textGeo.computeBoundingBox();
                 textGeo.computeVertexNormals();
@@ -196,15 +213,15 @@ class Element{
                 let z     = tam.depth*scale.z; 
 
                 // Destino del texto sobre su cubo (realizo x/2 para obtener la distancia del centro a la orilla despues le sumo un margen para q no quede al raz del cubo)
-                let xi = -(x/2)+TAM_GRAL/25;
-                let yi = (y/2)-(TAM_GRAL/5)*indice;
+                let xi = -(x/2)+Config_R01.TAM_GRAL/25;
+                let yi = (y/2)-(Config_R01.TAM_GRAL/5)*indice;
                 let zi = z/2;
 
                
                 textMesh1.position.set(
-                    0 - TAM_GRAL*2 ,
-                    0 - element.position.y - TAM_GRAL*2 + elementoOrigen.position.y,
-                    0 - TAM_GRAL*2 
+                    0 - Config_R01.TAM_GRAL*2 ,
+                    0 - element.position.y - Config_R01.TAM_GRAL*2 + elementoOrigen.position.y,
+                    0 - Config_R01.TAM_GRAL*2 
                     );     // lo envio al centro del metodo o padre
 
                 let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
@@ -217,8 +234,8 @@ class Element{
                             texto.remove(valorAnterior);
                         }                            
                         if(siguientePaso){
-                            if(esAnimacionFluida){
-                                btn_pasoApaso();
+                            if(Main.esAnimacionFluida){
+                                Main.pasoApaso();
                             }else{
                                 ctrl_fun_Activa__PorPaso();
                             }
@@ -235,15 +252,15 @@ class Element{
 
         return this._sons.children[index];    
     }
-    setTextType (txt, siguientePaso=false, animar=true){
+    setTextType (txt, siguientePaso=false, animar=false){
         
         this._setText("type",  1, txt, siguientePaso, animar, null);
     }
-    setTextName (txt, siguientePaso=false, animar=true){
+    setTextName (txt, siguientePaso=false, animar=false){
 
         this._setText("name",  2, txt, siguientePaso, animar, null);
     }
-    setTextValue(txt, siguientePaso=false, animar=true){
+    setTextValue(txt, siguientePaso=false, animar=false){
         let valorAnterior = this._text.getObjectByName("value");
         this._setText("value", 3, txt, siguientePaso, animar, valorAnterior);
     }

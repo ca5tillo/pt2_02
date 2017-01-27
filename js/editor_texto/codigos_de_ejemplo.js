@@ -1,11 +1,11 @@
 var ejemploDeCodigo_01 = 
 `public class Clase{
     public static void main(String[] args){
+        int[]   edad   = {45, 23, 11, 9};
         int     a;
         String  cadena = "texto";
         int     b      = 10;
         boolean c      = true;
-        int[]   edad   = {45, 23, 11, 9};
 
         a              = 10;
         cadena         = "nuevo";

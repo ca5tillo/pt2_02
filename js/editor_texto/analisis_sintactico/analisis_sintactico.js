@@ -1,5 +1,5 @@
 
-var as_generateID       = null;
+var _as_generateID      = null;
 var as_ids              = null;
 var as_arbol            = null;
 
@@ -25,7 +25,7 @@ class ASElemento  {
 		){
 
         this.reglaP                     = null;
-        this.id                         = as_generateID.next().value;
+        this.id                         = _as_generateID.next().value;
         this.idPadre                    = 0;
 		this.padre						= {};
 		this.hijos                      = [];
@@ -76,7 +76,7 @@ function analisisSintactico(){
 	let isFor            = false;
 	let isArray          = false;
     
-    as_generateID        = GenerateID();
+    _as_generateID        = GenerateID();
     as_ids               = [];
     as_arbol             = new ASElemento();
     as_arbol.name        = "ElementoRaiz";
@@ -205,7 +205,8 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME;
         obj.value            = "?";
 
-        obj.lineaInicial = arr[0].line;
+        obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
         return obj; 
     }
     /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                       */
@@ -218,6 +219,20 @@ function _as_reglasProduccion(str, arr){
         obj.valueType        = _RE_[1];
 
         obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
+        return obj; 
+    }    
+    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
+    if( _RE_ = str.match(RE_ARREGLO)                 ){
+        let obj              = new ASElemento();
+        obj.reglaP           = "arreglo";
+
+        obj.type             = _RE_[2];
+        obj.name             = strmap.NAME;
+        obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
+
+        obj.lineaInicial     = arr[0].line;
+        obj.lineaFinal       = arr[arr.length-1].line;
         return obj; 
     }
 
@@ -278,18 +293,6 @@ function _as_reglasProduccion(str, arr){
         obj.num             = strmap.NUM;
         
         obj.lineaInicial     = arr[0].line;
-        return obj; 
-    }
-    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
-    if( _RE_ = str.match(RE_ARREGLO)                 ){
-        let obj              = new ASElemento();
-        obj.reglaP           = "arreglo";
-
-        obj.type             = _RE_[2];
-        obj.name             = strmap.NAME;
-        obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
-
-        obj.lineaInicial = arr[0].line;
         return obj; 
     }
     /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;*/
@@ -566,7 +569,7 @@ function as_imprimirArbol(nodo){
     _createLista = function (nodo){
         if(nodo.reglaP == "ERROR_SINTACTICO"){
             javaEditor_markError(nodo.lineaInicial,nodo.lineaFinal);
-            existenErrores = true;
+            Main.existenErrores = true;
         }
         let li    = document.createElement("li");        
         let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
