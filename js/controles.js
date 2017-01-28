@@ -173,7 +173,7 @@ function setupControls(){
     let gui = new dat.GUI();
     $(".dg.ac").css( "z-index", "11" );
 
-
+console.log(gui.closed);
 gui.add(Controls,'message');
 
 /***************************************************************************************************/

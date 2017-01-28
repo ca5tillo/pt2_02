@@ -77,9 +77,6 @@ function javaEditor_enableReadOnly(){
     javaEditor.setGutterMarker(0, "CodeMirror-my-markers", _makeMarker());
     javaEditor.setOption("styleActiveLine",false);
     javaEditor.setOption("styleSelectedText",false);
-
-    
-
 }
 function javaEditor_disableReadOnly(){
     javaEditor.setOption("readOnly",false);
@@ -124,11 +121,10 @@ function javaEditor_clearMarkError(){
         javaEditor.setGutterMarker(i, "CodeMirror-my-markers", null);
     }
 }
-function javaEditor_markText_InstuccionSiguiente(lineaI,lineaF = null){
-    let _lineaF = lineaF ? lineaF : lineaI;
+function javaEditor_markText_InstuccionSiguiente(position){
     let tem = javaEditor.markText(
-                                    {line: lineaI, ch: 0}, 
-                                    {line: _lineaF, ch: 200}, 
+                                    {line: position.y1, ch: position.x1}, 
+                                    {line: position.y2, ch: position.x2}, 
                                     {className: "EditorTooltipMarcatexto siguiente_instruccion",
                                      css:"background: #ffa2ab; color: #000; ",
                                      title:"Se ejecutara en el siguiente paso.",
@@ -138,11 +134,11 @@ function javaEditor_markText_InstuccionSiguiente(lineaI,lineaF = null){
     $(".siguiente_instruccion").attr('title','Se ejecutara en el siguiente paso.');
     
 }
-function javaEditor_markText_InstuccionActual(lineaI,lineaF = null){
-    let _lineaF = lineaF ? lineaF : lineaI;
+function javaEditor_markText_InstuccionActual(position){
+
     let tem = javaEditor.markText(
-                                    {line: lineaI, ch: 0}, 
-                                    {line: _lineaF, ch: 200}, 
+                                    {line: position.y1, ch: position.x1}, 
+                                    {line: position.y2, ch: position.x2},  
                                     {className: "EditorTooltipMarcatexto",
                                      css:"background: orange; color: #000; ",
                                      title:"Instruccion ejecutada.",

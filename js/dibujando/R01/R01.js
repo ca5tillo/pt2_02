@@ -231,7 +231,24 @@ var R01 = {
             metodoDestino.sons.add(element.element);
             element.in();
         }
-    }
+    },
+    returnVariable         : function(instruccion){
+        let siguientePaso   = false; // es false ya que el  MethodOut() ara el siguiente paso
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        if(contenedor.returnA){
+
+            let value           = contenedor.getChildrenByName(instruccion.name,true).value;
+            let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
+            destino.value       = value;
+            destino.setTextValue(value,siguientePaso);
+
+        }
+        this.MethodOut();
+    },
 
 };
 
@@ -359,28 +376,7 @@ function createText(sa) {
 
 
 
-function returnVariable(instruccion){
-    if(instruccion.lineaInicial){
-        javaEditor_markText_Clean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }
 
-    let siguientePaso   = false; // es false ya que el  MethodOut() ara el siguiente paso
-    let idPadre         = getIdsAncestros().p;
-    let idContenedor    = getIdsAncestros().c;
-    let contenedor      = lstElements.getChildrenById(idContenedor);
-    let padre           = lstElements.getChildrenById(idPadre);
-
-    if(contenedor.returnA){
-
-        let value           = contenedor.getChildrenByName(instruccion.name,true).value;
-        let destino         = lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
-        destino.value       = value;
-        destino.setTextValue(value,siguientePaso);
-
-    }
-    MethodOut();
-}
 function returnNum(instruccion){
     if(instruccion.lineaInicial){
         javaEditor_markText_Clean();

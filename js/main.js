@@ -19,12 +19,14 @@ var Main = {
     'ejecutado'            : false,
     'existenErrores'       : false,
     'nextInstruccion'      : null,
+    'llamadas'             : [], // llamadas a metodos
 
     reset                  : function(){
         this.lstPasos            = {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null};
         this.esAnimacionFluida   = false;
         this.ejecutado           = false;
         this.existenErrores      = false;
+        this.llamadas            = [];
     },
     analizarCodigoFuente   : function(){
         javaEditor_clearMarkError();
@@ -65,17 +67,19 @@ var Main = {
     },
     preparar               : function(){//BTN
         this.existenErrores = false;
-        this.analizarCodigoFuente();    
+        this.analizarCodigoFuente();  
+
+        javaEditor_markText_Clean();  
 
         let main         = as_GetFunctionByName("main");
         if( main && !this.existenErrores && !this.ejecutado){
-            ctrl_fun__Preparar();
-            this.precompilacion();
-
-            this.ejecutado       = true;
             this.nextInstruccion = main;      
-            javaEditor_markText_Clean();
-            javaEditor_markText_InstuccionSiguiente(main.lineaInicial);  
+            this.ejecutado       = true;
+            this._marcarLinea_2(main);
+            
+            this.precompilacion();
+            ctrl_fun__Preparar();
+
             javaEditor_enableReadOnly();
             MyThreeJS.enableCameraControl();
         }
@@ -89,22 +93,26 @@ var Main = {
         this.esAnimacionFluida = false;
     },
     pasoApaso              : function(){// BTN
-        javaEditor_markText_Clean();
         let instruccion = null;
         let tipo        = null;
         ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;   
+        javaEditor_markText_Clean();
+
 
         if(this.nextInstruccion){            
-            
-            this.dibujar(this.nextInstruccion);
+            this._marcarLinea_1(this.nextInstruccion);
 
+
+            this.dibujar(this.nextInstruccion);
             instruccion =  this.getInstruccion();
-            if(instruccion){
-                instruccion = instruccion.value; // esto es porq aun era el obj del generador
-                this.nextInstruccion = instruccion;
-                if(instruccion.lineaInicial && instruccion.lineaFinal ){
-                    javaEditor_markText_InstuccionSiguiente(instruccion.lineaInicial, instruccion.lineaFinal); 
-                }
+
+
+            if(instruccion){                
+                this.nextInstruccion = instruccion.value;// esto es porq aun era el obj del generador
+
+
+                this._marcarLinea_2(this.nextInstruccion);
+                               
             }
         }
 
@@ -135,7 +143,7 @@ var Main = {
             ctrl_fun_Activa__PorPaso();                            
         }
     },
-    _addlstPasos_Level_1     : function(padre, id_3D){
+    _addlstPasos_Level_1   : function(padre, id_3D){
         this.lstPasos.children.push(
             {
                 id:id_3D, 
@@ -145,7 +153,7 @@ var Main = {
                 obj:padre
             });
     },
-    _addlstPasos_Level_2     : function(padre, des){
+    _addlstPasos_Level_2   : function(padre, des){
         let as = {
             generador:appCreateGenerador(padre),
             children:[], 
@@ -153,17 +161,87 @@ var Main = {
         }
         this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
     },
+    _marcarLinea_1         : function(i){
+        // Marcara line ejecutada
+
+        if(i.reglaP == "metodo" && i.name == "main"){
+            javaEditor_markText_InstuccionActual(i.position.regla); 
+        }
+        else if(i.reglaP == "finDeGenerador"){
+            javaEditor_markText_InstuccionActual(i.position.cierre); 
+            if(this.llamadas.length > 0){
+                javaEditor_markText_InstuccionActual(this.llamadas[this.llamadas.length-1].position.regla); 
+                this.llamadas.pop();
+            }
+        }
+        else if(i.reglaP == "llamada"){
+            let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
+            javaEditor_markText_InstuccionActual(i.position.regla); 
+            javaEditor_markText_InstuccionActual(declaracion.position.regla); 
+        }
+        else if(i.reglaP == "argumento"){
+            let parametros = as_GetFunctionByName(i.namePadre).parametros;
+            let parametro = null;
+            for(let param of parametros){
+                if(param.indice == i.indice){
+                    parametro = param;
+                }
+
+            }
+            javaEditor_markText_InstuccionActual(parametro.position.regla); 
+            javaEditor_markText_InstuccionActual(i.position.regla); 
+        }
+        else if(i.reglaP == "return_variable" || i.reglaP == "return_num"){
+            javaEditor_markText_InstuccionActual(i.position.regla); 
+            if(this.llamadas.length > 0){
+                javaEditor_markText_InstuccionActual(this.llamadas[this.llamadas.length-1].position.regla); 
+                this.llamadas.pop();
+            }
+        }
+        else{
+            javaEditor_markText_InstuccionActual(i.position.regla); 
+        }
+    },
+    _marcarLinea_2         : function(i){
+        // Marcara la siguiente linea a ejecutar
+        if(i.reglaP == "metodo" && i.name == "main"){
+            javaEditor_markText_InstuccionSiguiente(i.position.bloque); 
+        }
+        else if(i.reglaP == "finDeGenerador"){
+            javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+        }
+        else if(i.reglaP == "llamada"){
+            let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
+            javaEditor_markText_InstuccionSiguiente(i.position.regla); 
+            javaEditor_markText_InstuccionSiguiente(declaracion.position.bloque); 
+            this.llamadas.push(i);
+        }
+        else if(i.reglaP == "argumento"){
+            let parametros = as_GetFunctionByName(i.namePadre).parametros;
+            let parametro = null;
+            for(let param of parametros){
+                if(param.indice == i.indice){
+                    parametro = param;
+                }
+
+            }
+            javaEditor_markText_InstuccionSiguiente(parametro.position.regla); 
+            javaEditor_markText_InstuccionSiguiente(i.position.regla); 
+        }
+        else{
+            javaEditor_markText_InstuccionSiguiente(i.position.regla); 
+        } 
+
+    },
     dibujar                : function(instruccion){
         let O_o = instruccion.reglaP
        
-        if( (O_o) == "metodo" && instruccion.name == "main"){
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial);
-            
+        if( (O_o) == "metodo" && instruccion.name == "main"){                        
             let id           = R01.llamarMetodoMain(instruccion);
             this._addlstPasos_Level_1(instruccion, id);
         }
         else if( (O_o) == "finDeGenerador"  ){
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
+
             R01.MethodOut();
         }
         else if( (O_o) == "variable"        ){
@@ -171,15 +249,14 @@ var Main = {
                 int     a;
                 String  cadena = "texto";
             */
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
             R01.crearVariable(instruccion);
         }
         else if( (O_o) == "asignacion"      ){
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
+
             R01.asignarValorVariable(instruccion);  
         }        
         else if( (O_o) == "arreglo"         ){
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
+
             R01.crearArreglo(instruccion);  
         }
         else if( (O_o) == "llamada"         ){
@@ -188,7 +265,6 @@ var Main = {
                     e = pasoParametros(a, e, "texto");
                     metodo();
             */
-            javaEditor_markText_InstuccionActual(instruccion.lineaInicial, instruccion.lineaFinal);
             if(instruccion.destinoCreate){// Para int e = pasoParametros(a, b, "envio");
                 R01.crearVariable_2({
                     lineaInicial:instruccion.lineaInicial, 
@@ -204,8 +280,6 @@ var Main = {
 
             this._addlstPasos_Level_1(declaracion, id);
 
-            javaEditor_markText_InstuccionSiguiente(declaracion.lineaInicial, declaracion.lineaFinal);
-
             if(instruccion.argumentos.length > 0 ){
                 this._addlstPasos_Level_2(instruccion.argumentos,"argumentos");
             }
@@ -216,7 +290,7 @@ var Main = {
         }
         else if( (O_o) == "return_variable" ){    
 
-            returnVariable(instruccion);
+            R01.returnVariable(instruccion);
         }
         else if( (O_o) == "return_num" ){    
 
@@ -274,8 +348,7 @@ var Main = {
                 i = Main.lstPasos.children[index_1].generador.next();
                 if(i.done){                    
                     let instruccion = {reglaP: 'finDeGenerador'};
-                    instruccion.lineaInicial = Main.lstPasos.children[index_1].obj.lineaFinal;
-                    instruccion.lineaFinal   = Main.lstPasos.children[index_1].obj.lineaFinal;
+                    instruccion.position = Main.lstPasos.children[index_1].obj.position;
                     i = { value: instruccion, done: true };
                 }
             }
@@ -294,6 +367,7 @@ function init(){
 
     setupControls();
 
+    teclado();
     render();
 }
 
@@ -316,9 +390,25 @@ function render(){
 
 
 
-
-
-
+function teclado(){
+    $(document).keydown(function (tecla) {
+        if (tecla.keyCode == 32) { // barra esadora
+            if(Main.ejecutado){
+                Controls.Animar_Paso();
+            }        
+        }
+        if(tecla.keyCode == 65){// letra a
+            if(Main.ejecutado){
+                Controls.Animar();
+            } 
+        }
+        if(tecla.keyCode == 80){// letra p
+            if(Main.ejecutado){
+                Controls.Pausa();
+            } 
+        }
+    });
+}
 
 
 

@@ -9,6 +9,26 @@ class ASArgumento{
         this.type        = type;
         this.value       = value;
         this.namePadre   = name; 
+        this.position = {
+            regla:{// posicion de la instruccion que coincida con la regla de produccion
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            bloque:{// posicion tomando en cuenta hasta el cierre de llave ( } )
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            cierre:{
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            }                          
+        };
     }
 }
 class ASParametro{
@@ -16,6 +36,26 @@ class ASParametro{
         this.reglaP    = "parametro";
 		this.type      = type;
         this.name      = nombre;
+        this.position = {
+            regla:{// posicion de la instruccion que coincida con la regla de produccion
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            bloque:{// posicion tomando en cuenta hasta el cierre de llave ( } )
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            cierre:{
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            }                          
+        };
 	}
 
 }
@@ -53,14 +93,27 @@ class ASElemento  {
         this.retorno =""
         this.restriccion="";//private, public ...
 
-		
-		this.lineaInicial               = 0;
-		this.lineaFinal                 = 0;
-        this.li_columnaInicial          = 0;
-        this.li_columnaFinal            = 0;
-        this.lf_columnaInicial          = 0;
-        this.lf_columnaFinal            = 0;
-
+		this.position = {
+            regla:{// posicion de la instruccion que coincida con la regla de produccion
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            bloque:{// posicion tomando en cuenta hasta el cierre de llave ( } )
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            },
+            cierre:{
+                x1 : 0, // Columna inicial
+                x2 : 0, // Columna final
+                y1 : 0, // Linea inicial
+                y2 : 0, // Linea final
+            }                          
+        };
+                                                
 
 
         this.isNodoFinal                = true; // los q no son finales tiene sub elementos Ej. un metodo o un for
@@ -109,8 +162,7 @@ function analisisSintactico(){
 
                 let error = new ASElemento();
                     error.reglaP             = "ERROR_SINTACTICO";
-                    error.lineaInicial       = lst_token[0].line;
-                    error.lineaFinal         = lst_token[lst_token.length-1].line;
+                    _as_setPosition(error, lst_token);
                 _as_addNodo(error);
             }
 	        _as_finalizarRama(i);// tambien disminuye en uno al as_nivelAnidamiento
@@ -126,6 +178,19 @@ function analisisSintactico(){
 	}
 	//*/
 	return as_arbol;
+}
+function _as_setPosition(obj, arr){
+    obj.position.regla.y1 = arr[0].line;
+    obj.position.regla.y2 = arr[arr.length-1].line;
+
+    obj.position.regla.x1 = arr[0].start;
+    obj.position.regla.x2 = arr[arr.length-1].end;
+
+    obj.position.bloque.y1 = arr[0].line;
+    obj.position.bloque.y2 = arr[arr.length-1].line;
+
+    obj.position.bloque.x1 = arr[0].start;
+    obj.position.bloque.x2 = arr[arr.length-1].end;
 }
 function _as_reglasProduccion(str, arr){
 
@@ -161,9 +226,10 @@ function _as_reglasProduccion(str, arr){
         obj.reglaP          = "clase";
 
         obj.name            = strmap.NAME;
-        obj.lineaInicial    = arr[0].line;
 
         obj.isNodoFinal     = false;
+
+        _as_setPosition(obj, arr);
         return obj; 
     }
     /*    RECONOCIENDO DEFINICION DE METODO                                    */
@@ -177,9 +243,10 @@ function _as_reglasProduccion(str, arr){
         obj.restriccion     = _RE_[1]; 
         obj.static          = _RE_[2] ? true:false;
         obj.retorno         = _RE_[3];
-        obj.lineaInicial    = arr[0].line;
 
         obj.isNodoFinal     = false;
+
+        _as_setPosition(obj, arr);
     	return obj;     	
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                  */
@@ -192,8 +259,7 @@ function _as_reglasProduccion(str, arr){
 		obj.value            = strmap[_RE_[3]];
 		obj.valueType        = _RE_[3];
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
     	return obj; 
     }
     /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS               */
@@ -205,8 +271,7 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME;
         obj.value            = "?";
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }
     /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                       */
@@ -218,8 +283,7 @@ function _as_reglasProduccion(str, arr){
         obj.valor            = strmap[_RE_[1]];
         obj.valueType        = _RE_[1];
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }    
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
@@ -231,8 +295,7 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME;
         obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }
     /*    RECONOCIENDO LLAMADA A METODO*/
@@ -243,8 +306,7 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME;
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
         
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
         
         return obj; 
     }
@@ -257,8 +319,7 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME_0;
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
 
         return obj; 
     }
@@ -273,8 +334,7 @@ function _as_reglasProduccion(str, arr){
         obj.name             = strmap.NAME_0;
         obj.argumentos       = _as_getArgumentos(arr, obj.name);
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
 
         return obj; 
     }
@@ -288,7 +348,7 @@ function _as_reglasProduccion(str, arr){
 
         obj.name             = strmap.NAME;
         
-        obj.lineaInicial     = arr[0].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }
     if( _RE_ = str.match(RE_RERUEN_NUM)){
@@ -297,7 +357,7 @@ function _as_reglasProduccion(str, arr){
 
         obj.num             = strmap.NUM;
         
-        obj.lineaInicial     = arr[0].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }
     /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;*/
@@ -313,8 +373,7 @@ function _as_reglasProduccion(str, arr){
         obj.expresion        = _as_getExpresionMatematica(arr);
         obj.resultado        = resultado;
     
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
+        _as_setPosition(obj, arr);
         return obj; 
     }
     /*    RECONOCIENDO IF*/
@@ -325,10 +384,9 @@ function _as_reglasProduccion(str, arr){
     
         obj.condicionales    = _as_getCondicionales(arr);
 
-        obj.lineaInicial     = arr[0].line;
-        obj.lineaFinal       = arr[arr.length-1].line;
-
         obj.isNodoFinal     = false;
+
+        _as_setPosition(obj, arr);
         return obj; 
     }
      /*    RECONOCIENDO ELSE*/
@@ -346,10 +404,9 @@ function _as_reglasProduccion(str, arr){
             obj.name             = strmap.ELSE;
             obj.hermanoMayor     = nodoAnterior;
         
-            obj.lineaInicial     = arr[0].line;
-            obj.lineaFinal       = arr[arr.length-1].line;
-
-            obj.isNodoFinal     = false;
+            obj.isNodoFinal      = false;
+            
+            _as_setPosition(obj, arr);
             return obj; 
 
 
@@ -360,8 +417,7 @@ function _as_reglasProduccion(str, arr){
                nodo no final */
             let error = new ASElemento();
                 error.reglaP             = "ERROR_SINTACTICO";
-                error.lineaInicial       = arr[0].line;
-                error.lineaFinal         = arr[arr.length-1].line;
+                _as_setPosition(error, arr);
 
                 error.isNodoFinal        = false;
             return error;
@@ -407,8 +463,7 @@ function _as_reglasProduccion(str, arr){
     /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
     let error = new ASElemento();
         error.reglaP             = "ERROR_SINTACTICO";
-        error.lineaInicial       = arr[0].line;
-        error.lineaFinal         = arr[arr.length-1].line;
+        _as_setPosition(error, arr);
 
 
     return error;
@@ -423,6 +478,8 @@ function _as_getArgumentos(arr, name){
     let str="";
     let _re;
     let lstArgumentos = [];
+    let _arr = [];
+    let indice = 0;
 
 
     for(let i of arr){
@@ -430,6 +487,7 @@ function _as_getArgumentos(arr, name){
         if(insertinparam){
             
             str     += `${i.symbol}`;
+            _arr.push(i);
             if(strmap[i.symbol] == undefined)
                 strmap[i.symbol]=i.string;
 
@@ -437,13 +495,26 @@ function _as_getArgumentos(arr, name){
 
 
                 let modelArgumento = new ASArgumento(_re[1], strmap[_re[1]], name);
+
                 /*
                 modelArgumento.lineaInicial       = arr[0].line;
                 modelArgumento.lineaFinal         = arr[arr.length-1].line;
                 */
+
+                modelArgumento.position.regla.y1 = _arr[0].line;
+                modelArgumento.position.regla.y2 = _arr[_arr.length-1].line;
+
+                modelArgumento.position.regla.x1 = _arr[0].start;
+                modelArgumento.position.regla.x2 = _arr[_arr.length-1].end;
+
+                modelArgumento.indice = indice;
+
                 lstArgumentos.push(modelArgumento);
+
+                indice +=1;
                 str="";
                 strmap={};
+                _arr = [];
             }
           
         
@@ -464,6 +535,8 @@ function _as_getParametros(arr){
     let str="";
     let _re;
     let lstParametros = [];
+    let _arr = [];
+    let indice = 0;
 
 
     for(let i of arr){
@@ -471,6 +544,7 @@ function _as_getParametros(arr){
         if(insertinparam){
             if(i.symbol != "COMMA"){
                 str     += `${i.symbol}`;
+                _arr.push(i);
                 if(strmap[i.symbol] == undefined)
                     strmap[i.symbol]=i.string;
 
@@ -478,9 +552,22 @@ function _as_getParametros(arr){
 
 
                     let modelParametro = new ASParametro(_re[1],strmap.NAME);
+
+
+                    modelParametro.position.regla.y1 = _arr[0].line;
+                    modelParametro.position.regla.y2 = _arr[_arr.length-1].line;
+
+                    modelParametro.position.regla.x1 = _arr[0].start;
+                    modelParametro.position.regla.x2 = _arr[_arr.length-1].end;
+
+                    modelParametro.indice = indice;
+
                     lstParametros.push(modelParametro);
+
+                    indice += 1;
                     str="";
                     strmap={};
+                    _arr = [];
                 }
             }
 
@@ -570,14 +657,22 @@ function _as_finalizarRama(rbrace){
     let u        = as_ids.length-1;
     let padre    = as_GetElementById(as_ids[u]);
 
-    padre.lineaFinal = rbrace.line;
+    padre.position.bloque.y2 = rbrace.line;
+    padre.position.bloque.x2 = rbrace.end;
+
+    padre.position.cierre.y1 = rbrace.line;
+    padre.position.cierre.y2 = rbrace.line;
+    padre.position.cierre.x1 = rbrace.start;
+    padre.position.cierre.x2 = rbrace.end;
+
+
     as_ids.pop();
 }
 function as_imprimirArbol(nodo){
 
     _createLista = function (nodo){
         if(nodo.reglaP == "ERROR_SINTACTICO"){
-            javaEditor_markError(nodo.lineaInicial,nodo.lineaFinal);
+            javaEditor_markError(nodo.position.bloque.y1,nodo.position.bloque.y2);
             Main.existenErrores = true;
         }
         let li    = document.createElement("li");        

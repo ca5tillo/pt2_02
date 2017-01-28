@@ -36,10 +36,11 @@ class Metodo extends Element{
 		libreria_WorldPosition.setFromMatrixPosition  ( _this._getLibBy_idAS(declaracion.idPadre).element.matrixWorld )
     	contenedor_WorldPosition.setFromMatrixPosition( R01.lstElements.getChildrenById(this._idContenedor).element.matrixWorld )
     	Yopli__.setFromMatrixPosition(_this.element.matrixWorld);
-    	console.log("libreria_WorldPosition",libreria_WorldPosition);
-    	console.log("contenedor_WorldPosition",contenedor_WorldPosition);
-    	console.log("Yopli__",Yopli__);
-    
+    	/*
+	    	console.log("libreria_WorldPosition",libreria_WorldPosition);
+	    	console.log("contenedor_WorldPosition",contenedor_WorldPosition);
+	    	console.log("Yopli__",Yopli__);
+    	*/
 		let xi = (this.element.position.x - contenedor_WorldPosition.x)+(libreria_WorldPosition.x);
 		let yi = (this.element.position.y - contenedor_WorldPosition.y)+(libreria_WorldPosition.y);
 		let zi = (this.element.position.z - contenedor_WorldPosition.z)+(libreria_WorldPosition.z);
