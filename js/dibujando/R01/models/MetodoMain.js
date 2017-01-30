@@ -23,7 +23,7 @@ class MetodoMain extends Element{
 				    .to({ x: -libreria.position.x, 
 				          y: -libreria.position.y, 
 				          z: -libreria.position.z 
-				      }, Controls.velocidad)
+				      }, Controles.getVelocidad())
 				    .easing(TWEEN.Easing.Quadratic.In)
 				    .onStart(function (){
 				        _this.cube.material.opacity = 1;
@@ -35,7 +35,7 @@ class MetodoMain extends Element{
 	    let scale = new TWEEN.Tween(_this.cube.scale)
 				    .to({ x: R01.METODO_SCALE_X,
 				    	  y: R01.METODO_SCALE_Y,
-				    	  z: R01.METODO_SCALE_Z,}, Controls.velocidad/2)
+				    	  z: R01.METODO_SCALE_Z,}, Controles.getVelocidad()/2)
 				    .easing(TWEEN.Easing.Quadratic.In)
 				    .onComplete(function () {    
 				        let siguientePaso = true;
@@ -56,7 +56,7 @@ class MetodoMain extends Element{
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
-	            .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
+	            .to({ x:0.001,Y:0.001,z: 0.001,}, Controles.getVelocidad())
 	            .easing(TWEEN.Easing.Quadratic.In)
 	            .onStart(function (){
 	                i.graphics.remove(i.text);  
@@ -65,7 +65,7 @@ class MetodoMain extends Element{
 	            }).start(); 
 	    }
 	    var tweenB = new TWEEN.Tween(cube.scale)
-	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
+	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controles.getVelocidad())
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
 	        metodo.graphics.remove(metodo.text);  
@@ -78,7 +78,8 @@ class MetodoMain extends Element{
 
 	        pintarArbolDeLlamadas();
 	         if(Main.lstPasos.children.length == 0 && Main.ejecutado ){//si el programa termino 
-		        ctrl_fun_Reiniciar();
+	         	Controles.activar__botones()
+		        Controles.funcion.Reiniciar();
 		    }
 
 	    });

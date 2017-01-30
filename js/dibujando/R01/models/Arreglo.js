@@ -29,7 +29,7 @@ class ArregloValor extends Element{
 	        .to({ x: (Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)+(Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)*element.my_indice, 
 	             // y:  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)), 
 	              //z: -((TAM_GRAL*METODO_SCALE_Z)/2-TAM_GRAL/2)
-	               }, Controls.velocidad)
+	               }, Controles.getVelocidad())
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){})
 	        .onUpdate(function () {})
@@ -81,7 +81,7 @@ class Arreglo extends Element{
 					x: -(((padreCubeTamano.width*padreCubeScale.x)/2)-(thisCuboTamano.width*thisCuboScale.x)/2), 
 					y:  ((thisCuboTamano.height*thisCuboScale.y)+((thisCuboTamano.height*thisCuboScale.y)+Config_R01.TAM_GRAL/3)*element.my_indice), 
 					z: -(((padreCubeTamano.depth*padreCubeScale.z)/2)-(thisCuboTamano.depth*thisCuboScale.z)/2)  	
-	          	}, Controls.velocidad)
+	          	}, Controles.getVelocidad())
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){})
 	        .onUpdate(function () {})

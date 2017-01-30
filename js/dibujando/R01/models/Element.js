@@ -52,7 +52,7 @@ class Element{
 
         return malla;
     }
-    _setText( name, indice, txt, siguientePaso=false, animar=true, valorAnterior = null){
+    _setText( name, indice, txt, siguientePaso, animar, valorAnterior = null){
         let groupText       = this._text;
         let size            = 70;
         let height          = 20;
@@ -62,7 +62,7 @@ class Element{
         let bevelEnabled    = false;// este valor en true para fuentes muy pequeñas (size) se distorciona el texto
 
         let textGeo = new THREE.TextGeometry( txt, {
-            font: MyThreeJS.font,
+            font: R01_utileria.font.font,
             size: size,
             height: height,
             ///*
@@ -147,8 +147,12 @@ class Element{
         let zi = z/2;
 
         // Cambiamos la posicion del texto
-        if( ! animar){ //si no se desea animar el texto solo aparecera en la pared del cubo
+        if( animar == false){ //si no se desea animar el texto solo aparecera en la pared del cubo
             textMesh1.position.set(xi, yi, zi);    
+
+            if(valorAnterior){
+                groupText.remove(valorAnterior);
+            }
             if(siguientePaso){
                 Main.TriggerNextStep();
             }
@@ -160,7 +164,7 @@ class Element{
                 );     // lo envio al centro del metodo o padre
 
             let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
+                .to         ({ x:xi, y:yi, z:zi },Controles.getVelocidad())
                 .easing     (TWEEN.Easing.Quadratic.In)
                 .onStart    ( function (){} )
                 .onUpdate   ( function (){} )
@@ -225,7 +229,7 @@ class Element{
                     );     // lo envio al centro del metodo o padre
 
                 let tween = new TWEEN.Tween(textMesh1.position,valorAnterior)
-                    .to         ({ x:xi, y:yi, z:zi },Controls.velocidad)
+                    .to         ({ x:xi, y:yi, z:zi },Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In)
                     .onStart    ( function (){} )
                     .onUpdate   ( function (){} )
@@ -237,7 +241,7 @@ class Element{
                             if(Main.esAnimacionFluida){
                                 Main.pasoApaso();
                             }else{
-                                ctrl_fun_Activa__PorPaso();
+                                Controles.activar__botones();
                             }
                         }
                     });                    

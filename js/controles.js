@@ -1,315 +1,148 @@
-var ctrl_Preparar              = null;
-var ctrl_Animar                = null;
-var ctrl_Animar_Paso           = null;
-var ctrl_Pausa                 = null;
-var ctrl_Reiniciar             = null;
-var ctrl_Ejemplos              = [];
 
-var isActive_ctrl_Preparar     = true;
-var isActive_ctrl_Animar       = false;
-var isActive_ctrl_Animar_Paso  = false;
-var isActive_ctrl_Pausa        = false;
-var isActive_ctrl_Reiniciar    = false;
+var Controles = { 
+    gui:null,
+    _botones:{
+        preparar     :{ isEnabled:false,  btn:null },
+        animar       :{ isEnabled:false, btn:null },
+        pasoApaso    :{ isEnabled:false, btn:null },
+        pausa        :{ isEnabled:false, btn:null },
+        reiniciar    :{ isEnabled:false, btn:null },
+        velocidad    :{ isEnabled:false, btn:null },
+        npasos       :{ isEnabled:false, btn:null },
+        fullScreen   :{ isEnabled:false, btn:null },
+        opacidad     :{ isEnabled:false, btn:null },
+        opacidad     :{ isEnabled:false, btn:null },
+    },
+    _activar : function(key){
+        Controles._botones[key].isEnabled  = true;
+        Controles._botones[key].btn.__li.setAttribute("style", "border-left: 3px solid #1ed36f;");         
+    },
+    _desactivar : function(key){
+        Controles._botones[key].isEnabled  = false;
+        Controles._botones[key].btn.__li.setAttribute("style", "border-left: 3px solid red;"); 
+    },
+    getVelocidad : function(){
+        let velocidad = 100;
+        if( Controles.funcion.Velocidad == 10 ){
+            velocidad = 100;
+        }else{
+            velocidad = 5000/Controles.funcion.Velocidad;
+        }
+        console.log(velocidad)
+        return velocidad;
+    },
+    activar__botones    : function(){// Al terminar una animacion se llama esta funcion
+        // La primeta activacion la tiene en el modelo librerias al terminar la animacion
+        Controles._activar("animar");
+        Controles._activar("pasoApaso");
+        Controles._activar("reiniciar");
 
-var isActive_ctrl_Ejemplos     = true;
-var Controls = {
-        velocidad: 200,
-        pasos: 0,
-        Preparar: function () {
-        	if(isActive_ctrl_Preparar){
-				Main.preparar();
-        	}
+        //ctrl_fun_Activa__Ejemplos  ();
+
+        if(this.gui.closed){
+            $(".close-button").css({"background-color": "#000", "color": "#eee"}); 
+        }
+    },
+    desactivar__botones : function(){
+        Controles._desactivar("pasoApaso");
+        Controles._desactivar("animar");
+        Controles._desactivar("reiniciar");
+
+        //ctrl_fun_desactiva__Ejemplos  ();
+
+        if(this.gui.closed){
+            $(".close-button").css({"background-color": "red", "color": "#000"}); 
+        }
+    },
+    funcion             : {
+        Velocidad       : 10,
+        Pasos           : 0,
+        Mensaje         : "Hola mundo",
+        FullScreen      : true, // para el editor
+        Opacidad        : 0,// para el editor
+        Comodin         : function(){
+            
+            console.log(Controles.getVelocidad());
         },
-        Animar: function () {
-            if(isActive_ctrl_Animar){
+        Preparar        : function(){
+            if(Controles._botones.preparar.isEnabled){
+                if(Main.preparar()){
+                    this.pasos = 0;
+                    Controles._desactivar("preparar");
+                }
+            }
+        },
+        Animar          : function () {
+            if(Controles._botones.animar.isEnabled){
+
+                Controles.desactivar__botones();
+                Controles._activar("pausa");
+
                 Main.animacionFluida();
             }
         },
-        Animar_Paso: function () {
-        	if(isActive_ctrl_Animar_Paso){
-				Main.pasoApaso();				
-        	}
+        'Paso a paso'   : function () {
+            if(Controles._botones.pasoApaso.isEnabled){
+                Controles.funcion.pasos += 1; 
+                Controles.desactivar__botones();
+                Main.pasoApaso();               
+            }
         },
-        Pausa:function (){
-            if(isActive_ctrl_Pausa){
+        Pausa           :function (){
+            if(Controles._botones.pausa.isEnabled){                
+                Controles._desactivar("pausa");
                 Main.pausa();                
             }            
         },
-        Reiniciar:function (){
-            if(isActive_ctrl_Reiniciar){
-                ctrl_fun_Reiniciar();
+        Reiniciar       :function (){
+            if(Controles._botones.reiniciar.isEnabled){
+                Controles.desactivar__botones();                              
+                Controles._desactivar("pausa");
+                Controles._activar("preparar");
+                $(".close-button").css({"background-color": "#000", "color": "#eee"}); 
+                //ctrl_fun_Activa__Ejemplos  ();
+                
+
+                Main.reiniciar();
             }
         },
-
-
-        Ejemplo_01:function (){
-            if(isActive_ctrl_Ejemplos){                
-                ctrl_fun_Reiniciar();
-                javaEditor_setText(ejemploDeCodigo_01);
-            }
-        },
-        Ejemplo_02:function (){
-            if(isActive_ctrl_Ejemplos){                
-                ctrl_fun_Reiniciar();
-                javaEditor_setText(ejemploDeCodigo_02);
-            }
-        },
-        Ejemplo_03:function (){
-            if(isActive_ctrl_Ejemplos){                
-                ctrl_fun_Reiniciar();
-                javaEditor_setText(ejemploDeCodigo_03);
-            }
-        },
-        Ejemplo_04:function (){
-            if(isActive_ctrl_Ejemplos){                
-                ctrl_fun_Reiniciar();
-                javaEditor_setText(ejemploDeCodigo_04);
-            }
-        },
-
-
-        fullScreen: true,
-        Opacidad:0,
-
-
-        'Arbol Sintactico':false,
-        'Arbol de LLamadas':false,
-        a1:false,
-        a2:false,
-        a3:false,
-        message: function (){
-            console.log(javaEditor.getOption("fullScreen"))
-        },
-    };
-
-function ctrl_fun_ActivaControles() {
-    // Despues de prepara el AnalisadorSintactico y 
-    // mostrar en pantalla las librerias se puede ejecutar esta funcion
-    // js\dibujando\models\Libreria.js:
-
-
-    ctrl_fun_Activa__PorPaso();
-
-}
-function ctrl_fun_Reiniciar(){
-    Main.reiniciar();
-
-    isActive_ctrl_Preparar     = true;
-    isActive_ctrl_Animar       = false;
-    isActive_ctrl_Animar_Paso  = false;
-    isActive_ctrl_Pausa        = false;
-
+    },
     
 
-    ctrl_Preparar.__li.setAttribute    ("style", "border-left: 3px solid green;"); 
-    ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid red;"  ); 
-    ctrl_Animar_Paso.__li.setAttribute ("style", "border-left: 3px solid red;"  ); 
-    ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
-    ctrl_Reiniciar.__li.setAttribute   ("style", "border-left: 3px solid red;"  );    
-    
+};
+Controles.setupControles = function (){
+    this.gui = new dat.GUI();
+    $(".dg.ac").css( "z-index", "11" );// tiene valor de 11 ya que el editor de texto es de 10
 
-    
-    ctrl_fun_Activa__Ejemplos  ();
-}
+    this.gui.add(this.funcion,"Comodin");
+    this.gui.add(this.funcion,"Mensaje");
 
-function ctrl_fun_desactiva__PorPaso(){
-    isActive_ctrl_Animar_Paso  = false;
-    ctrl_Animar_Paso.__li.setAttribute ("style", "border-left: 3px solid red;"  );
-    ctrl_fun_desactiva__Animar    ();
-    ctrl_fun_desactiva__Reiniciar ();
-    ctrl_fun_desactiva__Ejemplos  ();
-}
-function ctrl_fun_Activa__PorPaso(){
-    isActive_ctrl_Animar_Paso  = true;
-    ctrl_Animar_Paso.__li.setAttribute ("style", "border-left: 3px solid green;"  );
-    ctrl_fun_Activa__Animar    ();
-    ctrl_fun_Activa__Reiniciar ();
-    ctrl_fun_Activa__Ejemplos  ();
-}
+    /***************************************************************************************************/
+    let f1                        = this.gui.addFolder('Animacion');
+    this._botones.preparar.btn    = f1.add(this.funcion, 'Preparar');
+    this._botones.animar.btn      = f1.add(this.funcion, 'Animar');
+    this._botones.pasoApaso.btn   = f1.add(this.funcion, 'Paso a paso');
+    this._botones.pausa.btn       = f1.add(this.funcion, 'Pausa');
+    this._botones.reiniciar.btn   = f1.add(this.funcion, 'Reiniciar');
+    this._botones.velocidad.btn   = f1.add(this.funcion, 'Velocidad').min(1).max(10).step(1);
+    this._botones.npasos.btn      = f1.add(this.funcion, 'Pasos').listen();
+    this._activar("preparar");
 
 
-function ctrl_fun_desactiva__Animar(){
-    isActive_ctrl_Animar        = false;
-    ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid red;"  );
-    if(Main.esAnimacionFluida){
-        isActive_ctrl_Pausa     = true;
-        ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid green;");
-    }
-}
-function ctrl_fun_desactiva__Reiniciar(){
-    isActive_ctrl_Reiniciar  = false;
-    ctrl_Reiniciar.__li.setAttribute ("style", "border-left: 3px solid red;"  );
-}
-function ctrl_fun_Activa__Animar(){
-    isActive_ctrl_Animar       = true;
-    ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid green;"  );
-}
-function ctrl_fun_Activa__Reiniciar(){
-    isActive_ctrl_Reiniciar  = true;
-    ctrl_Reiniciar.__li.setAttribute ("style", "border-left: 3px solid green;"  );
-}
+    let f2 = this.gui.addFolder('Editor');
+    this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
+    this._botones.opacidad.btn   = f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
 
-function ctrl_fun_desactiva__Ejemplos(){
-    isActive_ctrl_Ejemplos = false;
-    for(let i of ctrl_Ejemplos){
-        i.__li.setAttribute ("style", "border-left: 3px solid red;"  );
-    }
-}
-function ctrl_fun_Activa__Ejemplos(){
-    isActive_ctrl_Ejemplos = true;
-    for(let i of ctrl_Ejemplos){
-        i.__li.setAttribute ("style", "border-left: 3px solid green;"  );
-    }
-}
-function ctrl_fun__Preparar(){
-    if(isActive_ctrl_Preparar){                
-        Controls.pasos = 0;
-        isActive_ctrl_Preparar = false;
-        ctrl_Preparar.__li.setAttribute    ("style", "border-left: 3px solid red;"  );  
-    }
-}
-function setupControls(){
-	
-    let gui = new dat.GUI();
-    $(".dg.ac").css( "z-index", "11" );
-
-console.log(gui.closed);
-gui.add(Controls,'message');
-
-/***************************************************************************************************/
-    let f1               = gui.addFolder('Animacion');
-    	ctrl_Preparar    = f1.add(Controls, 'Preparar');
-    	ctrl_Animar      = f1.add(Controls, 'Animar');
-    	ctrl_Animar_Paso = f1.add(Controls, 'Animar_Paso');
-    	ctrl_Pausa       = f1.add(Controls, 'Pausa');
-    	ctrl_Reiniciar   = f1.add(Controls, 'Reiniciar');
-    let ctrl_velocidad   = f1.add(Controls, 'velocidad').min(100).max(5000).step(100);
-    					   f1.add(Controls, 'pasos').listen();
-
-    	
-	    ctrl_Preparar.__li.setAttribute        ("style", "border-left: 3px solid green;"); 
-	    ctrl_Animar.__li.setAttribute          ("style", "border-left: 3px solid red;"  ); 
-	    ctrl_Animar_Paso.__li.setAttribute     ("style", "border-left: 3px solid red;"  ); 
-	    ctrl_Pausa.__li.setAttribute           ("style", "border-left: 3px solid red;"  );
-        ctrl_Reiniciar.__li.setAttribute       ("style", "border-left: 3px solid red;"  );  
-
-
-        /*eventos*/
-
-	    ctrl_Animar.onFinishChange(function(value) {
-            if(isActive_ctrl_Animar){            
-                isActive_ctrl_Animar       = false;
-    	    	isActive_ctrl_Animar_Paso  = false;
-                isActive_ctrl_Pausa        = true;
-                ctrl_Animar.__li.setAttribute      ("style", "border-left: 3px solid red;"  ); 
-                ctrl_Animar_Paso.__li.setAttribute ("style", "border-left: 3px solid red;"  ); 
-                ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid green;");
-            }
-	    });
-	    ctrl_Pausa.onFinishChange(function(value) {
-            isActive_ctrl_Pausa        = false;
-            ctrl_Pausa.__li.setAttribute       ("style", "border-left: 3px solid red;"  );
-	    });
-
-	    
-
-/***************************************************************************************************/
-    let f2 = gui.addFolder('Ejemplos');
-	    ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_01'));
-        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_02'));
-        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_03'));
-        ctrl_Ejemplos.push(f2.add(Controls, 'Ejemplo_04'));
-
-    for(let i of ctrl_Ejemplos){
-        i.__li.setAttribute       ("style", "border-left: 3px solid green;");
-    }
-
-
-
-/***************************************************************************************************/
-    let f3 = gui.addFolder('Editor');
-
-    let ctrl_fullScreen = f3.add(Controls, 'fullScreen');
-    let ctrl_Opacidad   = f3.add(Controls, 'Opacidad').min(0).max(1).step(.1);
-
-	    ctrl_fullScreen.onFinishChange(function(value) {
-	    	javaEditor.setOption("fullScreen", Controls.fullScreen)
-	    });
-	    ctrl_Opacidad.onChange(function(value) {
-	    	$(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
-	    });
-	    ctrl_Opacidad.onFinishChange(function(value) {
-	    	$(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
-	    });
-
-/***************************************************************************************************/
-	let f4         = gui.addFolder('Informacion');
-
-    let ctrl_as    = f4.add(Controls,'Arbol Sintactico');
-    let ctrl_aCall = f4.add(Controls, 'Arbol de LLamadas');
-
-    let ctrl_a1    = f4.add(Controls, 'a1');
-    let ctrl_a2    = f4.add(Controls, 'a2');
-    let ctrl_a3    = f4.add(Controls, 'a3');
-
-	$('#representacion_arbolSintactico').css({'visibility': 'hidden'});
-	$('#representacion_arbolDeLlamadas').css({'visibility': 'hidden'});
-
-	$('#representacionarreglo1').css({'visibility': 'hidden'});
-	$('#representacionarreglo2').css({'visibility': 'hidden'});
-	$('#infonodo_as').css({'visibility': 'hidden'});
-
-    ctrl_as.onFinishChange(function(value) {
-    	if(Controls['Arbol Sintactico']){
-    		$('#representacion_arbolSintactico').css({'visibility': 'visible'});
-    	}else{
-    		$('#representacion_arbolSintactico').css({'visibility': 'hidden'});
-    	}
+    this._botones.fullScreen.btn.onFinishChange(function(value) {
+        javaEditor.setOption("fullScreen", Controles.funcion.FullScreen)
     });
-    ctrl_aCall.onFinishChange(function(value) {
-    	if(Controls['Arbol de LLamadas']){
-    		$('#representacion_arbolDeLlamadas').css({'visibility': 'visible'});
-    	}else{
-    		$('#representacion_arbolDeLlamadas').css({'visibility': 'hidden'});
-    	}
+    this._botones.opacidad.btn.onChange(function(value) {
+        $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controles.funcion.Opacidad+')' });
     });
-
-    ctrl_a1.onFinishChange(function(value) {
-    	if(!this.__prev){
-    		$('#representacionarreglo1').css({'visibility': 'visible'});
-    	}else{
-    		$('#representacionarreglo1').css({'visibility': 'hidden'});
-    	}
-    });
-    ctrl_a2.onFinishChange(function(value) {
-    	if(!this.__prev){
-    		$('#representacionarreglo2').css({'visibility': 'visible'});
-    	}else{
-    		$('#representacionarreglo2').css({'visibility': 'hidden'});
-    	}
-    });
-    ctrl_a3.onFinishChange(function(value) {
-    	if(!this.__prev){
-    		$('#infonodo_as').css({'visibility': 'visible'});
-    	}else{
-    		$('#infonodo_as').css({'visibility': 'hidden'});
-    	}
-    });
-    
-    /*
-    let f5          = gui.addFolder("Movimiento");
-    
-    let f6          = gui.addFolder("dev");
-    //*/
 
 
     f1.open();
     f2.open();
-    f3.open();
-    f4.open();
-
-
-
-/***************************************************************************************************/
-    
 }
+
+

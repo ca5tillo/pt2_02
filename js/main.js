@@ -17,7 +17,8 @@ var Main = {
     'lstPasos'             : {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null},
     'esAnimacionFluida'    : false,
     'ejecutado'            : false,
-    'existenErrores'       : false,
+    'existeMain'           : false, // Existe metodo main en el editor
+    'existenErrores'       : false, // as_imprimirArbol
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
 
@@ -26,7 +27,7 @@ var Main = {
         this.esAnimacionFluida   = false;
         this.ejecutado           = false;
         this.existenErrores      = false;
-        this.llamadas            = [];
+        this.llamadas            = [];        
     },
     analizarCodigoFuente   : function(){
         javaEditor_clearMarkError();
@@ -66,23 +67,20 @@ var Main = {
         _run();
     },
     preparar               : function(){//BTN
-        this.existenErrores = false;
         this.analizarCodigoFuente();  
 
-        javaEditor_markText_Clean();  
-
         let main         = as_GetFunctionByName("main");
-        if( main && !this.existenErrores && !this.ejecutado){
+        if( this.existeMain && !this.existenErrores && !this.ejecutado){
             this.nextInstruccion = main;      
             this.ejecutado       = true;
             this._marcarLinea_2(main);
             
             this.precompilacion();
-            ctrl_fun__Preparar();
 
             javaEditor_enableReadOnly();
             MyThreeJS.enableCameraControl();
         }
+        return this.existeMain && !this.existenErrores;
     },
     animacionFluida        : function(){// BTN
         this.esAnimacionFluida = true;
@@ -95,7 +93,7 @@ var Main = {
     pasoApaso              : function(){// BTN
         let instruccion = null;
         let tipo        = null;
-        ctrl_fun_desactiva__PorPaso   ();Controls.pasos += 1;   
+          
         javaEditor_markText_Clean();
 
 
@@ -140,7 +138,7 @@ var Main = {
         if(Main.esAnimacionFluida){
             this.pasoApaso();
         }else{                            
-            ctrl_fun_Activa__PorPaso();                            
+            Controles.activar__botones();                            
         }
     },
     _addlstPasos_Level_1   : function(padre, id_3D){
@@ -231,7 +229,6 @@ var Main = {
         else{
             javaEditor_markText_InstuccionSiguiente(i.position.regla); 
         } 
-
     },
     dibujar                : function(instruccion){
         let O_o = instruccion.reglaP
@@ -278,8 +275,10 @@ var Main = {
             let declaracion = as_GetFunctionByName(instruccion.name);
             let id          = R01.llamarMetodo(instruccion, declaracion, destino);
 
+            // Add Pasos para ejecutar el contenido  de la declaracion del metodo
             this._addlstPasos_Level_1(declaracion, id);
 
+            // Add Pasos al generador para la creacion de los argumentos
             if(instruccion.argumentos.length > 0 ){
                 this._addlstPasos_Level_2(instruccion.argumentos,"argumentos");
             }
@@ -294,11 +293,14 @@ var Main = {
         }
         else if( (O_o) == "return_num" ){    
 
-            returnNum(instruccion);
+            R01.returnNum(instruccion);
         }
         else if( (O_o) == "asignacion2"         ){    
-
-            asignacion2(instruccion);  
+            /*
+                Para representar Operaciones matematicas 
+                i = 5+9;
+            */
+            R01.asignacion2(instruccion);  
         }
         else if( (O_o) == "Condicional_if"         ){    
             let resultado = drawIF(instruccion);
@@ -310,7 +312,7 @@ var Main = {
             }else{
                 instruccion.evaluadoEn = false;
             }
-            ctrl_fun_Activa__PorPaso();
+            Controles.activar__botones();
             if(Main.esAnimacionFluida){
                 Main.pasoApaso();
             }
@@ -360,15 +362,29 @@ var Main = {
 
 
 function init(){
-    MyThreeJS.init();
+    Controles.setupControles();
+    R01_utileria.load();
+    load();
+}
+function load(){
+    let _id = requestAnimationFrame(load);
+    if( R01_utileria.allLoaded() ){
 
-    setup_javaEditor();
-    javaEditor_setText(ejemploDeCodigo_02);
+        console.log("Utilerias Cargadas Satisfactoriamente")
 
-    setupControls();
+        setup_javaEditor();
+        javaEditor_setText(ejemploDeCodigo_02);
 
-    teclado();
-    render();
+        MyThreeJS.init();
+
+        
+        //setupControls();
+        teclado();
+
+        render();
+
+        cancelAnimationFrame(_id);
+    }
 }
 
 function render(){   
@@ -376,15 +392,12 @@ function render(){
 
     MyThreeJS.renderer.render(MyThreeJS.scene, MyThreeJS.camera);
     MyThreeJS.cameraControl.update();    
-
-
     /*
     if(lstElements){    
         //https://github.com/mrdoob/three.js/issues/434
         //camera.lookAt(lstElements.getChildrenById(idNodoFinal).graphics.children[0].matrixWorld.getPosition());
     }
     //*/
-
     requestAnimationFrame(render);
 }
 

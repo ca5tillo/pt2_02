@@ -75,12 +75,13 @@ body {
 
 
 
+
+
 #editor{
     position : absolute;   
     height   : 100%;
     border   : solid 1px #fff;
 }
-
 
 .CodeMirror-selected  { background-color:transparent !important;}/*Remplazando el estilo original*/
 

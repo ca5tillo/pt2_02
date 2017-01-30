@@ -9,13 +9,11 @@ var MyThreeJS = {
 	'_NEAR'         : 0.1,
 	'_FAR'          : 3000,
 
-	'font'          : null,
 	'cameraControl' : null,
 
 
 	'init'			: function(){
 			this.setupThreeJS();
-			this.loadFont();
 			this.addFloor();
 			this.ambientLight();
 			this.spotLight();
@@ -53,18 +51,13 @@ var MyThreeJS = {
 	    document.getElementById("representacion_3D").appendChild(this.renderer.domElement);
 	},
 	'enableCameraControl' : function(){
+		
 		this.cameraControl.enabled = true;
 	},
 	'disableCameraControl' : function(){
 		//http://stackoverflow.com/questions/16525043/reset-camera-using-orbitcontrols-js
 	    this.cameraControl.enabled = false;
 		this.cameraControl.reset();	 
-	},
-	'loadFont' 		: function(){
-		let loader = new THREE.FontLoader();
-	    loader.load( 'lib/three-js/examples/fonts/optimer_bold.typeface.json', function ( response ) {
-	        MyThreeJS.font = response;
-	    });
 	},
 	'onResize'		: function(){
 	    MyThreeJS.camera.aspect = MyThreeJS._ASPECT;
@@ -96,41 +89,17 @@ var MyThreeJS = {
 	        //*/
 	},
 	'addFloor'      : function(){
-	    // instantiate a loader
-	    let loader = new THREE.TextureLoader();
-
-	    // load a resource
-	    loader.load(
-	        // resource URL
-	        'img/textures/floor_2-1024x1024.png',
-	        // Function when resource is loaded
-	        function ( texture ) {
-	            // do something with the texture
-	            /*let material = new THREE.MeshBasicMaterial( {
-	                map: texture
-	             } );//*/
-	            let floorMaterial = new THREE.MeshPhongMaterial();
-	                floorMaterial.map = texture;
-	                floorMaterial.map.wrapS = floorMaterial.map.wrapT = THREE.RepeatWrapping;
-	                floorMaterial.map.repeat.set(8, 8);
-	            let floorGeometry = new THREE.PlaneGeometry(200, 200, 20, 20);
-	            
-
-	            let floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
-	                floorMesh.receiveShadow = true;
-	                floorMesh.rotation.x = -0.5 * Math.PI;
-	                floorMesh.position.y = -Config_R01.TAM_GRAL/2;// bajo el piso para no tener q recalcular cada elemento a la altura del piso
-	            MyThreeJS.scene.add(floorMesh);
-	        },
-	        // Function called when download progresses
-	        function ( xhr ) {
-	            //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
-	        },
-	        // Function called when download errors
-	        function ( xhr ) {
-	            //console.log( 'An error happened' );
-	        }
-	    );
+        let floorMaterial = new THREE.MeshPhongMaterial();
+            floorMaterial.map = R01_utileria.floor.texture;
+            floorMaterial.map.wrapS = floorMaterial.map.wrapT = THREE.RepeatWrapping;
+            floorMaterial.map.repeat.set(8, 8);
+        let floorGeometry = new THREE.PlaneGeometry(200, 200, 20, 20);
+        
+        let floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
+            floorMesh.receiveShadow = true;
+            floorMesh.rotation.x = -0.5 * Math.PI;
+            floorMesh.position.y = -Config_R01.TAM_GRAL/2;// bajo el piso para no tener q recalcular cada elemento a la altura del piso
+        MyThreeJS.scene.add(floorMesh);	  
 	}
 	
 };

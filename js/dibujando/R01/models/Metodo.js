@@ -52,7 +52,7 @@ class Metodo extends Element{
 		    .to({ x: 0, 
 		          y: 0 + Config_R01.TAM_GRAL*2, 
 		          z: 0 + Config_R01.TAM_GRAL*2 
-		      }, Controls.velocidad)
+		      }, Controles.getVelocidad())
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onStart(function (){})
 		    .onComplete(function () {});
@@ -60,7 +60,7 @@ class Metodo extends Element{
 	    var scale = new TWEEN.Tween(this.cube.scale)
 		    .to({ x: R01.METODO_SCALE_X,
 		    	  y: R01.METODO_SCALE_Y,
-		    	  z: R01.METODO_SCALE_Z,}, Controls.velocidad/2)
+		    	  z: R01.METODO_SCALE_Z,}, Controles.getVelocidad()/2)
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {    
 		        let siguientePaso = true;
@@ -84,7 +84,7 @@ class Metodo extends Element{
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
-	            .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
+	            .to({ x:0.001,Y:0.001,z: 0.001,}, Controles.getVelocidad())
 	            .easing(TWEEN.Easing.Quadratic.In)
 	            .onStart(function (){
 	                i.graphics.remove(i.text);  
@@ -93,7 +93,7 @@ class Metodo extends Element{
 	            }).start(); 
 	    }
 	    var tweenB = new TWEEN.Tween(cube.scale)
-	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controls.velocidad)
+	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controles.getVelocidad())
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
 	        metodo.graphics.remove(metodo.text);  

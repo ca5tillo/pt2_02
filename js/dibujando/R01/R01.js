@@ -249,6 +249,58 @@ var R01 = {
         }
         this.MethodOut();
     },
+    returnNum              : function(instruccion){
+
+        let siguientePaso   = false; // es false ya que el  MethodOut() ara el siguiente paso
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        if(contenedor.returnA){
+
+            let value           = instruccion.num;
+            let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
+            destino.value       = value;
+            destino.setTextValue(value,siguientePaso);
+
+        }
+        this.MethodOut();
+    },
+    asignacion2            : function(instruccion){
+        /*
+            Para representar Operaciones matematicas 
+            i = 5+9;
+        */
+        let siguientePaso   = true;
+        let animar          = true;
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let expresion = "";
+        let resultado = "?";
+        
+        for(let i of instruccion.expresion){
+            if(i.symbol == 'NAME'){
+                expresion += " "+contenedor.getChildrenByName(i.string).value;
+            }else{
+                expresion += " "+i.string;
+            }
+        }
+
+        try{
+            resultado = eval(expresion);
+        }catch(err){
+            alert("Error en tiempo de ejecucion");
+        }
+
+        let value           = resultado;
+        let destino         = this.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
+        destino.setTextValue(value,siguientePaso,animar);
+        destino.value       = value;
+    }
 
 };
 
@@ -377,69 +429,7 @@ function createText(sa) {
 
 
 
-function returnNum(instruccion){
-    if(instruccion.lineaInicial){
-        javaEditor_markText_Clean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }
 
-    let siguientePaso   = false; // es false ya que el  MethodOut() ara el siguiente paso
-    let idPadre         = getIdsAncestros().p;
-    let idContenedor    = getIdsAncestros().c;
-    let contenedor      = lstElements.getChildrenById(idContenedor);
-    let padre           = lstElements.getChildrenById(idPadre);
-
-    if(contenedor.returnA){
-
-        let value           = instruccion.num;
-        let destino         = lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
-        destino.value       = value;
-        destino.setTextValue(value,siguientePaso);
-
-    }
-    MethodOut();
-}
-function asignacion2(instruccion){
-    if(instruccion.lineaInicial){
-        javaEditor_markText_Clean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }
-
-
-    let siguientePaso   = true;
-    let idPadre         = getIdsAncestros().p;
-    let idContenedor    = getIdsAncestros().c;
-    let contenedor      = lstElements.getChildrenById(idContenedor);
-    let padre           = lstElements.getChildrenById(idPadre);
-
-    let expresion = "";
-    let resultado = "?";
-    
-    for(let i of instruccion.expresion){
-        if(i.symbol == 'NAME'){
-            expresion += " "+contenedor.getChildrenByName(i.string).value;
-        }else{
-            expresion += " "+i.string;
-        }
-    }
-
-    try{
-        resultado = eval(expresion);
-    }catch(err){
-        alert("Error en tiempo de ejecucion");
-    }
-
-
-
-
-    let value           = resultado;
-    let destino         = lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
-
-    destino.value       = value;
-    destino.setTextValue(value,siguientePaso);
-
-  
-}
 
 
 

@@ -49,12 +49,12 @@ function setup_javaEditor(){
     });
     //  Evento change 
     javaEditor.on("change", function(javaEditor, inputRead) {    
-        Main.analizarCodigoFuente();
+
     });
 
     
-    javaEditor.setOption("fullScreen", Controls.fullScreen);
-    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controls.Opacidad+')' });
+    javaEditor.setOption("fullScreen", Controles.funcion.FullScreen);
+    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controles.funcion.Opacidad+')' });
 }
 function javaEditor_setText(value){
 	javaEditor.setValue(value);

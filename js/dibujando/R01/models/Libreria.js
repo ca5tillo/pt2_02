@@ -23,7 +23,7 @@ class Libreria extends Element{
         let element = this._element;
 
         let opacity = new TWEEN.Tween(cubo.material)
-	        .to({ opacity: 1 }, Controls.velocidad)
+	        .to({ opacity: 1 }, Controles.getVelocidad())
 	        .easing(TWEEN.Easing.Quadratic.In)
 	        .onStart(function (){
 	            cubo.material.visible = true; 
@@ -37,11 +37,11 @@ class Libreria extends Element{
 		        x: R01.zoneLib.position.x, 
 		        y:(Config_R01.TAM_GRAL*R01.LIB_SCALE_Y)*this._element.my_indice + Config_R01.TAM_GRAL/4*this._element.my_indice,
 		        z: R01.zoneLib.position.z 
-		   	}, Controls.velocidad)
+		   	}, Controles.getVelocidad())
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {
 		    	if(minum == numLibs){
-		    		ctrl_fun_ActivaControles();
+		    		Controles.activar__botones();
 		    	}
 		    });
 

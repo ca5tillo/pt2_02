@@ -669,12 +669,15 @@ function _as_finalizarRama(rbrace){
     as_ids.pop();
 }
 function as_imprimirArbol(nodo){
-
+    Main.existenErrores = false;
+    Main.existeMain     = false;
     _createLista = function (nodo){
         if(nodo.reglaP == "ERROR_SINTACTICO"){
             javaEditor_markError(nodo.position.bloque.y1,nodo.position.bloque.y2);
             Main.existenErrores = true;
         }
+        if(nodo.name == "main")Main.existeMain = true;
+
         let li    = document.createElement("li");        
         let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
         li.setAttribute("data-value", `${nodo.id}`); 

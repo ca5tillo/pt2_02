@@ -22,7 +22,7 @@ var ejemploDeCodigo_02 =
     public static int pasoParametros(int a, int b,String txt){
         a = 69;
         metodo();
-        return a;
+        return 999;
     }
     public static void main() {
         int a = 10; int b = 20;
