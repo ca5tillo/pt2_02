@@ -29,6 +29,7 @@ body {
     background:rgba(255,255,255,.3);
     z-index: 9;
     color:#fff;
+    visibility: hidden;
 }
 #representacion_arbolSintactico{
     position: absolute;
@@ -40,6 +41,7 @@ body {
     z-index: 9;
     color:#fff;
     overflow: auto;
+    visibility: hidden;
 }
 #representacionarreglo1{
     position: absolute;
@@ -50,6 +52,7 @@ body {
     background:rgba(255,255,255,.3);
     z-index: 9;
     color:#fff;
+    visibility: hidden;
 }
 #representacionarreglo2{
     position: absolute;
@@ -60,6 +63,7 @@ body {
     background:rgba(255,255,255,.3);
     z-index: 9;
     color:#fff;
+    visibility: hidden;
 }
 #infonodo_as{
     position: absolute;
@@ -70,6 +74,7 @@ body {
     background:rgba(255,255,255,.3);
     z-index: 9;
     color:#fff;
+    visibility: hidden;
 }
 
 

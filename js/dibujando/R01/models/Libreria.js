@@ -15,10 +15,11 @@ class Libreria extends Element{
 	    this._cube.scale.y          = R01.LIB_SCALE_Y;
 	    this._cube.scale.z          = R01.LIB_SCALE_Z;
 
-	    this.setTextName(name,false,false);
+	    
 	}
 	get idAS(){ return this._idAS; }
     in(minum, numLibs){
+    	let _this   = this;
         let cubo    = this._cube;
         let element = this._element;
 
@@ -40,6 +41,7 @@ class Libreria extends Element{
 		   	}, Controles.getVelocidad())
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {
+		    	_this.setTextName(_this._name,false,false);
 		    	if(minum == numLibs){
 		    		Controles.activar__botones();
 		    	}
