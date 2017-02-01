@@ -6,8 +6,8 @@ var R01 = {
 
     'LIB_SCALE_X'          : 2,
     'LIB_SCALE_Y'          : 1,
-    'LIB_SCALE_Z'          : 1,
-    'METODO_SCALE_X'       : 13,
+    'LIB_SCALE_Z'          : 2,
+    'METODO_SCALE_X'       : 7,
     'METODO_SCALE_Y'       : 1,
     'METODO_SCALE_Z'       : 5,
 

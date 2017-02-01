@@ -20,13 +20,24 @@ class ArregloValor extends Element{
     	this.setTextName(this._name);
 	    this.setTextValue(this._value);
 	}
+	_setcube(){
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
+        var mat = new THREE.MeshPhongMaterial({map: R01_utileria.var.texture, transparent:true, opacity:0,visible:false});
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
+    }
 	in(TriggerNextStep = false){
 		
         let element = this._element;
  
-		
+		let u  = Config_R01.TAM_GRAL/3;
 		let tween = new TWEEN.Tween(element.position)// se usa obj para mover todo el grupo
-	        .to({ x: (Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)+(Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)*element.my_indice, 
+	        .to({ x: ((Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)+(Config_R01.TAM_GRAL+Config_R01.TAM_GRAL/3)*element.my_indice) + u, 
 	             // y:  ((TAM_GRAL)+(TAM_GRAL+TAM_GRAL/3)), 
 	              //z: -((TAM_GRAL*METODO_SCALE_Z)/2-TAM_GRAL/2)
 	               }, Controles.getVelocidad())
@@ -65,6 +76,17 @@ class Arreglo extends Element{
     	this.setTextType(this._type+"[]");
 	    this.setTextName(this._name +"=");
 	}
+	_setcube(){
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL*2, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
+        var mat = new THREE.MeshPhongMaterial({map: R01_utileria.var.texture, transparent:true, opacity:0,visible:false});
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
+    }
 	in(){		
         let element = this._element;
         

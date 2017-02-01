@@ -5,6 +5,21 @@ class MetodoMain extends Element{
 		this._idContenedor          =  R01.getElementLibByName(declaracion.padre.name).id;
 		this._name                  = `${declaracion.name}`;			
 	}
+	_setcube(){
+
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
+        //var mat = new THREE.MeshPhongMaterial({color: 'green',map: mapBg3, transparent:true, opacity:0,visible:false});
+        var mat = new THREE.MeshPhongMaterial({map: R01_utileria.metodo.texture, transparent:true, opacity:0,visible:false});
+
+
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
+    }
 	_getLibBy_idAS(idAS){
 		/*Ya que son metodos estaticos necesito conoser la posicion de la libreria*/
 		let x = null;

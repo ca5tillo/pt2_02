@@ -21,6 +21,7 @@ var Main = {
     'existenErrores'       : false, // as_imprimirArbol
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
+    'mousedown'            :false,
 
     reset                  : function(){
         this.lstPasos            = {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null};
@@ -128,6 +129,7 @@ var Main = {
         javaEditor_clearMarkError();
         javaEditor_disableReadOnly();
         MyThreeJS.disableCameraControl();
+        MyThreeJS.resetCameraControl();
 
         document.getElementById("representacion_arbolSintactico").innerHTML="";
         document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
@@ -369,23 +371,25 @@ var Main = {
 
 function init(){
     Controles.setupControles();
+
+
     R01_utileria.load();
     load();
 }
 function load(){
+
+
     let _id = requestAnimationFrame(load);
     if( R01_utileria.allLoaded() ){
 
-        console.log("Utilerias Cargadas Satisfactoriamente")
+        //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
         javaEditor_setText(ejemploDeCodigo_02);
 
         MyThreeJS.init();
 
-        
-        //setupControls();
-        //teclado();
+        setup_EEDOCDG();
 
         render();
 

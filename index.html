@@ -9,6 +9,8 @@
 
 <!-- CSS --> 
     <link rel="stylesheet" href="lib/jquery-ui-1.12.1/jquery-ui.min.css">
+
+
             <!-- codemirror --> 
     <link rel="stylesheet" href="lib/codemirror/lib/codemirror.css">            <!-- main --> 
     <link rel="stylesheet" href="lib/codemirror/theme/abcdef.css">              <!-- addons theme --> 
@@ -101,13 +103,56 @@
     
 
 
+    <div id="detalles">
+        <!-- Manija para redimencionar el div de detalles -->
+        <div id="handle" class="ui-resizable-handle ui-resizable-n"></div>
 
-    <div id="representacion_arbolDeLlamadas"></div>
-    <div id="representacion_arbolSintactico"></div>
-    <div id="representacionarreglo1"></div>
-    <div id="representacionarreglo2"></div>
-    <div id="infonodo_as"></div>
-
+        <div id="detalles-tabs">
+            <ul id="detalles-menu">
+                <li><a href="#tabs-0">^_^</a></li>
+                <li><a href="#tabs-1">Arbol Sintactico</a></li>
+                <li><a href="#tabs-2">Arbol de llamadas</a></li>
+                <li><a href="#tabs-3">dev</a></li>
+            </ul>
+            <div id="detalles-content">
+                <div id="tabs-0" style="text-align: center;">
+                    <pre>
+                       /**************************************************************\                       
+                        *                            \\|//                           *                        
+                        *                            (O O)                           *                        
+                        *            +----------oOO---------------------+            *                        
+                        *            | Desarrollado por Miguel Castillo |            *                        
+                        *            +-------------------oOO------------+            *                        
+                        *                          |__|__|                           *                        
+                        *                           || ||                            *                        
+                        *                         ooO Ooo                            *                        
+                       \**************************************************************/                       
+                    </pre>
+                </div>                
+                <div id="tabs-1" >
+                    <div style="width: 50%; float: left;">
+                        <div id="representacion_arbolSintactico"></div>                        
+                    </div>
+                    <div style="width: 50%; float: left;">                        
+                        <div id="infonodo_as"></div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+                <div id="tabs-2" >
+                    <div id="representacion_arbolDeLlamadas"></div>
+                </div>
+                <div id="tabs-3" >
+                    <div style="width: 50%; float: left;">
+                        <div id="representacionarreglo1"></div>                     
+                    </div>
+                    <div style="width: 50%; float: left;">  
+                        <div id="representacionarreglo2"></div>
+                    </div>
+                    <div style="clear: both;"></div>
+                </div>
+            </div>
+        </div><!-- ./ #detalles-tabs -->
+    </div><!-- id="detalles" -->
 
 </body>
 </html>

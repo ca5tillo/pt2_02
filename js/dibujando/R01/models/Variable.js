@@ -24,6 +24,17 @@ class Variable extends Element{
 	get value( ){ return this._value; }
 	get type ( ){ return this._type;  }
 
+	_setcube(){
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL*2, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
+        var mat = new THREE.MeshPhongMaterial({map: R01_utileria.var.texture, transparent:true, opacity:0,visible:false});
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
+    }
 	in(TriggerNextStep = true){		
         let element = this._element;
 

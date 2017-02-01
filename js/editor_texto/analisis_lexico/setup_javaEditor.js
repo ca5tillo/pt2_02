@@ -14,7 +14,7 @@ function setup_javaEditor(){
         styleActiveLine: true,//Resalta la linea activa (solo donde esta el prom o puntero)
         styleSelectedText: "CodeMirror-selectedtext",
         mode: {name: "text/x-java",number:/^(?:0x[a-f\d]+|0b[01]+|(?:\d+\.?\d*|\.\d+)(?:e[-+]?\d+)?)/i},
-        theme: 'monokai',
+        //theme: 'monokai',
         autofocus:false,
         gutters: ["CodeMirror-my-markers"],
         readOnly:false,
@@ -54,7 +54,21 @@ function setup_javaEditor(){
 
     
     javaEditor.setOption("fullScreen", Controles.funcion.FullScreen);
-    $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controles.funcion.Opacidad+')' });
+    javaEditor_setTheme(Controles.funcion.Tema);
+    javaEditor_setOpacity();
+
+    //$(".CodeMirror").css({ "background":'rgba(255,255,255,'+Controles.funcion.Opacidad+')' });
+}
+function javaEditor_setTheme(theme){
+    javaEditor.setOption("theme", theme);
+}
+function javaEditor_setOpacity(){
+    let theme = javaEditor.getOption("theme");
+    if(theme == 'default'){            
+        $(".CodeMirror").css({ "background":'rgba(255,255,255,'+Controles.funcion.Opacidad+')' });
+    }else if(theme == 'monokai'){
+        $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controles.funcion.Opacidad+')' });
+    }
 }
 function javaEditor_setText(value){
 	javaEditor.setValue(value);

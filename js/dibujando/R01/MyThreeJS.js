@@ -7,16 +7,16 @@ var MyThreeJS = {
 	'_FOV'          : 45,
 	'_ASPECT'       : window.innerWidth / window.innerHeight,
 	'_NEAR'         : 0.1,
-	'_FAR'          : 3000,
+	'_FAR'          : 10000,
 
 	'cameraControl' : null,
 
 
 	'init'			: function(){
-			this.setupThreeJS();
-			this.addFloor();
-			this.ambientLight();
-			this.spotLight();
+		this.setupThreeJS();
+		this.addFloor();
+		this.ambientLight();
+		//this.spotLight();
 	},
 	'setupThreeJS'  : function(){
 	    /*ESCENA*/
@@ -32,12 +32,19 @@ var MyThreeJS = {
 	    this.camera.position.y = 20;
 	    this.camera.position.z = 60;
 
+	    this.camera.position.y = 400;
+		this.camera.position.z = 400;
+		this.camera.rotation.x = -45 * Math.PI / 180;
+
+
 	    this.camera.lookAt(this.scene.position);
 
 	    this.cameraControl = new THREE.OrbitControls(this.camera);
 	    this.cameraControl.enabled = false;   // Inicia desactivado
-	    /*
-	    this.cameraControl.minDistance = TAM_GRAL*6;
+
+	    ///*
+	    this.cameraControl.minDistance   = Config_R01.TAM_GRAL*6;
+	    this.cameraControl.maxDistance   = 1000;
 	    this.cameraControl.maxPolarAngle = Math.PI * 0.5;
 	    //*/   
 
@@ -57,6 +64,8 @@ var MyThreeJS = {
 	'disableCameraControl' : function(){
 		//http://stackoverflow.com/questions/16525043/reset-camera-using-orbitcontrols-js
 	    this.cameraControl.enabled = false;
+	},
+	'resetCameraControl' : function(){
 		this.cameraControl.reset();	 
 	},
 	'onResize'		: function(){
@@ -93,7 +102,7 @@ var MyThreeJS = {
             floorMaterial.map = R01_utileria.floor.texture;
             floorMaterial.map.wrapS = floorMaterial.map.wrapT = THREE.RepeatWrapping;
             floorMaterial.map.repeat.set(8, 8);
-        let floorGeometry = new THREE.PlaneGeometry(200, 200, 20, 20);
+        let floorGeometry = new THREE.PlaneGeometry(2000, 2000, 20, 20);
         
         let floorMesh = new THREE.Mesh(floorGeometry, floorMaterial);
             floorMesh.receiveShadow = true;

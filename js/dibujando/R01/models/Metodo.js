@@ -10,6 +10,21 @@ class Metodo extends Element{
 		this.cube.material.opacity = 1;
         this.cube.material.visible = true;
 	}
+	_setcube(){
+
+        var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
+        //var mat = new THREE.MeshPhongMaterial({color: 'green',map: mapBg3, transparent:true, opacity:0,visible:false});
+        var mat = new THREE.MeshPhongMaterial({map: R01_utileria.metodo.texture, transparent:true, opacity:0,visible:false});
+
+
+        var malla = new THREE.Mesh(geo, mat);
+
+        malla.castShadow = true;
+        malla.receiveShadow = true;
+        malla.name = "my_geometria";
+
+        return malla;
+    }
 	set returnA(d){ this._returnA = d;    }
 	get returnA( ){ return this._returnA; }
 

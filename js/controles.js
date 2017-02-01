@@ -1,7 +1,7 @@
 
 var Controles = { 
-    gui:null,
-    _botones:{
+    gui                   : null,
+    _botones              : {
         preparar     :{ isEnabled:false, btn:null },
         animar       :{ isEnabled:false, btn:null },
         pasoApaso    :{ isEnabled:false, btn:null },
@@ -12,31 +12,32 @@ var Controles = {
         fullScreen   :{ isEnabled:false, btn:null },
         opacidad     :{ isEnabled:false, btn:null },
         opacidad     :{ isEnabled:false, btn:null },
-        ejemplos     :{ isEnabled:false, eje: []  }
+        ejemplos     :{ isEnabled:false, eje: []  },
+        tema         :{ isEnabled:false, btn:null },
     },
-    _activar : function(key){
+    _activar              : function(key){
         Controles._botones[key].isEnabled  = true;
         Controles._botones[key].btn.__li.setAttribute("style", "border-left: 3px solid #1ed36f;");         
     },
-    _desactivar : function(key){
+    _desactivar           : function(key){
         Controles._botones[key].isEnabled  = false;
         Controles._botones[key].btn.__li.setAttribute("style", "border-left: 3px solid red;"); 
     },
-    _activar_Ejemplos   : function(){
+    _activar_Ejemplos     : function(){
         this._botones.ejemplos.isEnabled = true;
         for(let i of this._botones.ejemplos.eje){
             i.__li.setAttribute("style", "border-left: 3px solid #1ed36f;"); 
         }
     },
-    _desactivar_Ejemplos   : function(){
+    _desactivar_Ejemplos  : function(){
         this._botones.ejemplos.isEnabled = false;
         for(let i of this._botones.ejemplos.eje){
             i.__li.setAttribute("style", "border-left: 3px solid red;"); 
         }
     },
-    _teclado     : function(){
+    _teclado              : function(){
         $(document).keydown(function (tecla) {
-            if (tecla.keyCode == 32) { // barra esadora
+            if (tecla.keyCode == 78) { // letra n
                 if(Controles._botones.pasoApaso.isEnabled){
                     Controles.funcion['Paso a paso']();
                 }        
@@ -53,16 +54,14 @@ var Controles = {
             }
         });
     },
-    getVelocidad : function(){
+    getVelocidad          : function(){
         let velocidad = 100;
-        if( Controles.funcion.Velocidad == 10 ){
-            velocidad = 100;
-        }else{
+        if( Controles.funcion.Velocidad != Controles._botones.velocidad.btn.__max ){
             velocidad = 5000/Controles.funcion.Velocidad;
         }
         return velocidad;
     },
-    activar__botones    : function(){// Al terminar una animacion se llama esta funcion
+    activar__botones      : function(){// Al terminar una animacion se llama esta funcion
         // La primeta activacion la tiene en el modelo librerias al terminar la animacion
         Controles._activar("animar");
         Controles._activar("pasoApaso");
@@ -74,7 +73,7 @@ var Controles = {
             $(".close-button").css({"background-color": "#000", "color": "#eee"}); 
         }
     },
-    desactivar__botones : function(){
+    desactivar__botones   : function(){
         Controles._desactivar("pasoApaso");
         Controles._desactivar("animar");
         Controles._desactivar("reiniciar");
@@ -85,17 +84,24 @@ var Controles = {
             $(".close-button").css({"background-color": "red", "color": "#000"}); 
         }
     },
-    funcion             : {
-        Velocidad       : 10,
-        Pasos           : 0,
-        Mensaje         : "Hola mundo",
-        FullScreen      : true, // para el editor
-        Opacidad        : 0,// para el editor
-        'Linea Actual'  : true,
-        'Linea Siguiente': true,
-        Comodin         : function(){
-            
-            console.log(Controles.getVelocidad());
+    funcion               : {
+        Velocidad          : 5,
+        Pasos              : 0,
+        Mensaje            : "Hola mundo",
+        FullScreen         : true, // para el editor
+        Opacidad           : 0,// para el editor
+        'Linea Actual'     : true,
+        'Linea Siguiente'  : true,
+        'Panel'            : false, // Panel de detalles
+        'Tema'             : 'monokai',
+        Comodin            : function(){
+            //console.log(MyThreeJS.cameraControl)
+            //let json = JSON.stringify(R01.lstElements.children[1].children[0],['name', 'children']);
+            //console.log(json);
+              //  /*
+
+            console.log(javaEditor.getOption("theme"));
+            //*/
         },
         Preparar        : function(){
             if(Controles._botones.preparar.isEnabled){
@@ -167,12 +173,11 @@ var Controles = {
             },
         },
     },
-    
-
 };
 Controles.setupControles = function (){
     this.gui = new dat.GUI();
-    $(".dg.ac").css( "z-index", "11" );// tiene valor de 11 ya que el editor de texto es de 10
+    $(".dg.ac").css( "z-index", "18" );// explicacion en el archivo helpers
+    $(this.gui.domElement).attr("id","MyControlesDataGui");
 
     this.gui.add(this.funcion,"Comodin");
     this.gui.add(this.funcion,"Mensaje");// Funciona al desactivar el orbitControl de Three.js
@@ -184,24 +189,29 @@ Controles.setupControles = function (){
     this._botones.pasoApaso.btn   = f1.add(this.funcion, 'Paso a paso');
     this._botones.pausa.btn       = f1.add(this.funcion, 'Pausa');
     this._botones.reiniciar.btn   = f1.add(this.funcion, 'Reiniciar');
-    this._botones.velocidad.btn   = f1.add(this.funcion, 'Velocidad').min(1).max(10).step(1);
+    this._botones.velocidad.btn   = f1.add(this.funcion, 'Velocidad').min(1).max(5).step(1);
     this._botones.npasos.btn      = f1.add(this.funcion, 'Pasos').listen();
     this._activar("preparar");
 
 
     let f2 = this.gui.addFolder('Editor');
+    this._botones.tema.btn       = f2.add(this.funcion, 'Tema',{Negro: 'monokai', Blanco:'default'});
     this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
     this._botones.opacidad.btn   = f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
     f2.add(this.funcion, 'Linea Actual');
     f2.add(this.funcion, 'Linea Siguiente');
 
-
+    this._botones.tema.btn.onFinishChange(function(value) {
+        javaEditor_setTheme(value);
+        javaEditor_setOpacity();
+    });
     this._botones.fullScreen.btn.onFinishChange(function(value) {
         javaEditor.setOption("fullScreen", Controles.funcion.FullScreen)
     });
     this._botones.opacidad.btn.onChange(function(value) {
-        $(".CodeMirror").css({ "background":'rgba(0,0,0,'+Controles.funcion.Opacidad+')' });
+        javaEditor_setOpacity();
     });
+
 
     let f3 = this.gui.addFolder('Ejemplos');
     for(let i in this.funcion.Ejemplos){
@@ -209,9 +219,23 @@ Controles.setupControles = function (){
     }
     this._activar_Ejemplos();
 
+    let f4 = this.gui.addFolder('Detalles');
+    
+    if(this.funcion.Panel){
+        $('#detalles').css({'visibility': 'visible', 'height': '250px'});
+    }
+    f4.add(this.funcion,'Panel').onFinishChange(function(v){
+        v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
+        $('#detalles').css('visibility', 'hidden');
+    });
+
+
+    
+
     f1.open();
     f2.open();
-    f3.open();
+    //f3.open();
+    f4.open();
     this._teclado();
 }
 
