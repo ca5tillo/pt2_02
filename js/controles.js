@@ -224,7 +224,7 @@ Controles.setupControles = function (){
         $('#detalles').css({'visibility': 'visible', 'height': '250px'});
     }
     f4.add(this.funcion,'Panel').onFinishChange(function(v){
-        v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
+        v ? $('#detalles, #detalles-content').css({'visibility': 'visible', 'height': '250px'}):
         $('#detalles').css('visibility', 'hidden');
     });
 
