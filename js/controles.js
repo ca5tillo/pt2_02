@@ -221,11 +221,11 @@ Controles.setupControles = function (){
     let f4 = this.gui.addFolder('Detalles');
     
     if(this.funcion.Panel){
-        $('#detalles').css({'visibility': 'visible', 'height': '250px'});
+        $('#detalles, #detalles-content').css({'visibility': 'visible', 'height': '250px'});
     }
     f4.add(this.funcion,'Panel').onFinishChange(function(v){
         v ? $('#detalles, #detalles-content').css({'visibility': 'visible', 'height': '250px'}):
-        $('#detalles').css('visibility', 'hidden');
+        $('#detalles, #detalles-content').css('visibility', 'hidden');
     });
 
 
