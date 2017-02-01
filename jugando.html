@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PT2 Jugando</title>
     <link rel="stylesheet" href="lib/jquery-ui-1.12.1/jquery-ui.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 
     <script src="lib/jquery/jquery-3.1.1.min.js"></script>
@@ -13,22 +14,19 @@
 
 
 .draggable{
-    position: absolute;
-    top: 0;
-    
-
+    position: absolute !important;
     background-color: white;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 
 }
 .resizable {      
-    border:1px solid red;
+
     overflow:hidden;
-    width: 500px;
+    width: 400px;
 }
 .resizable .titulo { 
     text-align: center;
-    border:1px solid green;
+
     padding: 10px 20px;
 }
 .resizable .contenedor{
@@ -41,9 +39,11 @@
 
 
     <script>
+    //http://jsfiddle.net/vrUgs/2/
         $( function() {
-            $('#resizable').resizable();
-            $('#draggable').draggable();
+            $('#arbol-sintactico-draggable').draggable();
+            $('#arbol-sintactico-resizable').resizable();
+            $( "#tabs" ).tabs();
             $('#resizable2').resizable();
             $('#draggable2').draggable();
         } );
@@ -51,10 +51,11 @@
 </head>
 <body>
  
-<div id="draggable" class="draggable">
-    <div id="resizable" class="resizable">
+<div id="arbol-sintactico-draggable" class="draggable">
+    <div id="arbol-sintactico-resizable" class="resizable">
         <div class="contenedor">            
             <div class="titulo">Arbol Sintactico</div>
+
         </div>
     </div>
 </div>
