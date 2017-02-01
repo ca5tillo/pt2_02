@@ -106,7 +106,7 @@ var Controles = {
         Preparar        : function(){
             if(Controles._botones.preparar.isEnabled){
                 if(Main.preparar()){
-                    this.pasos = 0;
+                    Controles.funcion.Pasos = 0;
                     Controles._desactivar("preparar");
                 }
             }
@@ -122,7 +122,6 @@ var Controles = {
         },
         'Paso a paso'   : function () {
             if(Controles._botones.pasoApaso.isEnabled){
-                Controles.funcion.pasos += 1; 
                 Controles.desactivar__botones();
                 Main.pasoApaso();               
             }

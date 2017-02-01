@@ -94,6 +94,8 @@ var Main = {
     pasoApaso              : function(){// BTN
         let instruccion = null;
         let tipo        = null;
+
+        Controles.funcion.Pasos += 1; 
           
         javaEditor_markText_Clean();
 
