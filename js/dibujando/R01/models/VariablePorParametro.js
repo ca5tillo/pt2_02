@@ -31,11 +31,7 @@ class VariablePorParametro extends Element{
 
         return malla;
     }
-	in(instruccion,elementoOrigen){
-		let type          = `${instruccion.type}`;
-		let name3D        = `${instruccion.name}`;
-	    let value         = `${instruccion.value}`;
-
+	in(value,elementoOrigen){
 		let _this = this;
         let graphics =this._graphics;
         let element = this._element;

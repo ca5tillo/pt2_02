@@ -216,8 +216,7 @@ var R01 = {
             element  = new VariablePorParametro(ins);
             metodoDestino.children.push(element);
             metodoDestino.sons.add(element.element);
-            element.in(ins,elementoOrigen);
-
+            element.in(elementoOrigen.value,elementoOrigen);
         }else{
             let ins = {name:parametros[indice].name,value:valor, type:parametros[indice].type};
             element  = new Variable(ins);
