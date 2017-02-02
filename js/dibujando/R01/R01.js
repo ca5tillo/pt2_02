@@ -44,7 +44,7 @@ var R01 = {
     setupZoneLib           : function(){
         this.zoneLib = new THREE.Group();
 
-        this.zoneLib.position.x= -((Config_R01.TAM_GRAL*this.METODO_SCALE_X)/2+(Config_R01.TAM_GRAL*this.LIB_SCALE_X));
+        this.zoneLib.position.x= ((Config_R01.TAM_GRAL*this.METODO_SCALE_X)/2+(Config_R01.TAM_GRAL*this.LIB_SCALE_X));
         this.zoneLib.position.y= 0;
         this.zoneLib.position.z= 0;
 
@@ -196,12 +196,6 @@ var R01 = {
         element.in(TriggerNextStep);
     },
     crearParametros        : function(argumento, parametros){
-        /*if(instruccion.lineaInicial){
-            javaEditor_markText_Clean();
-            javaEditor_markText(instruccion.lineaInicial);
-        }//*/
-
-
         let idContenedor    = this.getIdsAncestros().c;
 
         let metodoDestino   = this.lstElements.getChildrenById(idContenedor);
@@ -222,7 +216,7 @@ var R01 = {
             element  = new VariablePorParametro(ins);
             metodoDestino.children.push(element);
             metodoDestino.sons.add(element.element);
-            element.in(ins,elementoOrigen.element);
+            element.in(ins,elementoOrigen);
 
         }else{
             let ins = {name:parametros[indice].name,value:valor, type:parametros[indice].type};
@@ -435,7 +429,7 @@ function createText(sa) {
 
 
 
-function drawIF(instruccion){
+function drawIFold(instruccion){
     if(instruccion.lineaInicial){
         javaEditor_markText_Clean();
         javaEditor_markText(instruccion.lineaInicial);
@@ -466,18 +460,13 @@ function drawIF(instruccion){
 
 }
 
-function crearArregloValor(instruccion){
-    //javaEditor_markText_Clean();
-    //javaEditor_markText(instruccion.lineaInicial);
-
-}
 
 
 
 
 
 
-function crearFOR(my_padre,lineaInicial){
+function crearFORold(my_padre,lineaInicial){
     // Crear grupo q representa el cicloFor
     var cicloFor = new THREE.Group();
     cicloFor.name = "cicloFor_group-";
@@ -520,7 +509,7 @@ function crearFOR(my_padre,lineaInicial){
     javaEditor_markText_Clean();
     javaEditor_markText(lineaInicial);
 }
-function eliminarFor(my_padre){
+function eliminarForold(my_padre){
     ciclo = group_librerias.getObjectByName("metodo_group-" +my_padre,true).getObjectByName("cicloFor_group-",true);
     group_librerias.getObjectByName("metodo_group-" +my_padre,true).children[1].remove(ciclo);
 }
@@ -528,7 +517,7 @@ function eliminarFor(my_padre){
 
 
 
-function asignarValorArreglo(A_quien,indice,valor,lineaInicial){
+function asignarValorArregloold(A_quien,indice,valor,lineaInicial){
     dibujitos = scene.getObjectByName( "variable_group-" + A_quien,true).children[1].children[indice].children[0];
     //console.log(dibujitos)
     textito = dibujitos.getObjectByName("textito",true);

@@ -12,7 +12,6 @@
 window.addEventListener('load',init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
-
 var Main = {
     'lstPasos'             : {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null},
     'esAnimacionFluida'    : false,
@@ -21,7 +20,7 @@ var Main = {
     'existenErrores'       : false, // as_imprimirArbol
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
-    'mousedown'            :false,
+    'mousedown'            : false, 
 
     reset                  : function(){
         this.lstPasos            = {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null};
@@ -241,7 +240,7 @@ var Main = {
         }
     },
     dibujar                : function(instruccion){
-        let O_o = instruccion.reglaP
+        let O_o = instruccion.reglaP; //console.log(instruccion.reglaP);
        
         if( (O_o) == "metodo" && instruccion.name == "main"){                        
             let id           = R01.llamarMetodoMain(instruccion);
@@ -325,8 +324,7 @@ var Main = {
             Controles.activar__botones();
             if(Main.esAnimacionFluida){
                 Main.pasoApaso();
-            }
-            
+            }            
         }
         else if( (O_o) == "Condicional_else"         ){    
 
@@ -337,9 +335,10 @@ var Main = {
 
             }
             Main.pasoApaso();
-        }else{        
-            alert("Error en tiempo de ejecucion");
-            Controls.Reiniciar();
+        }
+        else{        
+
+            alert("Error en tiempo de ejecucion");            
         }
     },
     getInstruccion         : function(){

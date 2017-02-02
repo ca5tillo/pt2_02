@@ -18,7 +18,6 @@ class VariablePorParametro extends Element{
     	this.setTextType(this._type    );
     	this.setTextName(this._name+"=");
 	    this.setTextValue("?");  
-console.log("VariablePorParametro")
 	}
 
 	_setcube(){
@@ -64,8 +63,6 @@ console.log("VariablePorParametro")
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
-	        	_this.setTextType(type);
-	        	_this.setTextName(name3D+"=");
 			    _this.setTextValueParam(value, elementoOrigen, siguientePaso);
 	        	
 	        });
