@@ -263,15 +263,43 @@ var R01 = {
     asignacion2            : function(instruccion){
         /*
             Para representar Operaciones matematicas 
-            i = 5+9;
+            i = 5+9; i = a + b;
         */
         let siguientePaso   = true;
         let animar          = true;
         let idPadre         = this.getIdsAncestros().p;
         let idContenedor    = this.getIdsAncestros().c;
         let contenedor      = this.lstElements.getChildrenById(idContenedor);
-        let padre           = this.lstElements.getChildrenById(idPadre);
+        let padre           = this.lstElements.getChildrenById(idPadre);        
+        let destino         = this.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
 
+      //  let arr = instruccion.expresion.clone();
+        let expresion  = "";
+        let expresion2 = "";
+        let resultado  = "?";
+
+        for(let i of instruccion.expresion){            
+            expresion += expresion == "" ? i.string : " "+i.string;
+            if(i.symbol == 'NAME'){
+                let valval = contenedor.getChildrenByName(i.string).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
+            }else{
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
+            }
+        }
+        destino.exp_matematica = expresion2;
+        try{
+            resultado = eval(expresion2);
+        }catch(err){
+            alert("Error en tiempo de ejecucion");
+            console.log("Error en tiempo de ejecucion");
+        }
+
+        let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+        let myChildren = instruccion.expresion.concat(as);  
+
+        destino._setText3(expresion, padre, myChildren);
+        /*
         let expresion = "";
         let resultado = "?";
         
@@ -290,9 +318,9 @@ var R01 = {
         }
 
         let value           = resultado;
-        let destino         = this.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
         destino.setTextValue(value,siguientePaso,animar);
         destino.value       = value;
+        //*/
     }
 
 };

@@ -34,12 +34,23 @@ var ejemploDeCodigo_02 =
 var ejemploDeCodigo_03 =
 `public class MyClass {
     public static void main() {
+        int a = 5;
+        int b = 5;
+        int c;
+            c = a + b + a;
+    }
+}`;
+var ejemploDeCodigo_03A =
+`public class MyClass {
+    public static void main() {
         int a = 0;
             a = ((5+8-3)*(2+1+(0*(52552+7))))/2;
             a = 5;
             a = 100*2;
         double b;
             b = 5/2;
+        double c;
+            c = a / b;
     }
 }`;
 var ejemploDeCodigo_04 =

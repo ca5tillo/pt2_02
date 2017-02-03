@@ -87,6 +87,7 @@ var Controles = {
     funcion               : {
         Velocidad          : 5,
         Pasos              : 0,
+        Detenerse          : 4,
         Mensaje            : "Hola mundo",
         FullScreen         : true, // para el editor
         Opacidad           : 0,// para el editor

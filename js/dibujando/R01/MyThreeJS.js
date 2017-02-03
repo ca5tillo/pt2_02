@@ -42,7 +42,7 @@ var MyThreeJS = {
 	    this.cameraControl = new THREE.OrbitControls(this.camera);
 	    this.cameraControl.enabled = false;   // Inicia desactivado
 
-	    ///*
+	    /*
 	    this.cameraControl.minDistance   = Config_R01.TAM_GRAL*6;
 	    this.cameraControl.maxDistance   = 1000;
 	    this.cameraControl.maxPolarAngle = Math.PI * 0.5;

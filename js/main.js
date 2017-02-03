@@ -95,6 +95,7 @@ var Main = {
         let tipo        = null;
 
         Controles.funcion.Pasos += 1; 
+        if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();
           
         javaEditor_markText_Clean();
 
@@ -240,7 +241,7 @@ var Main = {
         }
     },
     dibujar                : function(instruccion){
-        let O_o = instruccion.reglaP; //console.log(instruccion.reglaP);
+        let O_o = instruccion.reglaP;
        
         if( (O_o) == "metodo" && instruccion.name == "main"){                        
             let id           = R01.llamarMetodoMain(instruccion);
@@ -292,9 +293,16 @@ var Main = {
                 this._addlstPasos_Level_2(instruccion.argumentos,"argumentos");
             }
         }
-        else if( (O_o) == "argumento"       ){    
+        else if( (O_o) == "argumento"       ){
 
             R01.crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
+        }
+        else if( (O_o) == "asignacion2"     ){
+            /*
+                Para representar Operaciones matematicas 
+                i = 5+9; i = a + b;
+            */
+            R01.asignacion2(instruccion);  
         }
         else if( (O_o) == "return_variable" ){    
 
@@ -303,13 +311,6 @@ var Main = {
         else if( (O_o) == "return_num" ){    
 
             R01.returnNum(instruccion);
-        }
-        else if( (O_o) == "asignacion2"         ){    
-            /*
-                Para representar Operaciones matematicas 
-                i = 5+9;
-            */
-            R01.asignacion2(instruccion);  
         }
         else if( (O_o) == "Condicional_if"         ){    
             let resultado = drawIF(instruccion);
@@ -386,7 +387,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_02);
+        javaEditor_setText(ejemploDeCodigo_03);
 
         MyThreeJS.init();
 
