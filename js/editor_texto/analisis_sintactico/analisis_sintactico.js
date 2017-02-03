@@ -505,7 +505,7 @@ function _as_getArgumentos(arr, name){
                 modelArgumento.position.regla.y2 = _arr[_arr.length-1].line;
 
                 modelArgumento.position.regla.x1 = _arr[0].start;
-                modelArgumento.position.regla.x2 = _arr[_arr.length-1].end;
+                modelArgumento.position.regla.x2 = _arr[_arr.length-2].end; //le resto 2 porq el arreglo contiene la "," o el ")" porq asi lo detecta la Expresion regular
 
                 modelArgumento.indice = indice;
 
