@@ -239,7 +239,7 @@ class Element{
             .easing     (TWEEN.Easing.Quadratic.In)
             .onStart    ( function (){} )
             .onUpdate   ( function (){} )
-            .onComplete ( function (){ if(valorAnterior) groupText.remove(valorAnterior); });    
+            .onComplete ( function (){ if(valorAnterior) groupText.remove(valorAnterior);_this.value=textMesh1.string; });    
 
         let mo2 =new TWEEN.Tween(elementoOrigen.element.position)
                     .to         ({ x:origenPos_X },Controles.getVelocidad())
@@ -262,9 +262,12 @@ class Element{
                         .easing     (TWEEN.Easing.Quadratic.In)
                         .onComplete ( function (){
                             _this._text.remove(_this._text.children[2]);
-
+                            _this.value = result.mesh.string;
+                            Controles.activar__botones();
+                            //if(siguientePaso) Main.TriggerNextStep();
                         }).start();
         console.log("ya es muy tarde y no se que estoy haciendo",this);
+        Controles.activar__botones();
     }
     __cafe( textMesh1, position,txt, arr, i, f){
         let _this = this;
@@ -288,7 +291,7 @@ class Element{
                             _this._text.remove(textMesh1);
 
                             textMesh1 = _this.__setText("value",eval(_this.exp_matematica));
-                 
+                            _this.value=eval(_this.exp_matematica);
                             textMesh1.mesh.position.set(position.x,nuevoY , position.z);
 
             let a2 = new TWEEN.Tween(textMesh1.mesh.position)
@@ -318,11 +321,11 @@ class Element{
                 //text.position.set(position_B.x, position_B.y, position_B.z);
 
 
-let origenPos_X     = originalisimo.element.position.x;
+        let origenPos_X     = originalisimo.element.position.x;
         let origenPos_Xi    = origenPos_X - (Config_R01.TAM_GRAL*2);
 
 
-let mo =new TWEEN.Tween(originalisimo.element.position)
+        let mo =new TWEEN.Tween(originalisimo.element.position)
                     .to         ({ x:origenPos_Xi },Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In)
                     .onStart    ( function (){} )
@@ -473,6 +476,10 @@ let mo =new TWEEN.Tween(originalisimo.element.position)
         };
         let searchedItem = getSubMenuItem(this._children, id) || null;
         return searchedItem;
+    }
+    add(element){
+        this.children.push(element); // añade al arbol 
+        this.sons.add(element.element); // añade a la escena
     }
 
 }

@@ -2,7 +2,7 @@
 var R01 = {
     'lstElements'          : null,//nodo raiz
     '_lstIDsMetodos'       : {id:0,  children:[], descripcion:"lstIDsMetodos"},
-    '_idNodoFinal'         : null,
+    '_idNodoFinal'         : null,// ?
 
     'LIB_SCALE_X'          : 2,
     'LIB_SCALE_Y'          : 1,
@@ -14,6 +14,29 @@ var R01 = {
     'zoneLib'              : null, // zonaLibrerias  representa la zona donde se apilaran las librerias
     'groupBase'            : null, // group_ejecucion  representa la zona donde se ejecutara el programa de entrada
 
+    _addAncestro_1          : function(element, descripcion){
+        this._lstIDsMetodos.children.push(
+            {
+                id           : element.id, 
+                children     : [], 
+                descripcion  : descripcion
+            });
+    },
+    _addAncestro_2          : function(element, descripcion){
+        let obj = {
+            id           : element.id, 
+            children     : [], 
+            descripcion  : descripcion
+        };
+        this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.push(obj);
+        
+    },
+    _popAncestro_1           : function (){
+        this._lstIDsMetodos.children.pop();
+    },
+    __popAncestro_2           : function (){
+        this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
+    },
     reset                  : function(){
         MyThreeJS.scene.remove(this.zoneLib);
         MyThreeJS.scene.remove(this.groupBase);
@@ -72,7 +95,7 @@ var R01 = {
     llamarMetodoMain       : function(declaracion){
         let padre     = this.getElementLibByName(declaracion.padre.name);
         let element   = new MetodoMain(declaracion);
-        this._lstIDsMetodos.children.push({id:element.id, children:[], descripcion:"metodo"});
+        this._addAncestro_1(element,"MetodoMain");
 
         padre.children.push(element);
         padre.sons.add(element.element);
@@ -94,7 +117,7 @@ var R01 = {
         let element         = new Metodo(llamada,declaracion);
             element.returnA = destino;
 
-        this._lstIDsMetodos.children.push({id:element.id, children:[], descripcion:"metodo"});
+        this._addAncestro_1(element,"Metodo");
 
         padre.children.push(element);
         padre.sons.add(element.element);
@@ -152,7 +175,7 @@ var R01 = {
 
 
         // inserto el arreglo al _lstIDsMetodos para poder despues insertar los subelementos
-        this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.push({id:element.id, children:[], descripcion:"arreglo"});
+        this._addAncestro_2(element, "Arreglo");
         
         padre.children.push(element);
         padre.sons.add(element.element);
@@ -165,7 +188,7 @@ var R01 = {
                 _crearArregloValor(instruccion.hijos[i]);
             }
         }
-        this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
+        this.__popAncestro_2();
     },
     MethodOut              : function(){
         let idMetodoActual   = this.getIdsAncestros().c;
@@ -173,8 +196,9 @@ var R01 = {
 
         if(metodo){
             metodo.out();
-            this._lstIDsMetodos.children.pop();
-            Main.lstPasos.children.pop();
+            this._popAncestro_1();
+            
+            //Main.lstPasos.children.pop();
         }
     },
     crearVariable_2        : function(instruccion){
@@ -321,6 +345,36 @@ var R01 = {
         destino.setTextValue(value,siguientePaso,animar);
         destino.value       = value;
         //*/
+    },
+    drawIF                 : function(instruccion){
+
+        let siguientePaso   = true;
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let condicional = "";
+        let resultado = false;
+        
+        for(let i of instruccion.condicionales){
+            if(i.symbol == 'NAME'){
+                condicional += " "+contenedor.getChildrenByName(i.string).value;
+            }else{
+                condicional += " "+i.string;
+            }
+        }
+        try{
+            resultado = eval(condicional);
+        }catch(err){
+            alert("Error evaluacion");
+        }
+        let element  = new CIf();
+        this._addAncestro_2(element, "CIf");
+        padre.add(element);
+        element.in();
+
+        return resultado;
     }
 
 };
@@ -456,36 +510,7 @@ function createText(sa) {
 
 
 
-function drawIFold(instruccion){
-    if(instruccion.lineaInicial){
-        javaEditor_markText_Clean();
-        javaEditor_markText(instruccion.lineaInicial);
-    }
 
-
-    let siguientePaso   = true;
-    let idPadre         = getIdsAncestros().p;
-    let idContenedor    = getIdsAncestros().c;
-    let contenedor      = lstElements.getChildrenById(idContenedor);
-    let padre           = lstElements.getChildrenById(idPadre);
-
-    let condicional = "";
-    
-    for(let i of instruccion.condicionales){
-        if(i.symbol == 'NAME'){
-            condicional += " "+contenedor.getChildrenByName(i.string).value;
-        }else{
-            condicional += " "+i.string;
-        }
-    }
-
-    try{
-        return eval(condicional);
-    }catch(err){
-        return false;
-    }
-
-}
 
 
 

@@ -96,7 +96,6 @@ var Main = {
 
         Controles.funcion.Pasos += 1; 
         if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();
-          
         javaEditor_markText_Clean();
 
 
@@ -209,6 +208,7 @@ var Main = {
         }
     },
     _marcarLinea_2         : function(i){
+        
         if(Controles.funcion['Linea Siguiente']){
             // Marcara la siguiente linea a ejecutar
             if(i.reglaP == "metodo" && i.name == "main"){
@@ -220,7 +220,10 @@ var Main = {
             else if(i.reglaP == "llamada"){
                 let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
-                javaEditor_markText_InstuccionSiguiente(declaracion.position.bloque); 
+                i.name == this.lstPasos.children[this.lstPasos.children.length-1].obj.name ? 
+                javaEditor_markText_InstuccionSiguiente(declaracion.position.regla)
+                :
+                javaEditor_markText_InstuccionSiguiente(declaracion.position.bloque);                 
                 this.llamadas.push(i);
             }
             else if(i.reglaP == "argumento"){
@@ -313,29 +316,34 @@ var Main = {
             R01.returnNum(instruccion);
         }
         else if( (O_o) == "Condicional_if"         ){    
-            let resultado = drawIF(instruccion);
-            if(resultado){
-                
+            let resultado = R01.drawIF(instruccion);
+            if(resultado){                
                 instruccion.evaluadoEn = true;
-                let as = {generador:appCreateGenerador(instruccion.hijos),children:[], descripcion:"if"}
-                Main.lstPasos.children[Main.lstPasos.children.length-1].children.push(as);//level2
+                this._addlstPasos_Level_2(instruccion.hijos,"Condicional_if");
             }else{
                 instruccion.evaluadoEn = false;
             }
             Controles.activar__botones();
-            if(Main.esAnimacionFluida){
-                Main.pasoApaso();
-            }            
+            if(this.esAnimacionFluida){
+                /*
+                    se vielve infinita por crear multipes instancias 
+                    se puede llamar a un siguiente paso desde una animacion ya q 
+                    la animagion se ejecuta en otro hilo 
+                */
+                //Main.pasoApaso();//se vielve infinita por crear multipes instancias 
+            }  
         }
         else if( (O_o) == "Condicional_else"         ){    
-
             if( ! instruccion.hermanoMayor.evaluadoEn){
-                let as = {generador:appCreateGenerador(instruccion.hijos),children:[], descripcion:"else"}
-                Main.lstPasos.children[Main.lstPasos.children.length-1].children.push(as)
+
+                this._addlstPasos_Level_2(instruccion.hijos,"Condicional_else");
             }else{
 
             }
-            Main.pasoApaso();
+
+            Controles.activar__botones();
+            //Main.pasoApaso();
+            //*/
         }
         else{        
 
@@ -362,6 +370,7 @@ var Main = {
                     let instruccion = {reglaP: 'finDeGenerador'};
                     instruccion.position = Main.lstPasos.children[index_1].obj.position;
                     i = { value: instruccion, done: true };
+                    Main.lstPasos.children.pop();
                 }
             }
         }
@@ -387,7 +396,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_03);
+        javaEditor_setText(ejemploDeCodigo_04);
 
         MyThreeJS.init();
 
@@ -441,7 +450,8 @@ function pintarArbolDeLlamadas(){
     if(R01.lstElements){
         let ul    = document.createElement("ul"); 
         ul.setAttribute("id", "arbol"); 
-        ul.appendChild(_createLista(R01.lstElements));   
+        ul.appendChild(_createLista(R01.lstElements)); 
+        ul.addEventListener("change", info_elemento3D);  
 
         document.getElementById("representacion_arbolDeLlamadas").innerHTML="";
         document.getElementById("representacion_arbolDeLlamadas").appendChild(ul);  
@@ -452,6 +462,12 @@ function pintarArbolDeLlamadas(){
         });
 
     }
+}
+function info_elemento3D(ev) {
+    let id = ev.target.value;
+    let element = R01.lstElements.getChildrenById(id);
+    console.clear();
+    console.log(element)
 }
 function pintarArbol(destino, arbol, items){
     

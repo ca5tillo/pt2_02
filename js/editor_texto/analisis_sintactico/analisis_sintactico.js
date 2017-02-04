@@ -338,6 +338,34 @@ function _as_reglasProduccion(str, arr){
 
         return obj; 
     }
+     /*    RECONOCIENDO ELSE*/
+    if( _RE_ = str.match(RE_ELSE)                 ){
+        /*  Else solo es valido se es precedido de un if  */
+        let obj              = new ASElemento();
+        let padre            = as_GetElementById(as_ids[as_ids.length-1]);
+        let nodoAnterior     = padre.hijos[padre.hijos.length-1];
+        ///*
+        if(nodoAnterior.reglaP == "Condicional_if"){
+            obj.reglaP           = "Condicional_else";
+            obj.name             = strmap.ELSE;
+            obj.hermanoMayor     = nodoAnterior;
+        
+            obj.isNodoFinal      = false;
+            
+            _as_setPosition(obj, arr);
+            return obj; 
+        }else{
+            /* si este ELSE no precede de un if se crea un error 
+               se deja en nodoNOfinal ya que el analizador continua y 
+               al encontrar } (llave de cierre) Cerraria el ultimo
+               nodo no final */
+            let error = new ASElemento();
+                error.reglaP             = "ERROR_SINTACTICO";
+                _as_setPosition(error, arr);
+                error.isNodoFinal        = false;
+            return error;
+        }   
+    }
 
 
 
@@ -389,43 +417,7 @@ function _as_reglasProduccion(str, arr){
         _as_setPosition(obj, arr);
         return obj; 
     }
-     /*    RECONOCIENDO ELSE*/
-    if( _RE_ = str.match(RE_ELSE)                 ){
-        /*  Else solo es valido se es precedido de un if  */
-        let obj              = new ASElemento();
-
-
-        let padre            = as_GetElementById(as_ids[as_ids.length-1]);
-        let nodoAnterior     = padre.hijos[padre.hijos.length-1];
-        ///*
-        if(nodoAnterior.reglaP == "Condicional_if"){
-
-            obj.reglaP           = "Condicional_else";
-            obj.name             = strmap.ELSE;
-            obj.hermanoMayor     = nodoAnterior;
-        
-            obj.isNodoFinal      = false;
-            
-            _as_setPosition(obj, arr);
-            return obj; 
-
-
-        }else{
-            /* si este ELSE no precede de un if se crea un error 
-               se deja en nodoNOfinal ya que el analizador continua y 
-               al encontrar } (llave de cierre) Cerraria el ultimo
-               nodo no final */
-            let error = new ASElemento();
-                error.reglaP             = "ERROR_SINTACTICO";
-                _as_setPosition(error, arr);
-
-                error.isNodoFinal        = false;
-            return error;
-        }
-        //*/      
-      
-
-    }
+    
     
 
     

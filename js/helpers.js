@@ -47,10 +47,11 @@ function setup_EstilosPanelDetalles(){
             if(Main.ejecutado)MyThreeJS.enableCameraControl();            
         },
         resize: function( event, ui ){
-        	let height_detallesMenu = ui.size.height - parseInt($("#detalles-menu").css('height').replace("px", ""));
+        	let height_detallesMenu = ui.size.height - parseInt($("#detalles-menu").css('height').replace("px", ""))-10;
         	$('#detalles-content').css({'height':`${height_detallesMenu}px`});
 
         }
     };
 	$('#detalles').resizable(resizable);
 }
+

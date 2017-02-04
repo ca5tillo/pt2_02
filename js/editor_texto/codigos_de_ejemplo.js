@@ -59,8 +59,8 @@ var ejemploDeCodigo_04 =
         int temp;
         int temp2;
         int temp3;
-        if (numero == 0){
-            return 1;
+        if (0 == 0){
+            int yy = 1;
         }
         else{
             temp  = numero-1; 

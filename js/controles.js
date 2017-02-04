@@ -87,7 +87,7 @@ var Controles = {
     funcion               : {
         Velocidad          : 5,
         Pasos              : 0,
-        Detenerse          : 4,
+        Detenerse          : 0,
         Mensaje            : "Hola mundo",
         FullScreen         : true, // para el editor
         Opacidad           : 0,// para el editor
@@ -222,11 +222,11 @@ Controles.setupControles = function (){
     let f4 = this.gui.addFolder('Detalles');
     
     if(this.funcion.Panel){
-        $('#detalles, #detalles-content').css({'visibility': 'visible', 'height': '250px'});
+        $('#detalles').css({'visibility': 'visible', 'height': '250px'});
     }
     f4.add(this.funcion,'Panel').onFinishChange(function(v){
-        v ? $('#detalles, #detalles-content').css({'visibility': 'visible', 'height': '250px'}):
-        $('#detalles, #detalles-content').css('visibility', 'hidden');
+        v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
+        $('#detalles').css('visibility', 'hidden');
     });
 
 
