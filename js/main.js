@@ -363,8 +363,6 @@ var Main = {
             .onComplete ( function (){
                 Main.TriggerNextStep();
             }).start(); 
-
-            Controles.activar__botones();
             
         }
         else if( (O_o) == "finGenerador2_Condicional_else"){
