@@ -198,8 +198,8 @@ var R01 = {
         if(metodo){
             metodo.out();
             this._popAncestro_1();
-// ya no se usa  "Main.lstPasos.children.pop()" aqui porque cuando simplemente se terminan las reglas de un metodo
-// es "Main.getInstruccion" quien saca el generador de la pila           
+            // ya no se usa  "Main.lstPasos.children.pop()" aqui porque cuando simplemente se terminan las reglas de un metodo
+            // es "Main.getInstruccion" quien saca el generador de la pila           
         }
     },
     crearVariable_2        : function(instruccion){
@@ -383,6 +383,19 @@ var R01 = {
         padre.out();
         this.__popAncestro_2();
 
+    },
+    viewElse                   : function(instruccion){
+        let siguientePaso   = true;
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        
+        let element  = new CElse(instruccion);
+        this._addAncestro_2(element, "CIf");
+        padre.add(element);
+        element.in();
     }
 
 };

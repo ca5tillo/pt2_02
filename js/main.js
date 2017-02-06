@@ -350,19 +350,12 @@ var Main = {
         }
         else if( (O_o) == "finGenerador2_Condicional_if"){
             R01.ifOutfalse();
-            Controles.activar__botones();
         }
         else if( (O_o) == "Condicional_else"         ){    
             if( ! instruccion.hermanoMayor.value){
                 this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
+                R01.viewElse(instruccion);
             }
-
-            new TWEEN.Tween({x:0})
-            .to         ({ x:100},Controles.getVelocidad())
-            .easing     (TWEEN.Easing.Quadratic.In)
-            .onComplete ( function (){
-                Main.TriggerNextStep();
-            }).start(); 
             
         }
         else if( (O_o) == "finGenerador2_Condicional_else"){
@@ -395,8 +388,8 @@ var Main = {
                     i = { value: instruccion, done: true };
                     //*/
                     Main.lstPasos.children[index_1].children.pop();
-                    //if(a.obj.reglaP == "llamada")
-                    i = this.getInstruccion();
+                    if(a.obj.reglaP != "Condicional_if")
+                        i = this.getInstruccion();
                 }
                 
             }else{// Si no hay Main.lstPasos de segundo nivel
@@ -431,7 +424,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_04);
+        javaEditor_setText(ejemploDeCodigo_06);
 
         MyThreeJS.init();
 

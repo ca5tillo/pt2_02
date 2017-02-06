@@ -195,7 +195,6 @@ function _as_setPosition(obj, arr){
 function _as_reglasProduccion(str, arr){
 
 
-	let RE_FOR = /^FOR\s?LPAREN.*SEMICOLON.*SEMICOLON.*RPAREN/;
 	let RE_ASIGNACION_DE_VALOR_ARRAY = /(NAME) LBRACK (NAME|BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?RBRACK EQ /;
 
     let _RE_              = null;
@@ -205,233 +204,254 @@ function _as_reglasProduccion(str, arr){
 	let temporalcontador  = 0;
 
     for(let i of arr){
-        dev_frase += `${i.string} `;
-        dev_str     += `${i.symbol} `;
+        dev_frase  += `${i.string} `;
+        dev_str    += `${i.symbol} `;
     	if(strmap[i.symbol] == undefined){
 			strmap[i.symbol]=i.string;
     	}else{
-    		strmap[i.symbol+"_"+temporalcontador]=i.string;
-    		temporalcontador+=1;
+    		strmap[i.symbol+"_"+temporalcontador] = i.string;
+    		temporalcontador += 1;
     	}	
     }
     /*
     console.log("*********************************************************");
     console.log(dev_frase);
     console.log(str);
+    console.log(dev_str);
     //*/
 
-     /*    RECONOCIENDO DEFINICION DE CLASE                                    */
-    if( _RE_ = str.match(RE_DEF_CLASE) ){
-        let obj             = new ASElemento();
-        obj.reglaP          = "clase";
+    /********************************************************************************/
+    /*    RECONOCIENDO DEFINICION DE CLASE                                          */
+        if( _RE_ = str.match(RE_DEF_CLASE) ){
+            let obj             = new ASElemento();
+            obj.reglaP          = "clase";
 
-        obj.name            = strmap.NAME;
+            obj.name            = strmap.NAME;
 
-        obj.isNodoFinal     = false;
+            obj.isNodoFinal     = false;
 
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    /*    RECONOCIENDO DEFINICION DE METODO                                    */
-    if( _RE_ = str.match(RE_DEF_METODO)              ){
-    	let obj             = new ASElemento();
-        obj.reglaP          = "metodo";
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO DEFINICION DE METODO                                         */
+        if( _RE_ = str.match(RE_DEF_METODO)              ){
+        	let obj             = new ASElemento();
+            obj.reglaP          = "metodo";
 
-    	obj.name            = strmap.NAME;
-    	obj.parametros      = _as_getParametros(arr);    	
+        	obj.name            = strmap.NAME;
+        	obj.parametros      = _as_getParametros(arr);    	
 
-        obj.restriccion     = _RE_[1]; 
-        obj.static          = _RE_[2] ? true:false;
-        obj.retorno         = _RE_[3];
+            obj.restriccion     = _RE_[1]; 
+            obj.static          = _RE_[2] ? true:false;
+            obj.retorno         = _RE_[3];
 
-        obj.isNodoFinal     = false;
+            obj.isNodoFinal     = false;
 
-        _as_setPosition(obj, arr);
-    	return obj;     	
-    }
-    /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                  */
-    if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
-    	let obj              = new ASElemento();
-        obj.reglaP           = "variable";
+            _as_setPosition(obj, arr);
+        	return obj;     	
+        }
+    /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                       */
+        if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
+        	let obj              = new ASElemento();
+            obj.reglaP           = "variable";
 
-    	obj.type             = _RE_[1] || "";
-    	obj.name             = strmap.NAME;
-		obj.value            = strmap[_RE_[3]];
-		obj.valueType        = _RE_[3];
+        	obj.type             = _RE_[1] || "";
+        	obj.name             = strmap.NAME;
+    		obj.value            = strmap[_RE_[3]];
+    		obj.valueType        = _RE_[3];
 
-        _as_setPosition(obj, arr);
-    	return obj; 
-    }
-    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS               */
-    if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
-        let obj              = new ASElemento();
-        obj.reglaP           = "variable";
+            _as_setPosition(obj, arr);
+        	return obj; 
+        }
+    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS                    */
+        if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
+            let obj              = new ASElemento();
+            obj.reglaP           = "variable";
 
-        obj.type             = _RE_[1] || "";
-        obj.name             = strmap.NAME;
-        obj.value            = "?";
+            obj.type             = _RE_[1] || "";
+            obj.name             = strmap.NAME;
+            obj.value            = "?";
 
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                       */
-    if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
-    	let obj              = new ASElemento();
-        obj.reglaP           = "asignacion";
-    	
-        obj.name             = strmap.NAME;
-        obj.valor            = strmap[_RE_[1]];
-        obj.valueType        = _RE_[1];
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                            */
+        if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
+        	let obj              = new ASElemento();
+            obj.reglaP           = "asignacion";
+        	
+            obj.name             = strmap.NAME;
+            obj.valor            = strmap[_RE_[1]];
+            obj.valueType        = _RE_[1];
 
-        _as_setPosition(obj, arr);
-        return obj; 
-    }    
-    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};*/
-    if( _RE_ = str.match(RE_ARREGLO)                 ){
-        let obj              = new ASElemento();
-        obj.reglaP           = "arreglo";
+            _as_setPosition(obj, arr);
+            return obj; 
+        }    
+    /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};     */
+        if( _RE_ = str.match(RE_ARREGLO)                 ){
+            let obj              = new ASElemento();
+            obj.reglaP           = "arreglo";
 
-        obj.type             = _RE_[2];
-        obj.name             = strmap.NAME;
-        obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
+            obj.type             = _RE_[2];
+            obj.name             = strmap.NAME;
+            obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
 
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    /*    RECONOCIENDO LLAMADA A METODO*/
-    if( _RE_ = str.match(RE_LLAMADA_FUNCION)){
-        let obj              = new ASElemento();
-        obj.reglaP           = "llamada";
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO LLAMADA A METODO                                             */
+        if( _RE_ = str.match(RE_LLAMADA_FUNCION)){
+            let obj              = new ASElemento();
+            obj.reglaP           = "llamada";
 
-        obj.name             = strmap.NAME;
-        obj.argumentos       = _as_getArgumentos(arr, obj.name);
-        
-        _as_setPosition(obj, arr);
-        
-        return obj; 
-    }
-    /* RECONOCIENDO LLAMADA A METODO CON ASIGNACION */
-    if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN)){
-        let obj              = new ASElemento();
-        obj.reglaP           = "llamada";
+            obj.name             = strmap.NAME;
+            obj.argumentos       = _as_getArgumentos(arr, obj.name);
+            
+            _as_setPosition(obj, arr);
+            
+            return obj; 
+        }
+    /*    RECONOCIENDO LLAMADA A METODO CON ASIGNACION                              */
+        if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN)){
+            let obj              = new ASElemento();
+            obj.reglaP           = "llamada";
 
-        obj.destinoName      = strmap.NAME; // destino al hacer return 
-        obj.name             = strmap.NAME_0;
-        obj.argumentos       = _as_getArgumentos(arr, obj.name);
+            obj.destinoName      = strmap.NAME; // destino al hacer return 
+            obj.name             = strmap.NAME_0;
+            obj.argumentos       = _as_getArgumentos(arr, obj.name);
 
-        _as_setPosition(obj, arr);
+            _as_setPosition(obj, arr);
 
-        return obj; 
-    }
-    /* RECONOCIENDO LLAMADA A METODO CON ASIGNACION Y DECLARACION DE VARIABLE*/
-    if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN_1)){
-        let obj              = new ASElemento();
-        obj.reglaP           = "llamada";
+            return obj; 
+        }
+    /*    RECONOCIENDO LLAMADA A METODO CON ASIGNACION Y DECLARACION DE VARIABLE    */
+        if( _RE_ = str.match(RE_LLAMADA_FUNCION_RETURN_1)){
+            let obj              = new ASElemento();
+            obj.reglaP           = "llamada";
 
-        obj.destinoCreate    = true;
-        obj.type             = _RE_[1] || "";
-        obj.destinoName      = strmap.NAME; // destino al hacer return 
-        obj.name             = strmap.NAME_0;
-        obj.argumentos       = _as_getArgumentos(arr, obj.name);
+            obj.destinoCreate    = true;
+            obj.type             = _RE_[1] || "";
+            obj.destinoName      = strmap.NAME; // destino al hacer return 
+            obj.name             = strmap.NAME_0;
+            obj.argumentos       = _as_getArgumentos(arr, obj.name);
 
-        _as_setPosition(obj, arr);
+            _as_setPosition(obj, arr);
 
-        return obj; 
-    }
-     /*    RECONOCIENDO ELSE*/
-    if( _RE_ = str.match(RE_ELSE)                 ){
-        /*  Else solo es valido se es precedido de un if  */
-        let obj              = new ASElemento();
-        let padre            = as_GetElementById(as_ids[as_ids.length-1]);
-        let nodoAnterior     = padre.hijos[padre.hijos.length-1];
-        ///*
-        if(nodoAnterior.reglaP == "Condicional_if"){
-            obj.reglaP           = "Condicional_else";
-            obj.name             = strmap.ELSE;
-            obj.hermanoMayor     = nodoAnterior;
-        
-            obj.isNodoFinal      = false;
+            return obj; 
+        }
+    /*    RECONOCIENDO RETURN VARIABLE                                              */
+        if( _RE_ = str.match(RE_RETURN_VARIABLE)){
+            let obj              = new ASElemento();
+            obj.reglaP           = "return_variable";
+
+            obj.name             = strmap.NAME;
             
             _as_setPosition(obj, arr);
             return obj; 
-        }else{
-            /* si este ELSE no precede de un if se crea un error 
-               se deja en nodoNOfinal ya que el analizador continua y 
-               al encontrar } (llave de cierre) Cerraria el ultimo
-               nodo no final */
-            let error = new ASElemento();
-                error.reglaP             = "ERROR_SINTACTICO";
-                _as_setPosition(error, arr);
-                error.isNodoFinal        = false;
-            return error;
-        }   
-    }
+        }
+        if( _RE_ = str.match(RE_RERUEN_NUM)){
+            let obj              = new ASElemento();
+            obj.reglaP           = "return_num";
+
+            obj.num             = strmap.NUM;
+            
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;               */
+        if( _RE_ = str.match(RE_SUMARESTADIVMULT)                ){
+            let obj              = new ASElemento();
+
+            let resultado        = null;
 
 
-
-    /*    RECONOCIENDO RETURN VARIABLE*/
-    if( _RE_ = str.match(RE_RETURN_VARIABLE)){
-        let obj              = new ASElemento();
-        obj.reglaP           = "return_variable";
-
-        obj.name             = strmap.NAME;
+            obj.reglaP           = "asignacion2";
+            obj.name             = strmap.NAME;
+            obj.destinoName      = strmap.NAME; // destino al hacer return 
+            obj.expresion        = _as_getExpresionMatematica(arr);
+            obj.resultado        = resultado;
         
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    if( _RE_ = str.match(RE_RERUEN_NUM)){
-        let obj              = new ASElemento();
-        obj.reglaP           = "return_num";
-
-        obj.num             = strmap.NUM;
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO IF                                                           */
+        if( _RE_ = str.match(RE_IF)                 ){
+            let obj              = new ASElemento();
+            obj.reglaP           = "Condicional_if";
+            obj.name             = strmap.IF;
         
+            obj.condicionales    = _as_getCondicionales(arr);
+
+            obj.isNodoFinal     = false;
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
+    /*    RECONOCIENDO ELSE                                                         */
+        if( _RE_ = str.match(RE_ELSE)                 ){
+            /*  Else solo es valido se es precedido de un if  */
+            let obj              = new ASElemento();
+            let padre            = as_GetElementById(as_ids[as_ids.length-1]);
+            let nodoAnterior     = padre.hijos[padre.hijos.length-1];
+            ///*
+            if(nodoAnterior.reglaP == "Condicional_if"){
+                obj.reglaP           = "Condicional_else";
+                obj.name             = strmap.ELSE;
+                obj.hermanoMayor     = nodoAnterior;
+            
+                obj.isNodoFinal      = false;                
+                _as_setPosition(obj, arr);
+                return obj; 
+            }else{
+                /* si este ELSE no precede de un if se crea un error 
+                   se deja en nodoNOfinal ya que el analizador continua y 
+                   al encontrar } (llave de cierre) Cerraria el ultimo
+                   nodo no final */
+                let error = new ASElemento();
+                    error.reglaP             = "ERROR_SINTACTICO";
+                    _as_setPosition(error, arr);
+                    error.isNodoFinal        = false;
+                return error;
+            }   
+        }
+    /*                                                                              */
+    /********************************************************************************/
+    
+
+    
+
+
+
+    /*    RECONOCIENDO UN CICLO FOR_0    */
+    if(RE_FOR_0.test(str)){
+        //  for ( int j = 0 ; j < matrix.length ; j ++ ) { 
+
+        let obj = new ASElemento();
+        //obj.parametros = lstParametros;   
+        obj.regla_1;
+        obj.regla_2;
+        obj.regla_3; 
+
+        obj.isNodoFinal      = false;                
         _as_setPosition(obj, arr);
-        return obj; 
-    }
-    /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;*/
-    if( _RE_ = str.match(RE_SUMARESTADIVMULT)                ){
-        let obj              = new ASElemento();
 
-        let resultado        = null;
-
-
-        obj.reglaP           = "asignacion2";
-        obj.name             = strmap.NAME;
-        obj.destinoName      = strmap.NAME; // destino al hacer return 
-        obj.expresion        = _as_getExpresionMatematica(arr);
-        obj.resultado        = resultado;
-    
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    /*    RECONOCIENDO IF*/
-    if( _RE_ = str.match(RE_IF)                 ){
-        let obj              = new ASElemento();
-        obj.reglaP           = "Condicional_if";
-        obj.name             = strmap.IF;
-    
-        obj.condicionales    = _as_getCondicionales(arr);
-
-        obj.isNodoFinal     = false;
-
-        _as_setPosition(obj, arr);
-        return obj; 
-    }
-    
-    
-
-    
-
-
-
-    /*    RECONOCIENDO UN CICLO FOR    */
-    if(RE_FOR.test(str)){
-        /*
-    	let obj = new ASElemento();
-    	obj.parametros = lstParametros;    	
-        obj.lineaInicial = arr[0].line;
+        console.log(obj)
         return obj;
-        */ 
+ 
+    }
+    /*    RECONOCIENDO UN CICLO FOR_1    */
+    if(RE_FOR_1.test(str)){
+        //  for ( int j = 0 ; j < matrix.length - 1 ; j ++ ) { 
+
+        let obj = new ASElemento();
+        //obj.parametros = lstParametros;    
+
+        obj.isNodoFinal      = false;                
+        _as_setPosition(obj, arr);
+
+        console.log(obj)
+        return obj;
+ 
     }
 
     

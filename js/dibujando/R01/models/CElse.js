@@ -1,4 +1,5 @@
-class CIf extends Element{
+
+class CElse extends Element{
 	constructor(instruccion){
 		super();	
 		let my_indice               = R01.lstElements.getChildrenById(R01.getIdsAncestros().p).sons.children.length;
@@ -39,7 +40,7 @@ class CIf extends Element{
     }
 
 
-	in(arr){
+	in(){
 			
 		let _this    = this;
 
@@ -53,14 +54,14 @@ class CIf extends Element{
 		    .onComplete(function () {});
 
 	    var scale = new TWEEN.Tween(this.cube.scale)
-		    .to({ x: R01.METODO_SCALE_X-2, z: R01.METODO_SCALE_Z-1,}, Controles.getVelocidad()/2)
+		    .to({ x: R01.METODO_SCALE_X-2,z: R01.METODO_SCALE_Z-1,}, Controles.getVelocidad()/2)
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {    
 		    	_this.setTextType("");
-		    	_this.setTextName(`if(${arr[0].string})`);
-			    _this.setTextValue("?");  
+		    	_this.setTextName(`else`);
+			    _this.setTextValue("");  
 
-		       	_this._setText4(arr, 0, arr.length-1);
+                Main.TriggerNextStep();
 		    });
 
 	    position.chain(scale);

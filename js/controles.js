@@ -173,6 +173,24 @@ var Controles = {
                     javaEditor_setText(ejemploDeCodigo_04);
                 }
             },
+            e05:function (){
+                if(Controles._botones.ejemplos.isEnabled){ 
+                    Controles.funcion.Reiniciar();          
+                    javaEditor_setText(ejemploDeCodigo_05);
+                }
+            },
+            e06:function (){
+                if(Controles._botones.ejemplos.isEnabled){ 
+                    Controles.funcion.Reiniciar();          
+                    javaEditor_setText(ejemploDeCodigo_06);
+                }
+            },
+            e07:function (){
+                if(Controles._botones.ejemplos.isEnabled){ 
+                    Controles.funcion.Reiniciar();          
+                    javaEditor_setText(ejemploDeCodigo_07);
+                }
+            },
         },
     },
 };

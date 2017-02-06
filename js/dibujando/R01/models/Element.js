@@ -493,8 +493,11 @@ class Element{
                                 let value_2     = _this.text.children[3] || null;   
 
                                 _this.text.remove(value_1);
-                                
-                                R01.ifOutfalse();
+                                if(_this.value == 'false'){
+                                    R01.ifOutfalse();
+                                }else{
+                                    Main.TriggerNextStep();
+                                }
                                                              
                             }).start();
                     }

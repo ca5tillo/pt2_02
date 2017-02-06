@@ -30,8 +30,24 @@ var ejemploDeCodigo_02 =
             a = pasoParametros(a, e, "texto");
     }
 }`;
-
 var ejemploDeCodigo_03 =
+`public class MyClass {   
+    public static int resta(int y, int z){
+        int a; a = y - z; return a;
+    }
+    public static int suma(int y, int z){
+        int a;
+        a = y + z;
+        return a;
+    }
+    public static void main() {
+        int a = 10; int b = 20;
+        int e = suma(a, b);
+            a = resta(a, e);
+    }
+}`;
+
+var ejemploDeCodigo_04 =
 `public class MyClass {
     public static void main() {
         int a = 5;
@@ -40,7 +56,7 @@ var ejemploDeCodigo_03 =
             c = a + b + a;
     }
 }`;
-var ejemploDeCodigo_03A =
+var ejemploDeCodigo_05 =
 `public class MyClass {
     public static void main() {
         int a = 0;
@@ -53,7 +69,7 @@ var ejemploDeCodigo_03A =
             c = a / b;
     }
 }`;
-var ejemploDeCodigo_04 =
+var ejemploDeCodigo_06 =
 `public class MyClass {
     public static int factorial (int numero) {
         int temp;
@@ -63,6 +79,10 @@ var ejemploDeCodigo_04 =
             return 1;
         }
         else{
+            int u_u;
+            if(0==0){
+                String O_o;
+            }
             temp  = numero-1; 
             temp2 = factorial(temp);
             temp3 = numero * temp2;
@@ -71,8 +91,26 @@ var ejemploDeCodigo_04 =
         }
     }
     public static void main() {
-        int resultado = factorial(1);
+        int resultado = factorial(3);
         
+    }
+}`;
+
+//http://enrrike87.blogspot.mx/2011/06/metodos-de-ordenamiento-java_21.html
+var ejemploDeCodigo_07 =
+`public class MyClass {
+    public static void main() {
+        int temp = 0;
+        int[] matrix = {8,5,7,25,22,1};
+        for(int i=1;i < matrix.length; i++){
+            for (int j=0 ; j < matrix.length- 1; j++){
+                if (matrix[j] > matrix[j+1]){
+                    temp = matrix[j];
+                    matrix[j] = matrix[j+1];
+                    matrix[j+1] = temp;
+                }
+            }
+        }
     }
 }`;
 
