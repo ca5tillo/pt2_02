@@ -59,6 +59,7 @@ class VariablePorParametro extends Element{
             })
 	        .onComplete(function () {
 	        	let siguientePaso = true;
+	        	_this.value=value;
 			    _this.setTextValueParam(value, elementoOrigen, siguientePaso);
 	        	
 	        });

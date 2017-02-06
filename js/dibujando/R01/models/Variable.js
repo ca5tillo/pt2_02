@@ -17,7 +17,7 @@ class Variable extends Element{
 
     	this.setTextType(this._type    );
     	this.setTextName(this._name+"=");
-	    this.setTextValue(this._value  );  
+	    this.setTextValue(this._value  );
 	}
 	set value(v){ this._value = v;    }
 	get name ( ){ return this._name;  }

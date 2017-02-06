@@ -1,11 +1,27 @@
 class CIf extends Element{
-	constructor(){
+	constructor(instruccion){
 		super();	
+		let my_indice               = R01.lstElements.getChildrenById(R01.getIdsAncestros().p).sons.children.length;
+
+        this._idPadre               =  R01.getIdsAncestros().p;
+		this._idContenedor          =  R01.getIdsAncestros().c;
+		
+		this._type                  = `_condicional`;
+		this._name                  = `if`;	
+		this._value                 = `${instruccion.value}`;
+		this._element.name          = `if`;	
+    	this._element.my_indice     = my_indice;
 
 
 		this.cube.material.opacity = 1;
         this.cube.material.visible = true;
+
+        
 	}
+	set value(v){ this._value = v;    }
+	get name ( ){ return this._name;  }
+	get value( ){ return this._value; }
+	get type ( ){ return this._type;  }
 	_setcube(){
 
         var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
@@ -23,7 +39,7 @@ class CIf extends Element{
     }
 
 
-	in(){
+	in(arr){
 			
 		let _this    = this;
 
@@ -37,14 +53,14 @@ class CIf extends Element{
 		    .onComplete(function () {});
 
 	    var scale = new TWEEN.Tween(this.cube.scale)
-		    .to({ x: R01.METODO_SCALE_X-2,
-		    	  y: R01.METODO_SCALE_Y,
-		    	  z: R01.METODO_SCALE_Z-1,}, Controles.getVelocidad()/2)
+		    .to({ x: R01.METODO_SCALE_X-2,}, Controles.getVelocidad()/2)
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {    
-		        let siguientePaso = true;
-		        let animar        = false;
-		        _this.setTextName(_this.name, siguientePaso, animar); 
+		    	_this.setTextType("");
+		    	_this.setTextName(`if(${arr[0].string})`);
+			    _this.setTextValue("?");  
+
+		       	_this._setText4(arr, 0, arr.length-1);
 		    });
 
 	    position.chain(scale);
@@ -56,10 +72,10 @@ class CIf extends Element{
 
 
 	    let padre    = R01.lstElements.getChildrenById(this.idPadre);
-	    let metodo   = this;
-	    let hijos    = metodo.children;
-	    let cube     = metodo.cube;
-	    let index    = padre.children.findIndex(nodo => nodo.id == metodo.id);
+	    let _this    = this;
+	    let hijos    = this.children;
+	    let cube     = this.cube;
+	    let index    = padre.children.findIndex(nodo => nodo.id == this.id);
 
 	    for(let i of hijos){
 	        new TWEEN.Tween(i.cube.scale)
@@ -75,11 +91,11 @@ class CIf extends Element{
 	    .to({ x:0.001,Y:0.001,z: 0.001,}, Controles.getVelocidad())
 	    .easing(TWEEN.Easing.Quadratic.In)
 	    .onStart(function (){
-	        metodo.graphics.remove(metodo.text);  
+	        _this.graphics.remove(this.text);  
 	    })
 	    .onComplete(function () {  
 
-	        padre.sons.remove(metodo.element);
+	        padre.sons.remove(_this.element);
 	        padre.children.splice(index, 1);
 
 

@@ -59,8 +59,8 @@ var ejemploDeCodigo_04 =
         int temp;
         int temp2;
         int temp3;
-        if (0 == 0){
-            int yy = 1;
+        if (numero == 0){
+            return 1;
         }
         else{
             temp  = numero-1; 
@@ -71,7 +71,7 @@ var ejemploDeCodigo_04 =
         }
     }
     public static void main() {
-        int resultado = factorial(3);
+        int resultado = factorial(1);
         
     }
 }`;

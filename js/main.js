@@ -18,6 +18,7 @@ var Main = {
     'ejecutado'            : false,
     'existeMain'           : false, // Existe metodo main en el editor
     'existenErrores'       : false, // as_imprimirArbol
+    'actualInstruccion'    : null,
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
     'mousedown'            : false, 
@@ -95,7 +96,7 @@ var Main = {
         let tipo        = null;
 
         Controles.funcion.Pasos += 1; 
-        if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();
+        if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();        
         javaEditor_markText_Clean();
 
 
@@ -104,21 +105,22 @@ var Main = {
 
 
             this.dibujar(this.nextInstruccion);
+            this.actualInstruccion = this.nextInstruccion; 
             instruccion =  this.getInstruccion();
 
 
             if(instruccion){                
                 this.nextInstruccion = instruccion.value;// esto es porq aun era el obj del generador
 
-
-                this._marcarLinea_2(this.nextInstruccion);
-                               
+                this._marcarLinea_2(this.nextInstruccion);                            
             }
         }
 
         pintarArbolDeLlamadas();
         pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
-        pintarArbol("representacionarreglo2", this.lstPasos, ["id","descripcion"]);   
+        pintarArbol("representacionarreglo2", this.lstPasos, ["id","descripcion"]);  
+
+
     },    
     reiniciar              : function(){// BTN
         R01.reset();
@@ -154,11 +156,12 @@ var Main = {
                 obj:padre
             });
     },
-    _addlstPasos_Level_2   : function(padre, des){
+    _addlstPasos_Level_2   : function(padre, hijos, des){
         let as = {
-            generador:appCreateGenerador(padre),
+            generador:appCreateGenerador(hijos),
             children:[], 
             descripcion: des,
+            obj:padre
         }
         this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
     },
@@ -176,6 +179,11 @@ var Main = {
                     javaEditor_markText_InstuccionActual(this.llamadas[this.llamadas.length-1].position.regla); 
                     this.llamadas.pop();
                 }
+            }
+            else if(i.reglaP == "finGenerador2_Condicional_if"){
+                            
+                javaEditor_markText_InstuccionActual(i.position.cierre); 
+                   
             }
             else if(i.reglaP == "llamada"){
                 let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
@@ -217,6 +225,11 @@ var Main = {
             else if(i.reglaP == "finDeGenerador"){
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
             }
+            else if(i.reglaP == "finGenerador2_Condicional_if"){
+                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+            }
+
+
             else if(i.reglaP == "llamada"){
                 let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
@@ -293,8 +306,13 @@ var Main = {
 
             // Add Pasos al generador para la creacion de los argumentos
             if(instruccion.argumentos.length > 0 ){
-                this._addlstPasos_Level_2(instruccion.argumentos,"argumentos");
+                this._addlstPasos_Level_2(instruccion, instruccion.argumentos,"argumentos");
             }
+        }
+
+        else if( (O_o) == "finGenerador2_llamada"){
+            
+            Controles.activar__botones();
         }
         else if( (O_o) == "argumento"       ){
 
@@ -318,36 +336,50 @@ var Main = {
         else if( (O_o) == "Condicional_if"         ){    
             let resultado = R01.drawIF(instruccion);
             if(resultado){                
-                instruccion.evaluadoEn = true;
-                this._addlstPasos_Level_2(instruccion.hijos,"Condicional_if");
-            }else{
-                instruccion.evaluadoEn = false;
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if");
             }
-            Controles.activar__botones();
-            if(this.esAnimacionFluida){
+
                 /*
+            if(this.esAnimacionFluida){
                     se vielve infinita por crear multipes instancias 
                     se puede llamar a un siguiente paso desde una animacion ya q 
                     la animagion se ejecuta en otro hilo 
-                */
                 //Main.pasoApaso();//se vielve infinita por crear multipes instancias 
             }  
+                */
+        }
+        else if( (O_o) == "finGenerador2_Condicional_if"){
+            R01.ifOutfalse();
+            Controles.activar__botones();
         }
         else if( (O_o) == "Condicional_else"         ){    
-            if( ! instruccion.hermanoMayor.evaluadoEn){
+            if( ! instruccion.hermanoMayor.value){
 
-                this._addlstPasos_Level_2(instruccion.hijos,"Condicional_else");
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
             }else{
-
+                new TWEEN.Tween({x:0})
+                .to         ({ x:100},Controles.getVelocidad())
+                .easing     (TWEEN.Easing.Quadratic.In)
+                .onComplete ( function (){
+                    //Main.pasoApaso();
+                }).start();   
             }
-
+            
             Controles.activar__botones();
             //Main.pasoApaso();
             //*/
         }
+        else if( (O_o) == "finGenerador2_Condicional_else"){
+
+            Controles.activar__botones();
+            console.log("estupidin")
+        }
+
         else{        
 
-            alert("Error en tiempo de ejecucion");            
+            alert("Error en tiempo de ejecucion");
+            console.clear();
+            console.log("Error en tiempo de ejecucion")            
         }
     },
     getInstruccion         : function(){
@@ -360,7 +392,14 @@ var Main = {
             if(n > 0){// Tienen prioridad los Main.lstPasos de segundo nivel
                 i = Main.lstPasos.children[index_1].children[index_2].generador.next();
                 if(i.done){
+                    ///*
+                    let a = Main.lstPasos.children[index_1].children[index_2];
+                    let instruccion = {reglaP: `finGenerador2_${a.obj.reglaP}`};
+                        instruccion.position = a.obj.position;
+                    i = { value: instruccion, done: true };
+                    //*/
                     Main.lstPasos.children[index_1].children.pop();
+                    //if(a.obj.reglaP == "llamada")
                     i = this.getInstruccion();
                 }
                 
@@ -495,6 +534,11 @@ function pintarArbol(destino, arbol, items){
         ul.setAttribute("id", "arbol"); 
         ul.setAttribute("data-name", destino);  
         ul.appendChild(_createLista(arbol));   
+        if("representacionarreglo2" == destino){            
+            ul.addEventListener("change", as_infoNodo);
+        }else if("representacionarreglo1"){
+            ul.addEventListener("change", info_elemento3D);
+        }
         //ul.addEventListener("change", as_infoNodo);
 
         document.getElementById(destino).innerHTML="";

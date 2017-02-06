@@ -709,6 +709,9 @@ function as_infoNodo(ev){
     }
     textito += `</table>`;
     $('#infonodo_as').html(textito);
+
+    console.clear();
+    console.log(nodo)
 }
 function as_GetElementById(id){
     //http://jsfiddle.net/dystroy/MDsyr/

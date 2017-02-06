@@ -168,9 +168,9 @@ class Element{
         WorldPosition_B.setFromMatrixPosition ( receptor.element.matrixWorld );
              
 
-        WorldPosition_C.x = (textMesh1.position.x - WorldPosition_B.x)+(WorldPosition_A.x);
-        WorldPosition_C.y = (textMesh1.position.y - WorldPosition_B.y)+(WorldPosition_A.y);
-        WorldPosition_C.z = (textMesh1.position.z - WorldPosition_B.z)+(WorldPosition_A.z);
+        WorldPosition_C.x = (0 - WorldPosition_B.x)+(WorldPosition_A.x);
+        WorldPosition_C.y = (0 - WorldPosition_B.y)+(WorldPosition_A.y);
+        WorldPosition_C.z = (0 - WorldPosition_B.z)+(WorldPosition_A.z);
 
         return WorldPosition_C;
     }
@@ -253,171 +253,253 @@ class Element{
         tween.chain(mo2);               
         mo.start();                          
     }
-    __cafecitocon_pan(result){
-        let _this = this;
-        let positionDestino = this.__setTextPosition_1(3);
+    _setText3(arr, i, f){
 
-        let a1 = new TWEEN.Tween(result.mesh.position)
-                        .to         (positionDestino,Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){
-                            _this._text.remove(_this._text.children[2]);
-                            _this.value = result.mesh.string;
-                            Controles.activar__botones();
-                            //if(siguientePaso) Main.TriggerNextStep();
-                        }).start();
-        console.log("ya es muy tarde y no se que estoy haciendo",this);
-        Controles.activar__botones();
-    }
-    __cafe( textMesh1, position,txt, arr, i, f){
-        let _this = this;
+        let _this       = this;
         let idPadre         = R01.getIdsAncestros().p;
         let idContenedor    = R01.getIdsAncestros().c;
         let contenedor      = R01.lstElements.getChildrenById(idContenedor);
-        let padre           = R01.lstElements.getChildrenById(idPadre);        
-        //     let destino         = R01.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
-        let WorldPosition_A = new THREE.Vector3();
+        let padre           = R01.lstElements.getChildrenById(idPadre);
 
-        let text            = null;
-        let originalisimo = null;
-        if(i > f){ 
-            let ante = textMesh1.position.y;
-            let nuevoY = ante - Config_R01.TAM_GRAL; 
-            let a1 = new TWEEN.Tween(textMesh1.position)
-                        .to         ({y:nuevoY},Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){
-       
-                            _this._text.remove(textMesh1);
 
-                            textMesh1 = _this.__setText("value",eval(_this.exp_matematica));
-                            _this.value=eval(_this.exp_matematica);
-                            textMesh1.mesh.position.set(position.x,nuevoY , position.z);
 
-            let a2 = new TWEEN.Tween(textMesh1.mesh.position)
-                        .to         ({y:ante},Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){
-                            
-                            _this.__cafecitocon_pan(textMesh1);
+        let pos_mesa    = this.__setTextPosition_2(padre, this);// sobre de la mesa
+        pos_mesa.y += Config_R01.TAM_GRAL;
 
-                        }).start();
 
-                        }).start();
-            
-  
-
-           
-            
-        }else{
+        if(i <= f){
             if(arr[i].symbol && arr[i].symbol == 'NAME'){
-                originalisimo = contenedor.getChildrenByName(arr[i].string);     
+                let variable      = contenedor.getChildrenByName(arr[i].string);
+                let posVar        = new THREE.Vector3();
+                let origenPos_X   = variable.element.position.x;
+                let origenPos_Xi  = origenPos_X - (Config_R01.TAM_GRAL*2);
+                let __a           = this.__setText("value",variable.value,false).mesh;
 
-                WorldPosition_A.setFromMatrixPosition ( originalisimo.element.matrixWorld );
-                txt = txt.replace(arr[i].string, originalisimo.value); 
-                text            = this.__setText("value",originalisimo.value).mesh;
-                let position_B = _this.__setTextPosition_2(originalisimo, _this, text);
+                posVar.setFromMatrixPosition ( variable.element.matrixWorld );
 
-                //text.position.set(position_B.x, position_B.y, position_B.z);
-
-
-        let origenPos_X     = originalisimo.element.position.x;
-        let origenPos_Xi    = origenPos_X - (Config_R01.TAM_GRAL*2);
-
-
-        let mo =new TWEEN.Tween(originalisimo.element.position)
+                let varIzq = new TWEEN.Tween(variable.element.position)
                     .to         ({ x:origenPos_Xi },Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In)
-                    .onStart    ( function (){} )
-                    .onUpdate   ( function (){} )
                     .onComplete ( function (){
-                        let position_B = _this.__setTextPosition_2(originalisimo, _this, text);// Origen
-                        text.position.set(position_B.x, position_B.y, position_B.z); 
-                        textMesh1.visible = true;
+                        let position_B = _this.__setTextPosition_2(variable, _this);// Origen
+                        __a.position.set(position_B.x, position_B.y, position_B.z); 
+                        __a.visible = true;
                     });
 
+                let txtPos = new TWEEN.Tween(__a.position)
+                    .to         (pos_mesa,Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
+                    .onComplete ( function (){
+                        let value_3     = _this.text.children[4] || null;
+                        if(value_3){
+                            let value_2     = _this.text.children[3] || null;
+                            let string = value_2.string;
+                            string = string.replace(arr[i].string, value_3.string);
+                            _this.text.remove(value_2);
+                            _this.text.remove(value_3);
 
-
-
-                let a1 = new TWEEN.Tween(text.position)
-                        .to         (position,Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){
-                            _this._text.remove(textMesh1);
-                            _this._text.remove(text);
-                            let pato = _this.__setText("value",txt);
-
+                            let pato = _this.__setText("value",string);
+                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
                             pato.geo.center();
-                            pato.mesh.position.set(position.x, position.y, position.z);
-                            _this.__cafe( pato.mesh, position,txt, arr, i+1, f);
-                        });
-
-
-        let mo2 =new TWEEN.Tween(originalisimo.element.position)
+                        }
+                        _this._setText3( arr, i+1, f);
+                    });
+                let varDer = new TWEEN.Tween(variable.element.position)
                     .to         ({ x:origenPos_X },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onStart    ( function (){} )
-                    .onUpdate   ( function (){} )
-                    .onComplete ( function (){});
-
-
-                mo.chain(a1);
-                a1.chain(mo2);
-                mo.start();
-            }else if(arr[i].ext == 'ext'){
-                text            = this.__setText("value",arr[i].string).mesh;
-                text.position.set(position.x, position.y-Config_R01.TAM_GRAL, position.z);
-                txt += arr[i].string;
-                let a1 = new TWEEN.Tween(text.position)
-                        .to         (position,Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){
-                            _this._text.remove(textMesh1);
-                            _this._text.remove(text);
-                            let pato = _this.__setText("value",txt);
-
-                            pato.geo.center();
-                            pato.mesh.position.set(position.x, position.y, position.z);
-                            _this.__cafe( pato.mesh, position,txt, arr, i+1, f);
-                        }).start();
-            }else{
-
-                _this.__cafe( textMesh1, position,txt, arr, i+1, f);
+                    .easing     (TWEEN.Easing.Quadratic.In);
+                
+                varIzq.chain(txtPos);
+                txtPos.chain(varDer);
+                varIzq.start();            
             }
-        
+            else if(arr[i].ext == 'ext'){
+                let _a = this.__setText("value",arr[i].string,false);
+                let __a = _a.mesh;
+                     _a.geo.center();
+                    __a.position.set(pos_mesa.x, pos_mesa.y-Config_R01.TAM_GRAL, pos_mesa.z);
+                    __a.visible = true;
+           
+                 new TWEEN.Tween(__a.position)
+                    .to         ({y:pos_mesa.y},Controles.getVelocidad())
+                    .easing     (TWEEN.Easing.Quadratic.In)
+                    .onComplete ( function (){                            
+                        let value_3     = _this.text.children[4] || null;
+                        if(value_3){
+                            let value_2     = _this.text.children[3] || null;
+                            let string = value_2.string + " "+value_3.string;
+                            _this.text.remove(value_2);
+                            _this.text.remove(value_3);
+
+                            let pato = _this.__setText("value",string);
+
+                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                            pato.geo.center();
+
+                        }
+                        _this._setText3( arr, i+1, f);
+                    }).start();
+            }
+            else{
+
+                _this._setText3( arr, i+1, f);
+            }
         }
+        else if(i == f+1){
 
-        //a1.start();
+            let a = new TWEEN.Tween({x:0})
+                .to         ({x:20},Controles.getVelocidad())
+                .easing     (TWEEN.Easing.Quadratic.In)
+                .onComplete ( function (){                            
+                    let value_2     = _this.text.children[3] || null;
+                    if(value_2){
+
+                        let string = arr[arr.length-1].string;
+                        _this.text.remove(value_2);
+
+                        let pato = _this.__setText("value",string);
+                        pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                        //pato.geo.center();
+
+                        let po = _this.__setTextPosition_1(3);
+                        let b = new TWEEN.Tween(pato.mesh.position)
+                            .to         (po,Controles.getVelocidad())
+                            .easing     (TWEEN.Easing.Quadratic.In)
+                            .onComplete ( function (){    
+                                let value_1     = _this.text.children[2] || null;
+                                let value_2     = _this.text.children[3] || null;   
+
+                                _this.text.remove(value_1);
+
+                                Main.TriggerNextStep();                  
+                                
+                            }).start();
+                    }
+                });
+            a.start();            
+        }
     }
-    _setText3(txt, padre, expresion){
-        let _this           = this;
 
-        let text            = this.__setText("value",txt);
-        let textMesh1       = text.mesh;
-        let textGeo         = text.geo;
+    _setText4(arr, i, f){
 
-        let position_B      = this.__setTextPosition_2(padre, this, textMesh1);// Origen
-        textGeo.center();
-        textMesh1.position.set(position_B.x, position_B.y, position_B.z);
+        let _this       = this;
+        let idPadre         = R01.getIdsAncestros().p;
+        let idContenedor    = R01.getIdsAncestros().c;
+        let contenedor      = R01.lstElements.getChildrenById(idContenedor);
+        let padre           = R01.lstElements.getChildrenById(idPadre);
 
-        let pos1 = textMesh1.position.y + Config_R01.TAM_GRAL;
 
-        let a1 = new TWEEN.Tween(textMesh1.position)
-                    .to         ({ y:pos1 },Controles.getVelocidad())
+
+        let pos_mesa    = this.__setTextPosition_2(padre, this);// sobre de la mesa
+        pos_mesa.y += Config_R01.TAM_GRAL;
+
+
+        if(i <= f){
+            if(arr[i].symbol && arr[i].symbol == 'NAME'){
+                let variable      = contenedor.getChildrenByName(arr[i].string);
+                let posVar        = new THREE.Vector3();
+                let origenPos_X   = variable.element.position.x;
+                let origenPos_Xi  = origenPos_X - (Config_R01.TAM_GRAL*2);
+                let __a           = this.__setText("value",variable.value,false).mesh;
+
+                posVar.setFromMatrixPosition ( variable.element.matrixWorld );
+
+                let varIzq = new TWEEN.Tween(variable.element.position)
+                    .to         ({ x:origenPos_Xi },Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In)
                     .onComplete ( function (){
-                        _this.__cafe( textMesh1, textMesh1.position, txt, expresion, 0, expresion.length-1);
+                        let position_B = _this.__setTextPosition_2(variable, _this);// Origen
+                        __a.position.set(position_B.x, position_B.y, position_B.z); 
+                        __a.visible = true;
                     });
 
-        a1.start();
+                let txtPos = new TWEEN.Tween(__a.position)
+                    .to         (pos_mesa,Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
+                    .onComplete ( function (){
+                        let value_3     = _this.text.children[4] || null;
+                        if(value_3){
+                            let value_2     = _this.text.children[3] || null;
+                            let string = value_2.string;
+                            string = string.replace(arr[i].string, value_3.string);
+                            _this.text.remove(value_2);
+                            _this.text.remove(value_3);
 
+                            let pato = _this.__setText("value",string);
+                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                            pato.geo.center();
+                        }
+                        _this._setText4( arr, i+1, f);
+                    });
+                let varDer = new TWEEN.Tween(variable.element.position)
+                    .to         ({ x:origenPos_X },Controles.getVelocidad())
+                    .easing     (TWEEN.Easing.Quadratic.In);
+                
+                varIzq.chain(txtPos);
+                txtPos.chain(varDer);
+                varIzq.start();            
+            }
+            else if(arr[i].ext == 'ext'){
+                let _a = this.__setText("value",arr[i].string,false);
+                let __a = _a.mesh;
+                     _a.geo.center();
+                    __a.position.set(pos_mesa.x, pos_mesa.y-Config_R01.TAM_GRAL, pos_mesa.z);
+                    __a.visible = true;
+           
+                 new TWEEN.Tween(__a.position)
+                    .to         ({y:pos_mesa.y},Controles.getVelocidad())
+                    .easing     (TWEEN.Easing.Quadratic.In)
+                    .onComplete ( function (){                            
+                        let value_3     = _this.text.children[4] || null;
+                        if(value_3){
+                            let value_2     = _this.text.children[3] || null;
+                            let string = value_2.string + " "+value_3.string;
+                            _this.text.remove(value_2);
+                            _this.text.remove(value_3);
 
-        /*
-        let centerOffset = -0.5 * ( textGeo.boundingBox.max.x - textGeo.boundingBox.min.x );
-        textMesh1.position.x = centerOffset;
-        //*/
-        //textMesh1.position.set(position_A.x, position_A.y, position_A.z);  
+                            let pato = _this.__setText("value",string);
 
+                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                            pato.geo.center();
+
+                        }
+                        _this._setText4( arr, i+1, f);
+                    }).start();
+            }
+            else{
+                _this._setText4( arr, i+1, f);
+            }
+        }
+        else if(i == f+1){
+
+            new TWEEN.Tween({x:0})
+                .to         ({x:20},Controles.getVelocidad())
+                .easing     (TWEEN.Easing.Quadratic.In)
+                .onComplete ( function (){                            
+                    let value_2     = _this.text.children[3] || null;
+                    if(value_2){
+
+                        let string = arr[arr.length-1].string;
+                        _this.text.remove(value_2);
+
+                        let pato = _this.__setText("value",string);
+                        pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                        //pato.geo.center();
+
+                        let po = _this.__setTextPosition_1(3);
+
+                        new TWEEN.Tween(pato.mesh.position)
+                            .to         (po,Controles.getVelocidad())
+                            .easing     (TWEEN.Easing.Quadratic.In)
+                            .onComplete ( function (){    
+                                let value_1     = _this.text.children[2] || null;
+                                let value_2     = _this.text.children[3] || null;   
+
+                                _this.text.remove(value_1);
+                                
+                                R01.ifOutfalse();
+                                                             
+                            }).start();
+                    }
+                }).start();            
+        }
     }
     getSonByIndex(index){
 

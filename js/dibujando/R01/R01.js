@@ -14,7 +14,7 @@ var R01 = {
     'zoneLib'              : null, // zonaLibrerias  representa la zona donde se apilaran las librerias
     'groupBase'            : null, // group_ejecucion  representa la zona donde se ejecutara el programa de entrada
 
-    _addAncestro_1          : function(element, descripcion){
+    _addAncestro_1         : function(element, descripcion){
         this._lstIDsMetodos.children.push(
             {
                 id           : element.id, 
@@ -22,19 +22,20 @@ var R01 = {
                 descripcion  : descripcion
             });
     },
-    _addAncestro_2          : function(element, descripcion){
+    _addAncestro_2         : function(element, descripcion){
         let obj = {
             id           : element.id, 
             children     : [], 
             descripcion  : descripcion
         };
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.push(obj);
-        
     },
-    _popAncestro_1           : function (){
+    _popAncestro_1         : function (){
+        
         this._lstIDsMetodos.children.pop();
     },
-    __popAncestro_2           : function (){
+    __popAncestro_2        : function (){
+       
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
     },
     reset                  : function(){
@@ -198,7 +199,7 @@ var R01 = {
             metodo.out();
             this._popAncestro_1();
             
-            //Main.lstPasos.children.pop();
+            Main.lstPasos.children.pop(); // cuando existe un return seezara borrar los paso q ya fueron cargados
         }
     },
     crearVariable_2        : function(instruccion){
@@ -297,7 +298,7 @@ var R01 = {
         let padre           = this.lstElements.getChildrenById(idPadre);        
         let destino         = this.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
 
-      //  let arr = instruccion.expresion.clone();
+
         let expresion  = "";
         let expresion2 = "";
         let resultado  = "?";
@@ -314,37 +315,18 @@ var R01 = {
         destino.exp_matematica = expresion2;
         try{
             resultado = eval(expresion2);
+            let arr = [{ext:'ext',string:expresion}];
+            let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+            let myarr = arr.concat(instruccion.expresion, as);  
+            destino._setText3(myarr, 0, myarr.length-1);
         }catch(err){
             alert("Error en tiempo de ejecucion");
             console.log("Error en tiempo de ejecucion");
         }
 
-        let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
-        let myChildren = instruccion.expresion.concat(as);  
+        destino.value = resultado;
 
-        destino._setText3(expresion, padre, myChildren);
-        /*
-        let expresion = "";
-        let resultado = "?";
-        
-        for(let i of instruccion.expresion){
-            if(i.symbol == 'NAME'){
-                expresion += " "+contenedor.getChildrenByName(i.string).value;
-            }else{
-                expresion += " "+i.string;
-            }
-        }
-
-        try{
-            resultado = eval(expresion);
-        }catch(err){
-            alert("Error en tiempo de ejecucion");
-        }
-
-        let value           = resultado;
-        destino.setTextValue(value,siguientePaso,animar);
-        destino.value       = value;
-        //*/
+   
     },
     drawIF                 : function(instruccion){
 
@@ -354,27 +336,46 @@ var R01 = {
         let contenedor      = this.lstElements.getChildrenById(idContenedor);
         let padre           = this.lstElements.getChildrenById(idPadre);
 
-        let condicional = "";
-        let resultado = false;
-        
-        for(let i of instruccion.condicionales){
+        let expresion  = "";
+        let expresion2 = "";
+        let resultado  = false;
+
+        for(let i of instruccion.condicionales){            
+            expresion += expresion == "" ? i.string : " "+i.string;
             if(i.symbol == 'NAME'){
-                condicional += " "+contenedor.getChildrenByName(i.string).value;
+                let valval = contenedor.getChildrenByName(i.string).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
             }else{
-                condicional += " "+i.string;
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
             }
         }
-        try{
-            resultado = eval(condicional);
-        }catch(err){
+
+        
+        try{ resultado = eval(expresion2); }catch(err){
             alert("Error evaluacion");
         }
-        let element  = new CIf();
+
+        instruccion.value = resultado;
+
+        let arr = [{ext:'ext',string:expresion}];
+        let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado+""}];
+        let myarr = arr.concat(instruccion.condicionales, as);  
+
+
+        let element  = new CIf(instruccion);
         this._addAncestro_2(element, "CIf");
         padre.add(element);
-        element.in();
+        element.in(myarr);
+
 
         return resultado;
+    },
+    ifOutfalse                  : function(){
+        let idPadre         = this.getIdsAncestros().p;
+        let padre           = this.lstElements.getChildrenById(idPadre);
+        padre.out();
+        this.__popAncestro_2();
+
     }
 
 };

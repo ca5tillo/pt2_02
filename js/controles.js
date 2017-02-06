@@ -100,8 +100,10 @@ var Controles = {
             //let json = JSON.stringify(R01.lstElements.children[1].children[0],['name', 'children']);
             //console.log(json);
               //  /*
-
-            console.log(javaEditor.getOption("theme"));
+            console.clear();
+            console.log("Actual",Main.actualInstruccion);
+            console.log("");
+            console.log("Next",Main.nextInstruccion);
             //*/
         },
         Preparar        : function(){
@@ -225,6 +227,11 @@ Controles.setupControles = function (){
         $('#detalles').css({'visibility': 'visible', 'height': '250px'});
     }
     f4.add(this.funcion,'Panel').onFinishChange(function(v){
+        pintarArbolDeLlamadas();
+        pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
+        pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);  
+
+
         v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
         $('#detalles').css('visibility', 'hidden');
     });
