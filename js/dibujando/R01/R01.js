@@ -198,8 +198,8 @@ var R01 = {
         if(metodo){
             metodo.out();
             this._popAncestro_1();
-            
-            Main.lstPasos.children.pop(); // cuando existe un return seezara borrar los paso q ya fueron cargados
+// ya no se usa  "Main.lstPasos.children.pop()" aqui porque cuando simplemente se terminan las reglas de un metodo
+// es "Main.getInstruccion" quien saca el generador de la pila           
         }
     },
     crearVariable_2        : function(instruccion){
@@ -262,10 +262,15 @@ var R01 = {
             let value           = contenedor.getChildrenByName(instruccion.name,true).value;
             let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
             destino.value       = value;
-            destino.setTextValue(value,siguientePaso);
+
+            
+            let arr = [{ext:'ext',string:instruccion.name},{symbol: 'NAME', string:instruccion.name},{ext:'ext',string:value}];
+            destino._setText5(arr, 0, arr.length-2);
+
+            Main.lstPasos.children.pop(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
         }
-        this.MethodOut();
+        //this.MethodOut();// se ejecuta en la animacion de setText5
     },
     returnNum              : function(instruccion){
 
@@ -280,10 +285,12 @@ var R01 = {
             let value           = instruccion.num;
             let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
             destino.value       = value;
-            destino.setTextValue(value,siguientePaso);
+            let arr = [{ext:'ext',string:value}];
+            destino._setText5(arr, 0, arr.length-1);
+            Main.lstPasos.children.pop(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
         }
-        this.MethodOut();
+        //this.MethodOut();// se ejecuta en la animacion de setText5
     },
     asignacion2            : function(instruccion){
         /*

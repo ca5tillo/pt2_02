@@ -354,20 +354,18 @@ var Main = {
         }
         else if( (O_o) == "Condicional_else"         ){    
             if( ! instruccion.hermanoMayor.value){
-
                 this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
-            }else{
-                new TWEEN.Tween({x:0})
-                .to         ({ x:100},Controles.getVelocidad())
-                .easing     (TWEEN.Easing.Quadratic.In)
-                .onComplete ( function (){
-                    //Main.pasoApaso();
-                }).start();   
             }
-            
+
+            new TWEEN.Tween({x:0})
+            .to         ({ x:100},Controles.getVelocidad())
+            .easing     (TWEEN.Easing.Quadratic.In)
+            .onComplete ( function (){
+                Main.TriggerNextStep();
+            }).start(); 
+
             Controles.activar__botones();
-            //Main.pasoApaso();
-            //*/
+            
         }
         else if( (O_o) == "finGenerador2_Condicional_else"){
 
