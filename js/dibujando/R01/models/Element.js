@@ -1,4 +1,3 @@
-var dibujando_generateID = GenerateID();
 class Element{
     constructor(){
         this._id            = dibujando_generateID.next().value;

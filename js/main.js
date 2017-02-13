@@ -9,8 +9,8 @@
  *                         ooO Ooo                            *
 \**************************************************************/
 "use strict";
-var Main_generateID = GenerateID();
-window.addEventListener('load',init);
+
+window.addEventListener('load', init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
 var Main = {
@@ -169,7 +169,11 @@ var Main = {
         }
         this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
     },
-    popPasos_Level_2    : function() {
+    popPasos_Level_1       : function() {
+        
+        this.lstPasos.children.pop();
+    },
+    popPasos_Level_2       : function() {
         let index_1 = this.lstPasos.children.length-1;    // indice del ultimo generador
         this.lstPasos.children[index_1].children.pop();
     },

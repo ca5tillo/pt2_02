@@ -6,11 +6,12 @@ class CFor extends Element{
         this._idPadre               =  R01.getIdsAncestros().p;
 		this._idContenedor          =  R01.getIdsAncestros().c;
 		
-		this._type                  = `_condicional`;
+		this._type                  = `for`;
 		this._name                  = `for`;	
 		this._value                 = false
 		this._element.name          = `for`;	
     	this._element.my_indice     = my_indice;
+    	this._string                = instruccion.string;
 
 
 		this.cube.material.opacity = 1;
@@ -98,7 +99,7 @@ class CFor extends Element{
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {    
 		    	_this.setTextType("");
-		    	_this.setTextName(`for()`);
+		    	_this.setTextName(_this._string);
 			    _this.setTextValue("");  
 
 		       	Main.TriggerNextStep();
@@ -106,8 +107,6 @@ class CFor extends Element{
 
 	    position.chain(scale);
 	    position.start();   
-	
-
 	}
 	in2(){
 			
@@ -135,10 +134,6 @@ class CFor extends Element{
 		    	_this.element.rotation.x = 0;
 		    	Main.TriggerNextStep();
 		    }).start();
-
-	    
-	
-
 	}
 	out(){
 
@@ -184,6 +179,5 @@ class CFor extends Element{
 
 	    });
 	    tweenB.start();   
-	    
 	}
 }

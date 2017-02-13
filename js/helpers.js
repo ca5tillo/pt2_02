@@ -1,14 +1,17 @@
 /*
 INFO
 
-Code mirror                                   tiene un z-index = 9;
-.EditorTooltipMarcatexto:hover:after          tiene un z-index = 10;
-#detalles                                     tiene un z-index = 14;
-Data.gui                                      tiene un z-index = 18;
+Code mirror-----------------------------------tiene un z-index = 9;
+.EditorTooltipMarcatexto:hover:after----------tiene un z-index = 10;
+#detalles-------------------------------------tiene un z-index = 14;
+Data.gui--------------------------------------tiene un z-index = 18;
 */
 
 function *appCreateGenerador(arr){ for(let i of arr){ yield i; } }
 function *GenerateID   (){var i = 0;while(true){yield i;i++;}}
+
+var Main_generateID      = GenerateID();
+var dibujando_generateID = GenerateID();
 
 
 function setup_EEDOCDG(){
@@ -32,6 +35,7 @@ function setup_EventosMouse(){/* Desactivar OrbilControl de THREE.js */
     $("#detalles-content").mouseout(function()   { if(Main.ejecutado)MyThreeJS.enableCameraControl();     });	
 }
 function setup_PestanasPanelDetalles(){
+
 	$("#detalles-tabs").tabs();
 }
 function setup_EstilosPanelDetalles(){	
@@ -54,4 +58,13 @@ function setup_EstilosPanelDetalles(){
     };
 	$('#detalles').resizable(resizable);
 }
-
+function helper_detalles(){
+    if(as_arbol)
+        as_imprimirArbol(as_arbol);
+    if(R01.lstElements)
+        pintarArbolDeLlamadas();
+    if(R01._lstIDsMetodos)
+        pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
+    if(Main.lstPasos)
+        pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);  
+}

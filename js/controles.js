@@ -206,7 +206,7 @@ Controles.setupControles = function (){
     $(this.gui.domElement).attr("id","MyControlesDataGui");
 
     this.gui.add(this.funcion,"Comodin");
-    this.gui.add(this.funcion,"Mensaje");// Funciona al desactivar el orbitControl de Three.js
+    //this.gui.add(this.funcion,"Mensaje");// Funciona al desactivar el orbitControl de Three.js
 
     /***************************************************************************************************/
     let f1                        = this.gui.addFolder('Animacion');
@@ -251,9 +251,7 @@ Controles.setupControles = function (){
         $('#detalles').css({'visibility': 'visible', 'height': '250px'});
     }
     f4.add(this.funcion,'Panel').onFinishChange(function(v){
-        pintarArbolDeLlamadas();
-        pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
-        pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);  
+        helper_detalles();
 
 
         v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
@@ -264,9 +262,9 @@ Controles.setupControles = function (){
     
 
     f1.open();
-    f2.open();
+    //f2.open();
     //f3.open();
-    f4.open();
+    //f4.open();
     this._teclado();
 }
 

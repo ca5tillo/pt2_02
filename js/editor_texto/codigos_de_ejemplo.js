@@ -105,6 +105,7 @@ var ejemploDeCodigo_07 =
         int[] matrix = {8,5,7,25,22,1};
         for( i=1;i < 6; i++){
             for ( j=0 ; j < 5; j++){
+                int ww;
                     /*
                 if (matrix[j] > matrix[j+1]){
                     temp = matrix[j];

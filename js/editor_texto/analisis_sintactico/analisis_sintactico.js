@@ -57,13 +57,9 @@ class ASParametro{
             }                          
         };
 	}
-
 }
 class ASElemento  {
-	constructor(
-
-		){
-
+	constructor(){
         this.reglaP                     = null;
         this.id                         = _as_generateID.next().value;
         this.idPadre                    = 0;
@@ -86,12 +82,6 @@ class ASElemento  {
 
         this.condicionales              = null; // para los if
         this.evaluadoEn                 = null; //para los if  ya no se usa en su lugar se usa value
-
-        this.tipoDeDato = "";// si es variable
-        this.valor = "";// si es variable
-        this.static = false;
-        this.retorno =""
-        this.restriccion="";//private, public ...
 
 		this.position = {
             regla:{// posicion de la instruccion que coincida con la regla de produccion
@@ -116,9 +106,7 @@ class ASElemento  {
                                                 
 
 
-        this.isNodoFinal                = true; // los q no son finales tiene sub elementos Ej. un metodo o un for
-
-		
+        this.isNodoFinal                = true; // los que no son finales tiene sub elementos Ej. un metodo o un for
 	}
 }
 function analisisSintactico(){
@@ -129,7 +117,7 @@ function analisisSintactico(){
 	let isFor            = false;
 	let isArray          = false;
     
-    _as_generateID        = GenerateID();
+    _as_generateID       = GenerateID();
     as_ids               = [];
     as_arbol             = new ASElemento();
     as_arbol.name        = "ElementoRaiz";
@@ -225,12 +213,11 @@ function _as_reglasProduccion(str, arr){
         if( _RE_ = str.match(RE_DEF_CLASE) ){
             let obj             = new ASElemento();
             obj.reglaP          = "clase";
-
             obj.name            = strmap.NAME;
 
-            obj.isNodoFinal     = false;
 
             _as_setPosition(obj, arr);
+            obj.isNodoFinal     = false;
             return obj; 
         }
     /*    RECONOCIENDO DEFINICION DE METODO                                         */
@@ -428,7 +415,21 @@ function _as_reglasProduccion(str, arr){
                 return error;
             }   
         }
-    /*                                                                              */
+    /*    RECONOCIENDO UN CICLO FOR_0                                               */
+        if( _RE_ = str.match(RE_FOR_0) ){
+            //  for ( int j = 0 ; j < 10 ; j ++ ) { 
+
+            let obj = new ASElemento();
+            obj.reglaP          = "RE_FOR_0";
+            obj.name            = "for(...)";        
+            obj.reglas          = _as_getReglasFor(arr); 
+
+            obj.string           = dev_frase.replace("{","");
+
+            obj.isNodoFinal     = false;                
+            _as_setPosition(obj, arr);
+            return obj;     
+        }
     /********************************************************************************/
     
 
@@ -436,38 +437,7 @@ function _as_reglasProduccion(str, arr){
 
 
 
-    /*    RECONOCIENDO UN CICLO FOR_0    */
-        if( _RE_ = str.match(RE_FOR_0) ){
-            //  for ( int j = 0 ; j < 10 ; j ++ ) { 
 
-            let obj = new ASElemento();
-            obj.reglaP          = "RE_FOR_0";
-            obj.name            = strmap.NAME;        
-            obj.reglas         = _as_getReglasFor(arr); 
-
-            obj.isNodoFinal      = false;                
-            _as_setPosition(obj, arr);
-
-
-            return obj;
-     
-        }
-    /*    RECONOCIENDO UN CICLO FOR_1    */
-        if( _RE_ = str.match(RE_FOR_1)  ){
-            //  for ( int j = 0 ; j < matrix.length - 1 ; j ++ ) { 
-
-            let obj = new ASElemento();
-            obj.reglaP          = "RE_FOR_1";
-            obj.name            = strmap.NAME;
-
-            obj.reglas         = _as_getReglasFor(arr); 
-
-            obj.isNodoFinal      = false;                
-            _as_setPosition(obj, arr);
-
-            return obj;
-     
-        }
 
     
 
@@ -756,7 +726,8 @@ function as_imprimirArbol(nodo){
         if(nodo.name == "main")Main.existeMain = true;
 
         let li    = document.createElement("li");        
-        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
+        //let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre}] (${nodo.reglaP}) ${nodo.name}`); 
+        let texto = document.createTextNode(`${nodo.name}`); 
         li.setAttribute("data-value", `${nodo.id}`); 
         li.appendChild(texto);  
 

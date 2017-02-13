@@ -223,7 +223,7 @@ var R01 = {
         if(metodo){
             metodo.out();
             this._popAncestro_1();
-            // ya no se usa  "Main.lstPasos.children.pop()" aqui porque cuando simplemente se terminan las reglas de un metodo
+            // ya no se usa  "Main.popPasos_Level_1();" aqui porque cuando simplemente se terminan las reglas de un metodo
             // es "Main.getInstruccion" quien saca el generador de la pila           
         }
     },
@@ -292,7 +292,7 @@ var R01 = {
             let arr = [{ext:'ext',string:instruccion.name},{symbol: 'NAME', string:instruccion.name},{ext:'ext',string:value}];
             destino._setText5(arr, 0, arr.length-2);
 
-            Main.lstPasos.children.pop(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
+            Main.popPasos_Level_1(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
         }
         //this.MethodOut();// se ejecuta en la animacion de setText5
@@ -312,7 +312,7 @@ var R01 = {
             destino.value       = value;
             let arr = [{ext:'ext',string:value}];
             destino._setText5(arr, 0, arr.length-1);
-            Main.lstPasos.children.pop(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
+            Main.popPasos_Level_1(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
         }
         //this.MethodOut();// se ejecuta en la animacion de setText5
@@ -357,8 +357,6 @@ var R01 = {
         }
 
         destino.value = resultado;
-
-   
     },
     for                    : function(instruccion){
 
@@ -409,7 +407,6 @@ var R01 = {
         let miarr = [{ext:'ext',string:expresion}].concat(instruccion.arr,[{ext:'ext',string:'='},{ext:'ext',string:resultado+""}]);
 
         padre.eval(miarr, 0, miarr.length-1, 0);
-
     },
     drawIF                 : function(instruccion){
 
@@ -458,7 +455,6 @@ var R01 = {
         let padre           = this.lstElements.getChildrenById(idPadre);
         padre.out();
         this._popAncestro_2();
-
     },
     viewElse               : function(instruccion){
         let siguientePaso   = true;
