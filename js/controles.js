@@ -52,6 +52,12 @@ var Controles = {
                     Controles.funcion.Pausa();
                 } 
             }
+            if(tecla.keyCode == 81){// q
+                if(Controles._botones.preparar.isEnabled){
+                    Controles.funcion.Preparar();
+                } 
+            }
+
         });
     },
     getVelocidad          : function(){

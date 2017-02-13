@@ -15,9 +15,13 @@ class Variable extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	    
 
-    	this.setTextType(this._type    );
-    	this.setTextName(this._name+"=");
-	    this.setTextValue(this._value  );
+    	this.setTextType (this._type    );
+    	this.setTextName (this._name+"=");
+	    this.setTextValue(this._value   );
+
+	    if(['INT','FLOAT','DOUBLE'].find(function(i){return(i==instruccion.type);})){
+            this._value = parseFloat(this._value);
+        }   
 	}
 	set value(v){ this._value = v;    }
 	get name ( ){ return this._name;  }

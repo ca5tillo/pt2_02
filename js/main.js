@@ -9,11 +9,12 @@
  *                         ooO Ooo                            *
 \**************************************************************/
 "use strict";
+var Main_generateID = GenerateID();
 window.addEventListener('load',init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
 var Main = {
-    'lstPasos'             : {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null},
+    'lstPasos'             : {id:Main_generateID.next().value, children:[], generador:null,  descripcion:"lstPasos"},
     'esAnimacionFluida'    : false,
     'ejecutado'            : false,
     'existeMain'           : false, // Existe metodo main en el editor
@@ -24,11 +25,18 @@ var Main = {
     'mousedown'            : false, 
 
     reset                  : function(){
-        this.lstPasos            = {id:0, generador:null, children:[], descripcion:"lstPasos", obj: null};
+        this.lstPasos            = {id:Main_generateID.next().value, children:[], generador:null, descripcion:"lstPasos"};
         this.esAnimacionFluida   = false;
         this.ejecutado           = false;
         this.existenErrores      = false;
         this.llamadas            = [];        
+    },
+    marktext               : function(){
+        javaEditor_markText_Clean();
+        if(this.actualInstruccion)
+            this._marcarLinea_1(this.actualInstruccion.value);
+        if(this.nextInstruccion)
+            this._marcarLinea_2(this.nextInstruccion.value);   
     },
     analizarCodigoFuente   : function(){
         javaEditor_clearMarkError();
@@ -72,7 +80,8 @@ var Main = {
 
         let main         = as_GetFunctionByName("main");
         if( this.existeMain && !this.existenErrores && !this.ejecutado){
-            this.nextInstruccion = main;      
+           
+            this.nextInstruccion = { value: main, done: true, nodo: null };      
             this.ejecutado       = true;
             this._marcarLinea_2(main);
             
@@ -97,30 +106,19 @@ var Main = {
 
         Controles.funcion.Pasos += 1; 
         if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();        
-        javaEditor_markText_Clean();
-
 
         if(this.nextInstruccion){            
-            this._marcarLinea_1(this.nextInstruccion);
-
-
             this.dibujar(this.nextInstruccion);
-            this.actualInstruccion = this.nextInstruccion; 
-            instruccion =  this.getInstruccion();
 
-
-            if(instruccion){                
-                this.nextInstruccion = instruccion.value;// esto es porq aun era el obj del generador
-
-                this._marcarLinea_2(this.nextInstruccion);                            
-            }
+            this.actualInstruccion = this.nextInstruccion;
+            this.nextInstruccion   = this.getInstruccion();
+  
+            this.marktext();                        
         }
 
         pintarArbolDeLlamadas();
         pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
         pintarArbol("representacionarreglo2", this.lstPasos, ["id","descripcion"]);  
-
-
     },    
     reiniciar              : function(){// BTN
         R01.reset();
@@ -146,24 +144,34 @@ var Main = {
             Controles.activar__botones();                            
         }
     },
-    _addlstPasos_Level_1   : function(padre, id_3D){
+    _addlstPasos_Level_1   : function(padre){
         this.lstPasos.children.push(
             {
-                id:id_3D, 
-                generador:appCreateGenerador(padre.hijos),
-                children:[], 
-                descripcion:"metodo", 
-                obj:padre
+                id           : Main_generateID.next().value, 
+                children     : [], 
+                generador    : appCreateGenerador(padre.hijos),
+                
+                obj          : padre,
+                pasos        : padre.hijos,
+                descripcion  : "metodo", 
             });
     },
-    _addlstPasos_Level_2   : function(padre, hijos, des){
+    _addlstPasos_Level_2   : function(padre, hijos, des, val){
         let as = {
-            generador:appCreateGenerador(hijos),
-            children:[], 
-            descripcion: des,
-            obj:padre
+            id               : Main_generateID.next().value, 
+            children         : [], 
+            generador        : appCreateGenerador(hijos),
+            
+            obj              : padre,
+            pasos            : hijos,
+            descripcion      : des,
+            value            : val,
         }
         this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
+    },
+    popPasos_Level_2    : function() {
+        let index_1 = this.lstPasos.children.length-1;    // indice del ultimo generador
+        this.lstPasos.children[index_1].children.pop();
     },
     _marcarLinea_1         : function(i){
         // Marcara line ejecutada
@@ -185,8 +193,20 @@ var Main = {
                 javaEditor_markText_InstuccionActual(i.position.cierre); 
                    
             }
+            else if(i.reglaP == "finGenerador2_RE_FOR_0"){
+                            
+                javaEditor_markText_InstuccionActual(i.position.cierre); 
+                   
+            }
+            else if(i.reglaP == "finGenerador2_RE_FOR_1"){
+                            
+                javaEditor_markText_InstuccionActual(i.position.cierre); 
+                   
+            }
+
+
             else if(i.reglaP == "llamada"){
-                let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
+                let declaracion = as_GetFunctionByName(this.actualInstruccion.value.name);
                 javaEditor_markText_InstuccionActual(i.position.regla); 
                 javaEditor_markText_InstuccionActual(declaracion.position.regla); 
             }
@@ -229,9 +249,17 @@ var Main = {
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
             }
 
+            else if(i.reglaP == "finGenerador2_RE_FOR_0"){
+                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+            }
+
+            else if(i.reglaP == "finGenerador2_RE_FOR_1"){
+                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+            }
+
 
             else if(i.reglaP == "llamada"){
-                let declaracion = as_GetFunctionByName(this.nextInstruccion.name);
+                let declaracion = as_GetFunctionByName(this.nextInstruccion.value.name);
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
                 i.name == this.lstPasos.children[this.lstPasos.children.length-1].obj.name ? 
                 javaEditor_markText_InstuccionSiguiente(declaracion.position.regla)
@@ -256,12 +284,13 @@ var Main = {
             } 
         }
     },
-    dibujar                : function(instruccion){
-        let O_o = instruccion.reglaP;
+    dibujar                : function(generador){
+        let O_o = generador.value.reglaP;
+        let instruccion = generador.value;
        
         if( (O_o) == "metodo" && instruccion.name == "main"){                        
             let id           = R01.llamarMetodoMain(instruccion);
-            this._addlstPasos_Level_1(instruccion, id);
+            this._addlstPasos_Level_1(instruccion);
         }
         else if( (O_o) == "finDeGenerador"  ){
 
@@ -274,6 +303,11 @@ var Main = {
             */
             R01.crearVariable(instruccion);
         }
+        else if( (O_o) == "ASIGNACION_01"      ){
+
+            R01.asignacion_01(instruccion);  
+        } 
+        
         else if( (O_o) == "asignacion"      ){
 
             R01.asignarValorVariable(instruccion);  
@@ -302,11 +336,11 @@ var Main = {
             let id          = R01.llamarMetodo(instruccion, declaracion, destino);
 
             // Add Pasos para ejecutar el contenido  de la declaracion del metodo
-            this._addlstPasos_Level_1(declaracion, id);
+            this._addlstPasos_Level_1(declaracion);
 
             // Add Pasos al generador para la creacion de los argumentos
             if(instruccion.argumentos.length > 0 ){
-                this._addlstPasos_Level_2(instruccion, instruccion.argumentos,"argumentos");
+                this._addlstPasos_Level_2(instruccion, instruccion.argumentos,"argumentos",false);
             }
         }
 
@@ -336,7 +370,7 @@ var Main = {
         else if( (O_o) == "Condicional_if"         ){    
             let resultado = R01.drawIF(instruccion);
             if(resultado){                
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if");
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if",false);
             }
 
                 /*
@@ -349,11 +383,12 @@ var Main = {
                 */
         }
         else if( (O_o) == "finGenerador2_Condicional_if"){
+  
             R01.ifOutfalse();
         }
         else if( (O_o) == "Condicional_else"         ){    
             if( ! instruccion.hermanoMayor.value){
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else",false);
                 R01.viewElse(instruccion);
             }
             
@@ -363,6 +398,52 @@ var Main = {
             Controles.activar__botones();
             console.log("estupidin")
         }
+        else if( (O_o) == "RE_FOR_0"){
+            R01.for(instruccion);
+            let hijos = instruccion.hijos.concat([]);
+                hijos.unshift(instruccion.reglas[1]);
+                hijos.unshift(instruccion.reglas[0]);
+                hijos.push(instruccion.reglas[2]);
+
+            this._addlstPasos_Level_2(instruccion, hijos,"for",true);
+        } 
+        else if( (O_o) == "RE_FOR_1"){
+            
+            let tween = new TWEEN.Tween({x:0})
+                .to         ({ x:2 },Controles.getVelocidad())
+                .easing     (TWEEN.Easing.Quadratic.In)                
+                .onComplete ( function (){
+                        Main.TriggerNextStep();
+                });                    
+            tween.start();
+
+        } 
+        else if( (O_o) == "FOR_R1"){
+            R01.for_r1(instruccion);
+        }
+        else if( (O_o) == "finGenerador2_RE_FOR_0"){
+            console.clear()
+            console.log(instruccion);
+            console.log(generador);
+            instruccion.reglaP = "RE_FOR_0";
+            R01.forend(instruccion);
+            if(generador.nodo.value === true){
+                generador.nodo.pasos.shift();
+                
+            }
+
+            this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"for",false);
+        }
+        else if( (O_o) == "finGenerador2_RE_FOR_1"){
+            let tween = new TWEEN.Tween({x:0})
+                .to         ({ x:2 },Controles.getVelocidad())
+                .easing     (TWEEN.Easing.Quadratic.In)                
+                .onComplete ( function (){
+                        Main.TriggerNextStep();
+                });                    
+            tween.start();
+        }
+
 
         else{        
 
@@ -379,25 +460,33 @@ var Main = {
             let n       = Main.lstPasos.children[index_1].children.length;  // numero de hijos del ultimo generador
 
             if(n > 0){// Tienen prioridad los Main.lstPasos de segundo nivel
-                i = Main.lstPasos.children[index_1].children[index_2].generador.next();
+                let nodo = Main.lstPasos.children[index_1].children[index_2];
+                i        = nodo.generador.next();
+                i.nodo   = nodo;
+
                 if(i.done){
                     ///*
-                    let a = Main.lstPasos.children[index_1].children[index_2];
-                    let instruccion = {reglaP: `finGenerador2_${a.obj.reglaP}`};
-                        instruccion.position = a.obj.position;
-                    i = { value: instruccion, done: true };
+                    let instruccion = {
+                        reglaP   : `finGenerador2_${nodo.obj.reglaP}`,
+                        position : nodo.obj.position,
+                    };
+                    i = { value: instruccion, done: true, nodo: nodo };
                     //*/
                     Main.lstPasos.children[index_1].children.pop();
-                    if(a.obj.reglaP != "Condicional_if")
+                    if(nodo.obj.reglaP != "Condicional_if" && nodo.obj.reglaP != "RE_FOR_0" && nodo.obj.reglaP != "RE_FOR_1")
                         i = this.getInstruccion();
                 }
                 
             }else{// Si no hay Main.lstPasos de segundo nivel
-                i = Main.lstPasos.children[index_1].generador.next();
+                let nodo = Main.lstPasos.children[index_1];
+                i        = nodo.generador.next();
+                i.nodo   = nodo;
                 if(i.done){                    
-                    let instruccion = {reglaP: 'finDeGenerador'};
-                    instruccion.position = Main.lstPasos.children[index_1].obj.position;
-                    i = { value: instruccion, done: true };
+                    let instruccion = {
+                        reglaP   : 'finDeGenerador',
+                        position : nodo.obj.position,
+                    };
+                    i = { value: instruccion, done: true, nodo: nodo };
                     Main.lstPasos.children.pop();
                 }
             }
@@ -424,7 +513,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_06);
+        javaEditor_setText(ejemploDeCodigo_07);
 
         MyThreeJS.init();
 
@@ -524,7 +613,7 @@ function pintarArbol(destino, arbol, items){
         ul.setAttribute("data-name", destino);  
         ul.appendChild(_createLista(arbol));   
         if("representacionarreglo2" == destino){            
-            ul.addEventListener("change", as_infoNodo);
+            ul.addEventListener("change", infoMainPasos);
         }else if("representacionarreglo1"){
             ul.addEventListener("change", info_elemento3D);
         }
@@ -539,5 +628,31 @@ function pintarArbol(destino, arbol, items){
         });
 
     }
+}
+
+function infoMainPasos(ev) {
+    let id = ev.target.value;
+    let element = helperGetById([Main.lstPasos],id);
+    console.clear();
+    console.log("Pandejin",element)
+}
+
+function helperGetById(lista,id){
+    // http://jsfiddle.net/dystroy/MDsyr/
+    // Retorna la primera coincidencia
+    let getSubMenuItem = function (subMenuItems, id) {
+        if (subMenuItems) {
+            for (let i = 0; i < subMenuItems.length; i++) {
+                if (subMenuItems[i].id == id) {
+                    return subMenuItems[i];
+                };
+                let found = getSubMenuItem(subMenuItems[i].children, id);
+                if (found) return found;
+            
+            }
+        }
+    };
+    let searchedItem = getSubMenuItem(lista, id) || null;
+    return searchedItem;
 }
 

@@ -100,17 +100,33 @@ var ejemploDeCodigo_06 =
 var ejemploDeCodigo_07 =
 `public class MyClass {
     public static void main() {
+        int i; int j;
         int temp = 0;
         int[] matrix = {8,5,7,25,22,1};
-        for(int i=1;i < matrix.length; i++){
-            for (int j=0 ; j < matrix.length- 1; j++){
+        for( i=1;i < 6; i++){
+            for ( j=0 ; j < 5; j++){
+                    /*
                 if (matrix[j] > matrix[j+1]){
                     temp = matrix[j];
                     matrix[j] = matrix[j+1];
                     matrix[j+1] = temp;
                 }
+                    */
             }
         }
+    }
+}`;
+var ejemploDeCodigo_08 =
+`public class MyClass {
+    public static void main() {
+        int temp = 0;
+        int i;
+        temp++;/*
+        for ( i = 0; i < 2; i++){
+            int y = 20;
+            temp = i+0;
+        }//*/
+        temp = 10;
     }
 }`;
 

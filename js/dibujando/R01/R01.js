@@ -34,7 +34,7 @@ var R01 = {
         
         this._lstIDsMetodos.children.pop();
     },
-    __popAncestro_2        : function (){
+    _popAncestro_2         : function (){
        
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
     },
@@ -141,6 +141,28 @@ var R01 = {
 
         element.in();
     },
+    asignacion_01          : function(instruccion){
+        let idContenedor  = this.getIdsAncestros().c;
+        let A_quien       = `${instruccion.name}`;
+        let variable      = this.lstElements.getChildrenById(idContenedor).getChildrenByName(A_quien,true);
+
+        if(variable){
+
+            let valor         = variable.value;
+            if(['INT','FLOAT','DOUBLE'].find(function(i){return(i==variable.type);})){
+                valor = parseFloat(valor);
+            } 
+
+            let nuevoValor    = valor + 1;
+
+            let arr = [{ext:'ext',string:instruccion.string.replace(";","")},
+                {symbol:'NAME',string:variable.name},
+                {ext:'ext',string:'='},
+                {ext:'ext',string:nuevoValor+""}];
+            let as = [];
+            variable.eval(arr, 0, arr.length-1, 0);
+        }
+    },
     asignarValorVariable   : function(instruccion){
         let A_quien       = `${instruccion.name}`;
         let valor         = instruccion.valor;
@@ -150,13 +172,16 @@ var R01 = {
 
         let variable      = this.lstElements.getChildrenById(idContenedor).getChildrenByName(A_quien,true);
         if(variable){
-            variable.setTextValue(valor,siguientePaso,animar); 
+            //variable.setTextValue(valor,siguientePaso,animar); 
             variable.value = valor;
+
+            let arr = [{ext:'ext',string:valor}];
+            variable.eval(arr, 0, arr.length-1, 0);
         }else{
             // Error en tiempo de ejecucion
         }
     },
-    crearArreglo           :function(instruccion){
+    crearArreglo           : function(instruccion){
         let _crearArregloValor = function(instruccion, TriggerNextStep = false){
             
             let idPadre         = R01.getIdsAncestros().p;
@@ -189,7 +214,7 @@ var R01 = {
                 _crearArregloValor(instruccion.hijos[i]);
             }
         }
-        this.__popAncestro_2();
+        this._popAncestro_2();
     },
     MethodOut              : function(){
         let idMetodoActual   = this.getIdsAncestros().c;
@@ -313,7 +338,7 @@ var R01 = {
         for(let i of instruccion.expresion){            
             expresion += expresion == "" ? i.string : " "+i.string;
             if(i.symbol == 'NAME'){
-                let valval = contenedor.getChildrenByName(i.string).value;
+                let valval = contenedor.getChildrenByName(i.string,true).value;
                 expresion2 += expresion2 == "" ? valval   : " "+valval;
             }else{
                 expresion2 += expresion2 == "" ? i.string : " "+i.string;
@@ -325,7 +350,7 @@ var R01 = {
             let arr = [{ext:'ext',string:expresion}];
             let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
             let myarr = arr.concat(instruccion.expresion, as);  
-            destino._setText3(myarr, 0, myarr.length-1);
+            destino.eval(myarr, 0, myarr.length-1, 0);
         }catch(err){
             alert("Error en tiempo de ejecucion");
             console.log("Error en tiempo de ejecucion");
@@ -334,6 +359,57 @@ var R01 = {
         destino.value = resultado;
 
    
+    },
+    for                    : function(instruccion){
+
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let element  = new CFor(instruccion);
+        this._addAncestro_2(element, "CFor");
+        padre.add(element);
+        element.in();
+    },
+    forend                 : function(instruccion){
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        padre.in2();
+    },
+    for_r1                 : function(instruccion){
+
+        let siguientePaso   = true;
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let expresion  = "";
+        let expresion2 = "";
+        let resultado  = false;
+        for(let i of instruccion.arr){            
+            expresion += expresion == "" ? i.string : " "+i.string;
+            if(i.symbol == 'NAME'){
+                let valval = contenedor.getChildrenByName(i.string,true).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
+            }else{
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
+            }
+        }        
+        try{ resultado = eval(expresion2); }catch(err){
+            alert("Error evaluacion");
+        }
+        padre.value = resultado;
+
+
+        let miarr = [{ext:'ext',string:expresion}].concat(instruccion.arr,[{ext:'ext',string:'='},{ext:'ext',string:resultado+""}]);
+
+        padre.eval(miarr, 0, miarr.length-1, 0);
+
     },
     drawIF                 : function(instruccion){
 
@@ -377,14 +453,14 @@ var R01 = {
 
         return resultado;
     },
-    ifOutfalse                  : function(){
+    ifOutfalse             : function(){
         let idPadre         = this.getIdsAncestros().p;
         let padre           = this.lstElements.getChildrenById(idPadre);
         padre.out();
-        this.__popAncestro_2();
+        this._popAncestro_2();
 
     },
-    viewElse                   : function(instruccion){
+    viewElse               : function(instruccion){
         let siguientePaso   = true;
         let idPadre         = this.getIdsAncestros().p;
         let idContenedor    = this.getIdsAncestros().c;

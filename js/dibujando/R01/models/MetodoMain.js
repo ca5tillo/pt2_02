@@ -53,9 +53,8 @@ class MetodoMain extends Element{
 				    	  z: R01.METODO_SCALE_Z,}, Controles.getVelocidad()/2)
 				    .easing(TWEEN.Easing.Quadratic.In)
 				    .onComplete(function () {    
-				        let siguientePaso = true;
-				        let animar        = false;
-				        _this.setTextName(_this.name, siguientePaso, animar);   
+				        _this.setTextName(_this.name);
+				        Main.TriggerNextStep();   
 				    });
 	    position.chain(scale);
 	    position.start();   

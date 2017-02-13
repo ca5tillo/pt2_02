@@ -85,7 +85,7 @@ class ASElemento  {
         this.resultado                  = ""; //para las operaciones matematicas Ej.i = 5+92;
 
         this.condicionales              = null; // para los if
-        this.evaluadoEn                 = null; //para los if 
+        this.evaluadoEn                 = null; //para los if  ya no se usa en su lugar se usa value
 
         this.tipoDeDato = "";// si es variable
         this.valor = "";// si es variable
@@ -204,7 +204,7 @@ function _as_reglasProduccion(str, arr){
 	let temporalcontador  = 0;
 
     for(let i of arr){
-        dev_frase  += `${i.string} `;
+        dev_frase  += `${i.string}`;
         dev_str    += `${i.symbol} `;
     	if(strmap[i.symbol] == undefined){
 			strmap[i.symbol]=i.string;
@@ -214,10 +214,10 @@ function _as_reglasProduccion(str, arr){
     	}	
     }
     /*
-    console.log("*********************************************************");
-    console.log(dev_frase);
-    console.log(str);
-    console.log(dev_str);
+        console.log("*********************************************************");
+        console.log(dev_frase);
+        console.log(str);
+        console.log(dev_str);
     //*/
 
     /********************************************************************************/
@@ -250,6 +250,18 @@ function _as_reglasProduccion(str, arr){
             _as_setPosition(obj, arr);
         	return obj;     	
         }
+    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS                    */
+        if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
+            let obj              = new ASElemento();
+            obj.reglaP           = "variable";
+
+            obj.type             = _RE_[1] || "";
+            obj.name             = strmap.NAME;
+            obj.value            = "?";
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        }
     /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                       */
         if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
         	let obj              = new ASElemento();
@@ -263,23 +275,25 @@ function _as_reglasProduccion(str, arr){
             _as_setPosition(obj, arr);
         	return obj; 
         }
-    /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS                    */
-        if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
-            let obj              = new ASElemento();
-            obj.reglaP           = "variable";
+    /*    RECONOCIENDO ASIGNACION 01                                                */
+        /* Para a++; */
+        if( _RE_ = str.match(RE_ASIGNACION_01)     ){
 
-            obj.type             = _RE_[1] || "";
+            let obj              = new ASElemento();
+            obj.reglaP           = "ASIGNACION_01";
+            
             obj.name             = strmap.NAME;
-            obj.value            = "?";
+            obj.valor            = "";
+            obj.string           = dev_frase;
 
             _as_setPosition(obj, arr);
             return obj; 
-        }
+        } 
     /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                            */
         if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
-        	let obj              = new ASElemento();
+            let obj              = new ASElemento();
             obj.reglaP           = "asignacion";
-        	
+            
             obj.name             = strmap.NAME;
             obj.valor            = strmap[_RE_[1]];
             obj.valueType        = _RE_[1];
@@ -423,62 +437,113 @@ function _as_reglasProduccion(str, arr){
 
 
     /*    RECONOCIENDO UN CICLO FOR_0    */
-    if(RE_FOR_0.test(str)){
-        //  for ( int j = 0 ; j < matrix.length ; j ++ ) { 
+        if( _RE_ = str.match(RE_FOR_0) ){
+            //  for ( int j = 0 ; j < 10 ; j ++ ) { 
 
-        let obj = new ASElemento();
-        //obj.parametros = lstParametros;   
-        obj.regla_1;
-        obj.regla_2;
-        obj.regla_3; 
+            let obj = new ASElemento();
+            obj.reglaP          = "RE_FOR_0";
+            obj.name            = strmap.NAME;        
+            obj.reglas         = _as_getReglasFor(arr); 
 
-        obj.isNodoFinal      = false;                
-        _as_setPosition(obj, arr);
+            obj.isNodoFinal      = false;                
+            _as_setPosition(obj, arr);
 
-        console.log(obj)
-        return obj;
- 
-    }
+
+            return obj;
+     
+        }
     /*    RECONOCIENDO UN CICLO FOR_1    */
-    if(RE_FOR_1.test(str)){
-        //  for ( int j = 0 ; j < matrix.length - 1 ; j ++ ) { 
+        if( _RE_ = str.match(RE_FOR_1)  ){
+            //  for ( int j = 0 ; j < matrix.length - 1 ; j ++ ) { 
 
-        let obj = new ASElemento();
-        //obj.parametros = lstParametros;    
+            let obj = new ASElemento();
+            obj.reglaP          = "RE_FOR_1";
+            obj.name            = strmap.NAME;
 
-        obj.isNodoFinal      = false;                
-        _as_setPosition(obj, arr);
+            obj.reglas         = _as_getReglasFor(arr); 
 
-        console.log(obj)
-        return obj;
- 
-    }
+            obj.isNodoFinal      = false;                
+            _as_setPosition(obj, arr);
+
+            return obj;
+     
+        }
 
     
 
     /*    RECONOCIENDO ASIGNACION ARRAY TIPO Tipo_de_variable[i]=21;*/
-    if(RE_ASIGNACION_DE_VALOR_ARRAY.test(str)){
+        if(RE_ASIGNACION_DE_VALOR_ARRAY.test(str)){
 
-		let RE_Txt = str.match(RE_ASIGNACION_DE_VALOR_ARRAY);
-		//console.log(str,RE_Txt,strmap[RE_Txt[1]],strmap)
-    	let obj = new ASElemento(-1,"asignacionDeValorArray");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-    	obj.valor = strmap["NAME_1"];
-		obj.valor_tipoDeDato = RE_Txt[1];
-    	obj.name = strmap.NAME;
-    	obj.indice = strmap["NAME_0"];// esta propiedad no se ecncuentra en el modelo 
-        obj.lineaInicial = arr[0].line;
-        return obj; 
-    }
+    		let RE_Txt = str.match(RE_ASIGNACION_DE_VALOR_ARRAY);
+    		//console.log(str,RE_Txt,strmap[RE_Txt[1]],strmap)
+        	let obj = new ASElemento(-1,"asignacionDeValorArray");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
+        	obj.valor = strmap["NAME_1"];
+    		obj.valor_tipoDeDato = RE_Txt[1];
+        	obj.name = strmap.NAME;
+        	obj.indice = strmap["NAME_0"];// esta propiedad no se ecncuentra en el modelo 
+            obj.lineaInicial = arr[0].line;
+            return obj; 
+        }
 
 
 
     /*    SI NO COINCIDE CON NINGUNA REGLA SE CONSIDERA ERROR       */
-    let error = new ASElemento();
-        error.reglaP             = "ERROR_SINTACTICO";
-        _as_setPosition(error, arr);
+        let error = new ASElemento();
+            error.reglaP             = "ERROR_SINTACTICO";
+            _as_setPosition(error, arr);
 
 
     return error;
+}
+function _as_getReglasFor(arr){
+    let _arr = arr.concat([]);
+    _arr.pop();_arr.pop();_arr.shift();_arr.shift();
+    let a1 = [];a1[0]=[];a1[1]=[];a1[2]=[];
+
+    let str1 = "";
+    let j = 0;
+    
+    for(let i of _arr){
+        a1[j].push(i);if(i.symbol == 'SEMICOLON')j+=1;
+    }
+    a1[1].pop();//quita el ; 
+    for(let i of a1[0]){
+        str1+=i.symbol;
+    }
+    
+    a1[0]  = _as_reglasProduccion(str1,a1[0]);
+
+
+    let b1 = new ASElemento();
+    b1.reglaP          = "FOR_R1";
+    b1.position.regla.y1 = a1[1][0].line;
+    b1.position.regla.y2 = a1[1][a1[1].length-1].line;
+
+    b1.position.regla.x1 = a1[1][0].start;
+    b1.position.regla.x2 = a1[1][a1[1].length-1].end; 
+    b1.arr = a1[1];
+    a1[1]= b1;
+
+    str1 = "";
+    for(let i of a1[2]){
+        str1+=i.symbol;
+    }
+    str1 += "SEMICOLON";
+    a1[2]  = _as_reglasProduccion(str1,a1[2]);
+    /*
+    b1 = new ASElemento();
+    b1.reglaP          = "FOR_R2";
+    b1.position.regla.y1 = a1[2][0].line;
+    b1.position.regla.y2 = a1[2][a1[2].length-1].line;
+
+    b1.position.regla.x1 = a1[2][0].start;
+    b1.position.regla.x2 = a1[2][a1[2].length-1].end; 
+    b1.arr = a1[2];
+    a1[2]= b1;
+    //*/
+
+    return a1;
+
 }
 function _as_getArgumentos(arr, name){
     /*
