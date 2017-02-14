@@ -127,7 +127,7 @@ var ejemploDeCodigo_08 =
             int y = 20;
             temp = i+0;
         }//*/
-        temp = 10;
+        i = 10;
     }
 }`;
 

@@ -517,7 +517,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_07);
+        javaEditor_setText(ejemploDeCodigo_08);
 
         MyThreeJS.init();
 

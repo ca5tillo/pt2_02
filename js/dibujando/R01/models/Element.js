@@ -224,49 +224,91 @@ class Element{
         tween.chain(mo2);               
         mo.start();                          
     }
-    eval_2(arr){
-        let _this           = this;
+    _eval_2(arr){
+        /* Remplazara todo el texto sobre la mesa con el valor final (resultado) */
+        /* se juega con tres valores de value en textos (el q se encuentra en el elemento,
+        el que esta sobre la mesa y el que llegara a fusionarse con el de la sobre mesa) 
+        type  -> [0]
+        name  -> [1]
+        value -> [2]
+        val2  -> [3]
+        val3  -> [4] 
+        */  
+        let _this             = this;
+        let value_1           = this.text.children[2] || null;
+        let value_2           = this.text.children[3] || null;
+        let padre             = R01.lstElements.getChildrenById(R01.getIdsAncestros().p);
+        let pos_mesa          = this.__getTextPosition_2(padre, this);// dentro de la mesa 
+            pos_mesa.y       += Config_R01.TAM_GRAL;// sobre de la mesa
+        let position_destino  = this.__getTextPosition_1(3);
+        /* Es el resultado (valor final) */
+        let value             = arr[arr.length-1].string;
+        let pato = _this.__setText("value",value);
+            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z); // Sobre la mesa 
+                        
+        if(value_2){
+            _this.text.remove(value_2);
+        }
+        /* Llevar el texto a su posicion destino */
+        new TWEEN.Tween(pato.mesh.position)
+            .to         (position_destino, Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
+            .onComplete ( function (){    
+                
+                _this.text.remove(value_1);
+                _this.value = value;
 
-        let idPadre         = R01.getIdsAncestros().p;
-        let padre           = R01.lstElements.getChildrenById(idPadre);
-
-        let pos_mesa    = this.__getTextPosition_2(padre, this);// dentro de la mesa 
-        pos_mesa.y += Config_R01.TAM_GRAL;// sobre de la mesa
-
-        let a = new TWEEN.Tween({x:0})
-            .to         ({x:20},Controles.getVelocidad()/3)
-            .easing     (TWEEN.Easing.Quadratic.In)
-            .onComplete ( function (){                            
-                let value_2     = _this.text.children[3] || null;
-                if(value_2){
-
-                    let string = arr[arr.length-1].string;
-                    _this.text.remove(value_2);
-
-                    let pato = _this.__setText("value",string);
-                    pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                    //pato.geo.center();
-
-                    let po = _this.__getTextPosition_1(3);
-                    new TWEEN.Tween(pato.mesh.position)
-                        .to         (po,Controles.getVelocidad())
-                        .easing     (TWEEN.Easing.Quadratic.In)
-                        .onComplete ( function (){    
-                            let value_1     = _this.text.children[2] || null;
-                            _this.text.remove(value_1);
-                            _this.value = arr[arr.length-1].string;
-
-                            Main.TriggerNextStep();                  
-                            
-                        }).start();
-                }
-            });
-        a.start();    
+                Main.TriggerNextStep();                  
+                
+            }).start();
     }
-    eval(arr, i, f, regla){
+    _eval_return(arr){
+        /* Remplazara todo el texto sobre la mesa con el valor final (resultado) */
+        /* se juega con tres valores de value en textos (el q se encuentra en el elemento,
+        el que esta sobre la mesa y el que llegara a fusionarse con el de la sobre mesa) 
+        type  -> [0]
+        name  -> [1]
+        value -> [2]
+        val2  -> [3]
+        val3  -> [4] 
+        */  
+        let _this             = this;
+        let value_1           = this.text.children[2] || null;
+        let value_2           = this.text.children[3] || null;
+        let padre             = R01.lstElements.getChildrenById(R01.getIdsAncestros().p);
+        let pos_mesa          = this.__getTextPosition_2(padre, this);// dentro de la mesa 
+            pos_mesa.y       += Config_R01.TAM_GRAL;// sobre de la mesa
+        let position_destino  = this.__getTextPosition_1(3);
+        /* Es el resultado (valor final) */
+        let value             = arr[arr.length-1].string;
+        let pato = _this.__setText("value",value);
+            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z); // Sobre la mesa 
+                        
+        if(value_2){
+            _this.text.remove(value_2);
+        }
+        /* Llevar el texto a su posicion destino */
+        R01.MethodOut();
+        let a = new TWEEN.Tween({x:0}).to({x:20},Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In);
+        let b = new TWEEN.Tween(pato.mesh.position)
+            .to         (position_destino, Controles.getVelocidad())
+            .easing     (TWEEN.Easing.Quadratic.In)
+            .onComplete ( function (){    
+                _this.text.remove(value_1);
+                _this.value = value;
+                // no se da la indicacion del siguiente habilitar los botones 
+                // ya que esa orden la ejecuta el R01.MethodOut();
+            });
+        a.chain(b);
+        a.start();
+    }
+    _evaluacion(arr, i, f, regla){
+        /* Realiza operaciones sobre la mesa de trabajo actual */
         /*
-            Para representar Operaciones matematicas 
-            i = 5+9; i = a + b;
+            recibe un array de obj tipo 
+            [
+                {symbol: 'NAME', string:instruccion.name},
+                {ext:'ext',string:value} 
+            ]
         */
         let _this           = this;
         let idPadre         = R01.getIdsAncestros().p;
@@ -274,56 +316,74 @@ class Element{
         let contenedor      = R01.lstElements.getChildrenById(idContenedor);
         let padre           = R01.lstElements.getChildrenById(idPadre);
 
+        let pos_mesa        = this.__getTextPosition_2(padre, this);// dentro de la mesa 
+        pos_mesa.y         += Config_R01.TAM_GRAL;// sobre de la mesa
 
-
-        let pos_mesa    = this.__getTextPosition_2(padre, this);// dentro de la mesa 
-        pos_mesa.y += Config_R01.TAM_GRAL;// sobre de la mesa
-
-
+        /* Coloca el value de una variable sobre la mesa fusionandolo con el que ya se encuentra sobre la mesa */
         if(i <= f){
             if(arr[i].symbol && arr[i].symbol == 'NAME'){
+                /* Busco la variable */
                 let variable      = contenedor.getChildrenByName(arr[i].string, true);
-                let posVar        = new THREE.Vector3();
-                let origenPos_X   = variable.element.position.x;
+                /* Guardo posicion actual del elemento origen (variable) */
+                let origenPos_X   = variable.element.position.x; 
+                /* Muevo elemento origen a la izquierda (variable) */
                 let origenPos_Xi  = origenPos_X - (Config_R01.TAM_GRAL*2);
+                /* Creo el texto con con el value del origen y visibilidad false */
                 let __a           = this.__setText("value",variable.value,false).mesh;
 
-                posVar.setFromMatrixPosition ( variable.element.matrixWorld );
-                
+                /* Animar a la Izquierda */
                 let varIzq = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_Xi },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onUpdate(function () {})
+                    .to         ({ x:origenPos_Xi }, Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
                     .onComplete ( function (){
-                        let position_B = _this.__getTextPosition_2(variable, _this);// Origen
+                        /* Pido la nueva posicion de elemento origen (variable) */
+                        let position_B = _this.__getTextPosition_2(variable, _this);
+                        /* Cambio la posicion del texto pa colocarlo dentro del elemento origen */
+                        /* Aunque en realidad el texto no pertenece a ese elemento por eso lo cambio de posicion */
                         __a.position.set(position_B.x, position_B.y, position_B.z); 
                         __a.visible = true;
                     });
-
+                /* Animar texto */
                 let txtPos = new TWEEN.Tween(__a.position)
-                    .to         (pos_mesa,Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
+                    .to         (pos_mesa, Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
                     .onComplete ( function (){
+                        /* se juega con tres valores de value en textos (el q se encuentra en el elemento,
+                        el que esta sobre la mesa y el que llegara a fusionarse con el de la sobre mesa) 
+                        type  -> [0]
+                        name  -> [1]
+                        value -> [2]
+                        val2  -> [3]
+                        val3  -> [4] 
+                        */
+                        /* pregunta por val3 porq esta oensado en que el primer elemento sea la expresion */
+                        let value_2     = _this.text.children[3] || null;
                         let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
+                        /* Si no existe value_3 solo dejara sobre la mesa el texto que se mueve actualmente si fucionar texto*/
+                        if(value_3){// si existe "fusionara" el texto 
+                            /* Obtengo el texto de val2 */
                             let string = value_2.string;
+                            /* Remplazo en nombre del origen con el valor de val3 quien contiene el value del origen */
                             string = string.replace(arr[i].string, value_3.string);
+                            /* Remuevo textos */
                             _this.text.remove(value_2);
                             _this.text.remove(value_3);
 
+                            /* Creo un nuevo texto con el texto ya remplazado */
                             let pato = _this.__setText("value",string);
                             pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
+                            /* Coloco el pibote en el centro del texto  */
                             pato.geo.center();
                         }
-                        _this.eval( arr, i+1, f, regla);
+                        _this._evaluacion( arr, i+1, f, regla);
                     });
+                /* Animar a la derecha */
                 let varDer = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_X },Controles.getVelocidad())
+                    .to         ({ x:origenPos_X }, Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In);
                 
-                
+                /* Si la variable origen es la misma q la asignacion 
+                NO se animara a derecha e izquierda ya que esto mueve el texto por ser parte de su grupo  */
                 if(_this.name == variable.name){
-                    let position_B = _this.__getTextPosition_2(variable, _this);// Origen
+                    let position_B = _this.__getTextPosition_2(variable, _this);
                         __a.position.set(position_B.x, position_B.y, position_B.z); 
                         __a.visible = true;
                     txtPos.start();                       
@@ -334,19 +394,22 @@ class Element{
                 }
             }
             else if(arr[i].ext == 'ext'){
+                /* Creo un texto con visibilidad en false */
                 let _a = this.__setText("value",arr[i].string,false);
+                /* Coloco el pibote en el centro del texto  */
                     _a.geo.center();
                 let __a = _a.mesh;
+                /* coloco el texto dentro de la mesa */
                     __a.position.set(pos_mesa.x, pos_mesa.y-Config_R01.TAM_GRAL, pos_mesa.z);
                     __a.visible = true;
-           
-                 new TWEEN.Tween(__a.position)
+                /* Animar texto para colocarlo sobre la mesa */
+                new TWEEN.Tween(__a.position)
                     .to         ({y:pos_mesa.y},Controles.getVelocidad())
                     .easing     (TWEEN.Easing.Quadratic.In)
                     .onComplete ( function (){                            
+                        let value_2     = _this.text.children[3] || null;
                         let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
+                        if(value_3){ // si existe "fusionara" el texto 
                             let string = value_2.string + " "+value_3.string;
                             _this.text.remove(value_2);
                             _this.text.remove(value_3);
@@ -357,271 +420,27 @@ class Element{
                             pato.geo.center();
 
                         }
-                        _this.eval( arr, i+1, f, regla);
+                        _this._evaluacion( arr, i+1, f, regla);
                     }).start();
             }
             else{
-
-                _this.eval( arr, i+1, f, regla);
+                /* Si no es una variable o un texto podria ser un simbolo de + o - 
+                en ese caso solo pasa al siguiente indice.
+                el arreglo puede tener esos simbolos porque solo la lista de tokens directamente
+                lo que le paso a esta funcion
+                 */
+                _this._evaluacion( arr, i+1, f, regla);
             }
         }
         else if(i == f+1){
-            this.eval_2(arr);
-        }
-    }
-
-    _setText4(arr, i, f){
-        /* Para el if*/
-
-        let _this       = this;
-        let idPadre         = R01.getIdsAncestros().p;
-        let idContenedor    = R01.getIdsAncestros().c;
-        let contenedor      = R01.lstElements.getChildrenById(idContenedor);
-        let padre           = R01.lstElements.getChildrenById(idPadre);
-
-
-
-        let pos_mesa    = this.__getTextPosition_2(padre, this);// sobre de la mesa
-        pos_mesa.y += Config_R01.TAM_GRAL;
-
-
-        if(i <= f){
-            if(arr[i].symbol && arr[i].symbol == 'NAME'){
-                let variable      = contenedor.getChildrenByName(arr[i].string);
-                let posVar        = new THREE.Vector3();
-                let origenPos_X   = variable.element.position.x;
-                let origenPos_Xi  = origenPos_X - (Config_R01.TAM_GRAL*2);
-                let __a           = this.__setText("value",variable.value,false).mesh;
-
-                posVar.setFromMatrixPosition ( variable.element.matrixWorld );
-
-                let varIzq = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_Xi },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){
-                        let position_B = _this.__getTextPosition_2(variable, _this);// Origen
-                        __a.position.set(position_B.x, position_B.y, position_B.z); 
-                        __a.visible = true;
-                    });
-
-                let txtPos = new TWEEN.Tween(__a.position)
-                    .to         (pos_mesa,Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){
-                        let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
-                            let string = value_2.string;
-                            string = string.replace(arr[i].string, value_3.string);
-                            _this.text.remove(value_2);
-                            _this.text.remove(value_3);
-
-                            let pato = _this.__setText("value",string);
-                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                            pato.geo.center();
-                        }
-                        _this._setText4( arr, i+1, f);
-                    });
-                let varDer = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_X },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In);
-                
-                varIzq.chain(txtPos);
-                txtPos.chain(varDer);
-                varIzq.start();            
-            }
-            else if(arr[i].ext == 'ext'){
-                let _a = this.__setText("value",arr[i].string,false);
-                let __a = _a.mesh;
-                     _a.geo.center();
-                    __a.position.set(pos_mesa.x, pos_mesa.y-Config_R01.TAM_GRAL, pos_mesa.z);
-                    __a.visible = true;
-           
-                 new TWEEN.Tween(__a.position)
-                    .to         ({y:pos_mesa.y},Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){                            
-                        let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
-                            let string = value_2.string + " "+value_3.string;
-                            _this.text.remove(value_2);
-                            _this.text.remove(value_3);
-
-                            let pato = _this.__setText("value",string);
-
-                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                            pato.geo.center();
-
-                        }
-                        _this._setText4( arr, i+1, f);
-                    }).start();
-            }
-            else{
-                _this._setText4( arr, i+1, f);
-            }
-        }
-        else if(i == f+1){
-
+            /* Remplazara todo el texto sobre la mesa con el valor final (resultado) */
+            /* Esto me da una pausa antes de remplazar todo el texto por el resultado */
             new TWEEN.Tween({x:0})
-                .to         ({x:20},Controles.getVelocidad())
+                .to         ({x:10},Controles.getVelocidad()/3)
                 .easing     (TWEEN.Easing.Quadratic.In)
-                .onComplete ( function (){                            
-                    let value_2     = _this.text.children[3] || null;
-                    if(value_2){
-
-                        let string = arr[arr.length-1].string;
-                        _this.text.remove(value_2);
-
-                        let pato = _this.__setText("value",string);
-                        pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                        //pato.geo.center();
-
-                        let po = _this.__getTextPosition_1(3);
-
-                        new TWEEN.Tween(pato.mesh.position)
-                            .to         (po,Controles.getVelocidad())
-                            .easing     (TWEEN.Easing.Quadratic.In)
-                            .onComplete ( function (){    
-                                let value_1     = _this.text.children[2] || null;  
-                                _this.text.remove(value_1);
-
-                                if(_this.value == 'false'){
-                                    R01.ifOutfalse();
-                                }else{
-                                    Main.TriggerNextStep();
-                                }
-                                                             
-                            }).start();
-                    }
-                }).start();            
-        }
-    }
-    _setText5(arr, i, f){
-        /* Para returnNum  y  returnVariable*/
-        let _this       = this;
-        let idPadre         = R01.getIdsAncestros().p;
-        let idContenedor    = R01.getIdsAncestros().c;
-        let contenedor      = R01.lstElements.getChildrenById(idContenedor);
-        let padre           = R01.lstElements.getChildrenById(idPadre);
-
-
-
-        let pos_mesa    = this.__getTextPosition_2(padre, this);// sobre de la mesa
-        pos_mesa.y += Config_R01.TAM_GRAL;
-
-
-        if(i <= f){
-            if(arr[i].symbol && arr[i].symbol == 'NAME'){
-                let variable      = contenedor.getChildrenByName(arr[i].string);
-                let posVar        = new THREE.Vector3();
-                let origenPos_X   = variable.element.position.x;
-                let origenPos_Xi  = origenPos_X - (Config_R01.TAM_GRAL*2);
-                let __a           = this.__setText("value",variable.value,false).mesh;
-
-                posVar.setFromMatrixPosition ( variable.element.matrixWorld );
-
-                let varIzq = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_Xi },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){
-                        let position_B = _this.__getTextPosition_2(variable, _this);// Origen
-                        __a.position.set(position_B.x, position_B.y, position_B.z); 
-                        __a.visible = true;
-                    });
-
-                let txtPos = new TWEEN.Tween(__a.position)
-                    .to         (pos_mesa,Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){
-                        let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
-                            let string = value_2.string;
-                            string = string.replace(arr[i].string, value_3.string);
-                            _this.text.remove(value_2);
-                            _this.text.remove(value_3);
-
-                            let pato = _this.__setText("value",string);
-                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                            pato.geo.center();
-                        }
-                        _this._setText5( arr, i+1, f);
-                    });
-                let varDer = new TWEEN.Tween(variable.element.position)
-                    .to         ({ x:origenPos_X },Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In);
-                
-                varIzq.chain(txtPos);
-                txtPos.chain(varDer);
-                varIzq.start();            
-            }
-            else if(arr[i].ext == 'ext'){
-                let _a = this.__setText("value",arr[i].string,false);
-                let __a = _a.mesh;
-                     _a.geo.center();
-                    __a.position.set(pos_mesa.x, pos_mesa.y-Config_R01.TAM_GRAL, pos_mesa.z);
-                    __a.visible = true;
-           
-                 new TWEEN.Tween(__a.position)
-                    .to         ({y:pos_mesa.y},Controles.getVelocidad())
-                    .easing     (TWEEN.Easing.Quadratic.In)
-                    .onComplete ( function (){                            
-                        let value_3     = _this.text.children[4] || null;
-                        if(value_3){
-                            let value_2     = _this.text.children[3] || null;
-                            let string = value_2.string + " "+value_3.string;
-                            _this.text.remove(value_2);
-                            _this.text.remove(value_3);
-
-                            let pato = _this.__setText("value",string);
-
-                            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                            pato.geo.center();
-
-                        }
-                        _this._setText5( arr, i+1, f);
-                    }).start();
-            }
-            else{
-                _this._setText5( arr, i+1, f);
-            }
-        }
-        else if(i == f+1){
-
-            new TWEEN.Tween({x:0})
-                .to         ({x:10},Controles.getVelocidad())
-                .easing     (TWEEN.Easing.Quadratic.In)
-                .onComplete ( function (){                            
-                    let value_2     = _this.text.children[3] || null;
-                    if(value_2){
-
-                        let string = arr[arr.length-1].string;
-                        _this.text.remove(value_2);
-
-                        let pato = _this.__setText("value",string);
-                        pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z);
-                        //pato.geo.center();
-
-                        let po = _this.__getTextPosition_1(3);
-
-                        R01.MethodOut();
-                        let a = new TWEEN.Tween({x:0})
-                            .to         ({x:20},Controles.getVelocidad())
-                            .easing     (TWEEN.Easing.Quadratic.In);
-
-                        let b = new TWEEN.Tween(pato.mesh.position)
-                            .to         (po,Controles.getVelocidad())
-                            .easing     (TWEEN.Easing.Quadratic.In)
-                            .onComplete ( function (){    
-                                let value_1     = _this.text.children[2] || null; 
-
-                                _this.text.remove(value_1);
-                                
-                                
-                                                             
-                            });
-                        a.chain(b);
-                        a.start();
-                    }
+                .onComplete ( function (){
+                    console.log(regla);
+                    _this[regla](arr); 
                 }).start();            
         }
     }
@@ -648,6 +467,14 @@ class Element{
     setTextValueParam(txt, origen, siguientePaso=false){
         
         this._setText2("value", 3, txt, siguientePaso, origen);
+    }
+    asignacion(arr){
+        
+        this._evaluacion(arr, 0, arr.length-1,'_eval_2');
+    }
+    retornar(arr){
+
+        this._evaluacion(arr, 0, arr.length-2, '_eval_return');
     }
     getChildrenByName(name, profundidad = false){
         // http://jsfiddle.net/dystroy/MDsyr/

@@ -155,12 +155,13 @@ var R01 = {
 
             let nuevoValor    = valor + 1;
 
-            let arr = [{ext:'ext',string:instruccion.string.replace(";","")},
-                {symbol:'NAME',string:variable.name},
-                {ext:'ext',string:'='},
-                {ext:'ext',string:nuevoValor+""}];
-            let as = [];
-            variable.eval(arr, 0, arr.length-1, 0);
+            let arr = [
+                    {ext:'ext',string:instruccion.string.replace(";","")},
+                    {symbol:'NAME',string:variable.name},
+                    {ext:'ext',string:'='},
+                    {ext:'ext',string:nuevoValor}
+                ];
+            variable.asignacion(arr);
         }
     },
     asignarValorVariable   : function(instruccion){
@@ -176,7 +177,7 @@ var R01 = {
             variable.value = valor;
 
             let arr = [{ext:'ext',string:valor}];
-            variable.eval(arr, 0, arr.length-1, 0);
+            variable.asignacion(arr);
         }else{
             // Error en tiempo de ejecucion
         }
@@ -289,8 +290,11 @@ var R01 = {
             destino.value       = value;
 
             
-            let arr = [{ext:'ext',string:instruccion.name},{symbol: 'NAME', string:instruccion.name},{ext:'ext',string:value}];
-            destino._setText5(arr, 0, arr.length-2);
+            let arr = [
+                {symbol: 'NAME', string:instruccion.name},
+                {ext:'ext',string:value}
+                ];
+            destino.retornar(arr);
 
             Main.popPasos_Level_1(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
@@ -310,8 +314,8 @@ var R01 = {
             let value           = instruccion.num;
             let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
             destino.value       = value;
-            let arr = [{ext:'ext',string:value}];
-            destino._setText5(arr, 0, arr.length-1);
+            let arr = [{ext:'ext',string:value},{ext:'ext',string:value}];// se coloca dos veccecs ya q 1 es animacion y 2 es el resultado
+            destino.retornar(arr);
             Main.popPasos_Level_1(); // cuando existe un return se fuerza el borrar los paso q ya fueron cargados
 
         }
@@ -338,7 +342,7 @@ var R01 = {
         for(let i of instruccion.expresion){            
             expresion += expresion == "" ? i.string : " "+i.string;
             if(i.symbol == 'NAME'){
-                let valval = contenedor.getChildrenByName(i.string,true).value;
+                let valval = contenedor.getChildrenByName(i.string, true).value;
                 expresion2 += expresion2 == "" ? valval   : " "+valval;
             }else{
                 expresion2 += expresion2 == "" ? i.string : " "+i.string;
@@ -347,14 +351,15 @@ var R01 = {
         destino.exp_matematica = expresion2;
         try{
             resultado = eval(expresion2);
-            let arr = [{ext:'ext',string:expresion}];
-            let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
-            let myarr = arr.concat(instruccion.expresion, as);  
-            destino.eval(myarr, 0, myarr.length-1, 0);
         }catch(err){
             alert("Error en tiempo de ejecucion");
             console.log("Error en tiempo de ejecucion");
         }
+
+        let arr = [{ext:'ext',string:expresion}];
+        let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+        let myarr = arr.concat(instruccion.expresion, as);  
+        destino.asignacion(myarr);
 
         destino.value = resultado;
     },
@@ -406,7 +411,7 @@ var R01 = {
 
         let miarr = [{ext:'ext',string:expresion}].concat(instruccion.arr,[{ext:'ext',string:'='},{ext:'ext',string:resultado+""}]);
 
-        padre.eval(miarr, 0, miarr.length-1, 0);
+        padre.asignacion(miarr);
     },
     drawIF                 : function(instruccion){
 

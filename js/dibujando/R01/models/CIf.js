@@ -38,7 +38,37 @@ class CIf extends Element{
         return malla;
     }
 
+    _eval_2(arr){ 
+        let _this             = this;
+        let value_1           = this.text.children[2] || null;
+        let value_2           = this.text.children[3] || null;
+        let padre             = R01.lstElements.getChildrenById(R01.getIdsAncestros().p);
+        let pos_mesa          = this.__getTextPosition_2(padre, this);// dentro de la mesa 
+            pos_mesa.y       += Config_R01.TAM_GRAL;// sobre de la mesa
+        let position_destino  = this.__getTextPosition_1(3);
+        /* Es el resultado (valor final) */
+        let value             = arr[arr.length-1].string;
+        let pato = _this.__setText("value",value);
+            pato.mesh.position.set(pos_mesa.x, pos_mesa.y, pos_mesa.z); // Sobre la mesa 
+                        
+        if(value_2){
+            _this.text.remove(value_2);
+        }
+        /* Llevar el texto a su posicion destino */
+        new TWEEN.Tween(pato.mesh.position)
+            .to         (position_destino, Controles.getVelocidad()).easing(TWEEN.Easing.Quadratic.In)
+            .onComplete ( function (){    
+                
+                _this.text.remove(value_1);
+                _this.value = value;
 
+                if(_this.value == 'false'){
+                    R01.ifOutfalse();
+                }else{
+                    Main.TriggerNextStep();
+                }                
+            }).start();
+    }
 	in(arr){
 			
 		let _this    = this;
@@ -60,7 +90,7 @@ class CIf extends Element{
 		    	_this.setTextName(`if(${arr[0].string})`);
 			    _this.setTextValue("?");  
 
-		       	_this._setText4(arr, 0, arr.length-1);
+		       	_this.asignacion(arr);
 		    });
 
 	    position.chain(scale);
