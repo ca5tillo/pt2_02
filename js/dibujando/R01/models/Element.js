@@ -439,7 +439,6 @@ class Element{
                 .to         ({x:10},Controles.getVelocidad()/3)
                 .easing     (TWEEN.Easing.Quadratic.In)
                 .onComplete ( function (){
-                    console.log(regla);
                     _this[regla](arr); 
                 }).start();            
         }
