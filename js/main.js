@@ -90,6 +90,9 @@ var Main = {
             javaEditor_enableReadOnly();
             MyThreeJS.enableCameraControl();
         }
+        if(! this.existeMain || as_arbol.hijos.length == 0){
+            javaEditor_markError(0,50);
+        }
         return this.existeMain && !this.existenErrores;
     },
     animacionFluida        : function(){// BTN
@@ -119,8 +122,6 @@ var Main = {
                     this.nextInstruccion   = this.getInstruccion();
                 }
             }
-            console.log(this.actualInstruccion);
-            console.log(this.nextInstruccion);
   
             this.marktext();                        
         }
@@ -172,9 +173,9 @@ var Main = {
             generador        : appCreateGenerador(hijos),
             
             obj              : padre,
-            pasos            : hijos,
+            pasos            : hijos, // para retomar los mismos paso para los ciclos (for, ...)
             descripcion      : des,
-            value            : val,
+            value            : val, // usado para saber si la primera instruccion de un for ya se ejecuto
         }
         this.lstPasos.children[this.lstPasos.children.length-1].children.push(as);
     },
@@ -411,7 +412,6 @@ var Main = {
         else if( (O_o) == "finGenerador2_Condicional_else"){
 
             R01.elseOut();
-            
         }
         else if( (O_o) == "RE_FOR_0"){
             R01.for(instruccion);
@@ -427,9 +427,6 @@ var Main = {
             R01.for_r1(instruccion);
         }
         else if( (O_o) == "finGenerador2_RE_FOR_0"){
-            console.clear()
-            console.log(instruccion);
-            console.log(generador);
             instruccion.reglaP = "RE_FOR_0";
             R01.forend(instruccion);
             if(generador.nodo.value === true){
