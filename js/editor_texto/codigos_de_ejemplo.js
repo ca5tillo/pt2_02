@@ -1,7 +1,9 @@
 var ejemploDeCodigo_01 = 
 `public class Clase{
     public static void main(String[] args){
-        int[]   edad   = {45, 23, 11, 9};
+        int[]   edad       = {45, 23, 11, 9};
+        double[ ] estatura = {1.73, 1.67, 1.56}; //Array de 3 elementos
+        String[ ] nombre   = {"María", "Gerson"};   //Array de 2 elementos
         int     a;
         String  cadena = "texto";
         int     b      = 10;
@@ -79,10 +81,6 @@ var ejemploDeCodigo_06 =
             return 1;
         }
         else{
-            int u_u;
-            if(0==0){
-                String O_o;
-            }
             temp  = numero-1; 
             temp2 = factorial(temp);
             temp3 = numero * temp2;
@@ -130,7 +128,35 @@ var ejemploDeCodigo_08 =
         i = 10;
     }
 }`;
-
+var ejemploDeCodigo_09 =
+`public class MyClass {
+    public static int factorial (int numero) {
+        int temp;
+        int temp2;
+        int temp3;
+        if (numero == 0){
+            factorial(5);
+        }
+        else{
+            int u_u;
+           
+            // return numero * factorial(numero-1);
+        }
+    }
+    public static void main() {
+        factorial(0);
+        
+    }
+}`;
+var ejemploDeCodigo_10 =
+`public class MyClass {
+    public static void main() {
+        if (1 == 0){
+        }
+        else{
+        }
+    }
+}`;
 
 
 
@@ -143,39 +169,3 @@ var ejemploDeCodigo_08 =
 //https://threejs.org/examples/#webgl_geometry_extrude_splines
 //http://idflood.github.io/ThreeNodes.js/index_optimized.html#ExportImage
 //http://peoplebehindthepixels.com/
-
-/*
-
-package test;
-
-public class Test {
-    public int numerito = 9;
- 
-    public static void main(String[] args) {
-        Test t = new Test();
-        System.out.println(t.numerito);
-        t.test();
-        Test.test();
-        test();
-    }
-    public static void test(){
-    int i=9;
-    String f = "Hola mundo";
-    double[ ] estatura = {1.73, 1.67, 1.56}; //Array de 3 elementos
-    String[ ] nombre = {"María", "Gerson"};   //Array de 2 elementos
-    
-     int[][]  matriz = new int[3][2];
-     
-     matriz[0][0] = 1; matriz[0][1] = 2; matriz[1][0] = 3; matriz[1][1] = 4; matriz[2][0] = 5; matriz[2][1] = 6;
-        
-        for(int j =0; j<nombre.length; j++){
-             System.out.println(nombre[j]);
-        }
-    }
-    
-}
-
-
-
-
-*/

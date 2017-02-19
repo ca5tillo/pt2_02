@@ -455,7 +455,13 @@ var R01 = {
 
         return resultado;
     },
-    ifOutfalse             : function(){
+    ifOut                   : function(){
+        let idPadre         = this.getIdsAncestros().p;
+        let padre           = this.lstElements.getChildrenById(idPadre);
+        padre.out();
+        this._popAncestro_2();
+    },
+    elseOut                   : function(){
         let idPadre         = this.getIdsAncestros().p;
         let padre           = this.lstElements.getChildrenById(idPadre);
         padre.out();

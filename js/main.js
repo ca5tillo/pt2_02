@@ -112,6 +112,15 @@ var Main = {
 
             this.actualInstruccion = this.nextInstruccion;
             this.nextInstruccion   = this.getInstruccion();
+
+            // Si se ejecuto el if y le sigue un else este no se ejecutara y pedira el siguiente paso
+            if(this.actualInstruccion.value.reglaP == "finGenerador2_Condicional_if"){
+                if(this.nextInstruccion.value.reglaP == "Condicional_else" ){
+                    this.nextInstruccion   = this.getInstruccion();
+                }
+            }
+            console.log(this.actualInstruccion);
+            console.log(this.nextInstruccion);
   
             this.marktext();                        
         }
@@ -252,6 +261,9 @@ var Main = {
             else if(i.reglaP == "finGenerador2_Condicional_if"){
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
             }
+            else if(i.reglaP == "finGenerador2_Condicional_else"){
+                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+            }
 
             else if(i.reglaP == "finGenerador2_RE_FOR_0"){
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
@@ -308,10 +320,9 @@ var Main = {
             R01.crearVariable(instruccion);
         }
         else if( (O_o) == "ASIGNACION_01"      ){
-
+            /* i++;*/
             R01.asignacion_01(instruccion);  
         } 
-        
         else if( (O_o) == "asignacion"      ){
 
             R01.asignarValorVariable(instruccion);  
@@ -347,7 +358,6 @@ var Main = {
                 this._addlstPasos_Level_2(instruccion, instruccion.argumentos,"argumentos",false);
             }
         }
-
         else if( (O_o) == "finGenerador2_llamada"){
             
             Controles.activar__botones();
@@ -371,10 +381,11 @@ var Main = {
 
             R01.returnNum(instruccion);
         }
-        else if( (O_o) == "Condicional_if"         ){    
+        else if( (O_o) == "Condicional_if"         ){   
+            
             let resultado = R01.drawIF(instruccion);
             if(resultado){                
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if",false);
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if");
             }
 
                 /*
@@ -387,20 +398,20 @@ var Main = {
                 */
         }
         else if( (O_o) == "finGenerador2_Condicional_if"){
-  
-            R01.ifOutfalse();
+            
+            R01.ifOut();
         }
         else if( (O_o) == "Condicional_else"         ){    
-            if( ! instruccion.hermanoMayor.value){
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else",false);
-                R01.viewElse(instruccion);
-            }
-            
+            // Aqui No valido si se ejecuto el if este se valida en la funcion paso a paso 
+            // si existe el " finGenerador2_Condicional_if " significa que se evaluo en TRUE
+            // y se brincara la instruccion q contenfa el else 
+            this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
+            R01.viewElse(instruccion);
         }
         else if( (O_o) == "finGenerador2_Condicional_else"){
 
-            Controles.activar__botones();
-            console.log("estupidin")
+            R01.elseOut();
+            
         }
         else if( (O_o) == "RE_FOR_0"){
             R01.for(instruccion);
@@ -411,18 +422,8 @@ var Main = {
 
             this._addlstPasos_Level_2(instruccion, hijos,"for",true);
         } 
-        else if( (O_o) == "RE_FOR_1"){
-            
-            let tween = new TWEEN.Tween({x:0})
-                .to         ({ x:2 },Controles.getVelocidad())
-                .easing     (TWEEN.Easing.Quadratic.In)                
-                .onComplete ( function (){
-                        Main.TriggerNextStep();
-                });                    
-            tween.start();
-
-        } 
         else if( (O_o) == "FOR_R1"){
+        
             R01.for_r1(instruccion);
         }
         else if( (O_o) == "finGenerador2_RE_FOR_0"){
@@ -477,7 +478,12 @@ var Main = {
                     i = { value: instruccion, done: true, nodo: nodo };
                     //*/
                     Main.lstPasos.children[index_1].children.pop();
-                    if(nodo.obj.reglaP != "Condicional_if" && nodo.obj.reglaP != "RE_FOR_0" && nodo.obj.reglaP != "RE_FOR_1")
+                    if(nodo.obj.reglaP != "Condicional_if" 
+                        && nodo.obj.reglaP != "RE_FOR_0" 
+                        && nodo.obj.reglaP != "RE_FOR_1"
+                        && nodo.obj.reglaP != "Condicional_else"
+
+                        )
                         i = this.getInstruccion();
                 }
                 
@@ -517,7 +523,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_08);
+        javaEditor_setText(ejemploDeCodigo_09);
 
         MyThreeJS.init();
 
@@ -638,7 +644,7 @@ function infoMainPasos(ev) {
     let id = ev.target.value;
     let element = helperGetById([Main.lstPasos],id);
     console.clear();
-    console.log("Pandejin",element)
+    console.log(element)
 }
 
 function helperGetById(lista,id){

@@ -63,7 +63,7 @@ class CIf extends Element{
                 _this.value = value;
 
                 if(_this.value == 'false'){
-                    R01.ifOutfalse();
+                    R01.ifOut();
                 }else{
                     Main.TriggerNextStep();
                 }                
