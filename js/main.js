@@ -553,6 +553,7 @@ function render(){
     //*/
 
  
+    // La luz que emite sombras seguira la posicion de la camara 
     MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.y = MyThreeJS.camera.position.y+40;
     MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.x = MyThreeJS.camera.position.x-100;
     MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.z = MyThreeJS.camera.position.z+60;
