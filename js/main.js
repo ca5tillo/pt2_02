@@ -22,14 +22,16 @@ var Main = {
     'actualInstruccion'    : null,
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
-    'mousedown'            : false, 
+    'mousedown'            : false, // usada en setup_EventosMouse();
+    'errorEnEjecucion'     : false, // si se genera un error en ejecucion por evemplo q no encuentre una variable o un eval sanga mal se reiniciara el sistema
 
     reset                  : function(){
         this.lstPasos            = {id:Main_generateID.next().value, children:[], generador:null, descripcion:"lstPasos"};
         this.esAnimacionFluida   = false;
         this.ejecutado           = false;
         this.existenErrores      = false;
-        this.llamadas            = [];        
+        this.errorEnEjecucion    = false;       
+        this.llamadas            = []; 
     },
     marktext               : function(){
         javaEditor_markText_Clean();
@@ -76,11 +78,11 @@ var Main = {
         _run();
 
         new TWEEN.Tween(MyThreeJS.camera.position)
-            .to         ({y:Config_R01.TAM_GRAL*6, z:Config_R01.TAM_GRAL*12 },Controles.getVelocidad()*3)
+            .to         ({y:Config_R01.TAM_GRAL*6, z:Config_R01.TAM_GRAL*12 },4000)
             .easing     (TWEEN.Easing.Quadratic.Out)
             .onStart    ( function (){} )
             .onUpdate   ( function (){ MyThreeJS.camera.lookAt(MyThreeJS.scene.position); } )
-            .onComplete ( function (){} )
+            .onComplete ( function (){ Controles.activar__botones(); } )
             .start(); 
     },
     preparar               : function(){//BTN
@@ -156,10 +158,15 @@ var Main = {
         document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);
     },
     TriggerNextStep        : function(){
-        if(Main.esAnimacionFluida){
-            this.pasoApaso();
-        }else{                            
-            Controles.activar__botones();                            
+        if(! Main.errorEnEjecucion){
+            if(Main.esAnimacionFluida){
+                this.pasoApaso();
+            }else{                            
+                Controles.activar__botones();                            
+            }
+        }else{
+            Controles.activar__botones()
+            Controles.funcion.Reiniciar();
         }
     },
     _addlstPasos_Level_1   : function(padre){
@@ -220,11 +227,6 @@ var Main = {
                 javaEditor_markText_InstuccionActual(i.position.cierre); 
                    
             }
-            else if(i.reglaP == "finGenerador2_RE_FOR_1"){
-                            
-                javaEditor_markText_InstuccionActual(i.position.cierre); 
-                   
-            }
 
 
             else if(i.reglaP == "llamada"){
@@ -278,10 +280,6 @@ var Main = {
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
             }
 
-            else if(i.reglaP == "finGenerador2_RE_FOR_1"){
-                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
-            }
-
 
             else if(i.reglaP == "llamada"){
                 let declaracion = as_GetFunctionByName(this.nextInstruccion.value.name);
@@ -328,14 +326,29 @@ var Main = {
             */
             R01.crearVariable(instruccion);
         }
-        else if( (O_o) == "ASIGNACION_01"      ){
+        else if( (O_o) == "asignacion_01"      ){
             /* i++;*/
             R01.asignacion_01(instruccion);  
         } 
-        else if( (O_o) == "asignacion"      ){
-
-            R01.asignarValorVariable(instruccion);  
-        }        
+        else if( (O_o) == "asignacion_02"      ){
+            /* i--;*/
+            R01.asignacion_02(instruccion);  
+        } 
+        else if( (O_o) == "asignacion_03"      ){
+            /* a = b; */
+            R01.asignacion_03(instruccion);    
+        } 
+        else if( (O_o) == "asignacion_04"      ){
+            /* a = 3; a = "texto"; a = true; */
+            R01.asignacion_04(instruccion);  
+        }   
+        else if( (O_o) == "asignacion_05"     ){
+            /*
+                Para representar Operaciones matematicas 
+                i = 5+9; i = a + b;
+            */
+            R01.asignacion_05(instruccion);  
+        }     
         else if( (O_o) == "arreglo"         ){
 
             R01.crearArreglo(instruccion);  
@@ -375,13 +388,7 @@ var Main = {
 
             R01.crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
         }
-        else if( (O_o) == "asignacion2"     ){
-            /*
-                Para representar Operaciones matematicas 
-                i = 5+9; i = a + b;
-            */
-            R01.asignacion2(instruccion);  
-        }
+        
         else if( (O_o) == "return_variable" ){    
 
             R01.returnVariable(instruccion);
@@ -444,15 +451,7 @@ var Main = {
 
             this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"for",false);
         }
-        else if( (O_o) == "finGenerador2_RE_FOR_1"){
-            let tween = new TWEEN.Tween({x:0})
-                .to         ({ x:2 },Controles.getVelocidad())
-                .easing     (TWEEN.Easing.Quadratic.In)                
-                .onComplete ( function (){
-                        Main.TriggerNextStep();
-                });                    
-            tween.start();
-        }
+        
 
 
         else{        
@@ -485,7 +484,6 @@ var Main = {
                     Main.lstPasos.children[index_1].children.pop();
                     if(nodo.obj.reglaP != "Condicional_if" 
                         && nodo.obj.reglaP != "RE_FOR_0" 
-                        && nodo.obj.reglaP != "RE_FOR_1"
                         && nodo.obj.reglaP != "Condicional_else"
 
                         )

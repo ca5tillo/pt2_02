@@ -30,13 +30,27 @@ var R01 = {
         };
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.push(obj);
     },
-    _popAncestro_1         : function (){
+    _popAncestro_1         : function(){
         
         this._lstIDsMetodos.children.pop();
     },
-    _popAncestro_2         : function (){
+    _popAncestro_2         : function(){
        
         this._lstIDsMetodos.children[this._lstIDsMetodos.children.length-1].children.pop();
+    },
+    _parseValue            : function(v){
+        let vi = null;
+        if(['FLOAT','DOUBLE'].find(function(i){return(i == v.type);})){
+                vi = parseFloat(v.value) || null;
+        }else if(['INT'].find(function(i){return(i == v.type);})){
+                vi = parseInt(v.value) || null;
+        }
+        return vi; 
+    },
+    _error                 : function(comentario) {
+        console.log(comentario);
+        Main.errorEnEjecucion = true;
+        alert("Error en tiempo de ejecucion");
     },
     reset                  : function(){
         MyThreeJS.scene.remove(this.zoneLib);
@@ -136,50 +150,159 @@ var R01 = {
         let padre    = this.lstElements.getChildrenById(idPadre);
         let element  = new Variable(instruccion);
 
-        padre.children.push(element);
-        padre.sons.add(element.element);
+        padre.add(element);
 
         element.in();
     },
     asignacion_01          : function(instruccion){
-        let idContenedor  = this.getIdsAncestros().c;
-        let A_quien       = `${instruccion.name}`;
-        let variable      = this.lstElements.getChildrenById(idContenedor).getChildrenByName(A_quien,true);
+        /* i++;*/
+        let A_quien        = `${instruccion.name}`;
+        let variable       = null;
+        let valor          = null;
+        let nuevoValor     = null;
+        let arr            = null;
 
-        if(variable){
-
-            let valor         = variable.value;
-            if(['INT','FLOAT','DOUBLE'].find(function(i){return(i==variable.type);})){
-                valor = parseFloat(valor);
-            } 
-
-            let nuevoValor    = valor + 1;
-
-            let arr = [
+            variable       = this
+                            .lstElements.getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(A_quien);
+        if(variable)
+            valor          = this._parseValue(variable);
+        if(valor){
+            nuevoValor     = valor + 1;
+            arr = [
                     {ext:'ext',string:instruccion.string.replace(";","")},
                     {symbol:'NAME',string:variable.name},
                     {ext:'ext',string:'='},
                     {ext:'ext',string:nuevoValor}
                 ];
             variable.asignacion(arr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_01 linea 179");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
         }
     },
-    asignarValorVariable   : function(instruccion){
-        let A_quien       = `${instruccion.name}`;
-        let valor         = instruccion.valor;
-        let siguientePaso = true;
-        let animar        = true;
-        let idContenedor  = this.getIdsAncestros().c;
+    asignacion_02          : function(instruccion){
+        /* i--;*/
+        let A_quien        = `${instruccion.name}`;
+        let variable       = null;
+        let valor          = null;
+        let nuevoValor     = null;
+        let arr            = null;
 
-        let variable      = this.lstElements.getChildrenById(idContenedor).getChildrenByName(A_quien,true);
-        if(variable){
-            //variable.setTextValue(valor,siguientePaso,animar); 
-            variable.value = valor;
-
-            let arr = [{ext:'ext',string:valor}];
+            variable       = this
+                            .lstElements.getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(A_quien);
+        if(variable)
+            valor          = this._parseValue(variable);
+        if(valor){
+            nuevoValor     = valor - 1;
+            arr = [
+                    {ext:'ext',string:instruccion.string.replace(";","")},
+                    {symbol:'NAME',string:variable.name},
+                    {ext:'ext',string:'='},
+                    {ext:'ext',string:nuevoValor}
+                ];
             variable.asignacion(arr);
         }else{
-            // Error en tiempo de ejecucion
+            
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_02 linea 206");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
+    asignacion_03          : function(instruccion){
+        /* a = b; */
+        let nam_destino    = `${instruccion.name}`;
+        let nam_origen     = `${instruccion.value}`;
+        let var_destino    = null;
+        let var_origen     = null;
+
+
+        let valor          = null;
+        let arr            = null;
+
+            var_destino    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_destino);
+            var_origen    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_origen);
+
+        if(var_destino && var_origen)
+            valor          = this._parseValue(var_origen);
+        if(valor){
+            arr = [
+                    
+                    {symbol:'NAME',string:nam_origen},
+                    {ext:'ext',string:valor}
+                ];
+            var_destino.asignacion0(arr);
+        }else{
+            
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_03 linea 244");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
+    asignacion_04          : function(instruccion){
+        /* a = 3; a = "texto"; a = true; */
+        let nam_destino    = `${instruccion.name}`;
+        let arr            = null;
+        let valor          = instruccion.value;
+        let variable       = this.lstElements
+                                .getChildrenById(this.getIdsAncestros().c)
+                                .getChildrenByName(nam_destino);
+        if(variable){
+            variable.value = valor;
+            arr = [{ext:'ext',string:valor}];
+            variable.asignacion(arr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_03 linea 244");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start();
+        }
+    },
+    asignacion_05          : function(instruccion){
+        /*    i = 5+9; i = a + b;    */
+        let nam_destino    = `${instruccion.name}`;
+        let contenedor     = this.lstElements.getChildrenById(this.getIdsAncestros().c);
+        let padre          = this.lstElements.getChildrenById(this.getIdsAncestros().p);        
+        let destino        = this.lstElements
+                                .getChildrenById(this.getIdsAncestros().c)
+                                .getChildrenByName(nam_destino);
+        let expresion      = ""; 
+        let expresion2     = ""; // las variables ya se remprazaron por su valor
+        let resultado      = null;
+
+        for(let i of instruccion.value){            
+            expresion      += expresion == "" ? i.string : " "+i.string;
+            if(i.symbol == 'NAME'){
+                let valval  = contenedor.getChildrenByName(i.string).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
+            }else{
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
+            }
+        }
+        if(destino){
+            destino.exp_matematica = expresion2;
+            try{ resultado = eval(expresion2); }catch(err){ }
+        }
+        if(resultado){
+            let arr   = [{ext:'ext',string:expresion}];
+            let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+            let myarr = arr.concat(instruccion.value, as);  
+            destino.asignacion(myarr);
+            destino.value = resultado;
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_05 linea 307");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
         }
     },
     crearArreglo           : function(instruccion){
@@ -257,7 +380,7 @@ var R01 = {
         let element         = null;
 
         if(argumento.type == "NAME"){
-            elementoOrigen  = metodoOrigen.getChildrenByName(argumento.value,true);
+            elementoOrigen  = metodoOrigen.getChildrenByName(argumento.value);
         }else{
             valor = argumento.value;
         }
@@ -285,7 +408,7 @@ var R01 = {
 
         if(contenedor.returnA){
 
-            let value           = contenedor.getChildrenByName(instruccion.name,true).value;
+            let value           = contenedor.getChildrenByName(instruccion.name).value;
             let destino         = this.lstElements.getChildrenById(contenedor.idContenedor).getChildrenByName(contenedor.returnA);
             destino.value       = value;
 
@@ -321,48 +444,6 @@ var R01 = {
         }
         //this.MethodOut();// se ejecuta en la animacion de setText5
     },
-    asignacion2            : function(instruccion){
-        /*
-            Para representar Operaciones matematicas 
-            i = 5+9; i = a + b;
-        */
-        let siguientePaso   = true;
-        let animar          = true;
-        let idPadre         = this.getIdsAncestros().p;
-        let idContenedor    = this.getIdsAncestros().c;
-        let contenedor      = this.lstElements.getChildrenById(idContenedor);
-        let padre           = this.lstElements.getChildrenById(idPadre);        
-        let destino         = this.lstElements.getChildrenById(idContenedor).getChildrenByName(instruccion.destinoName);
-
-
-        let expresion  = "";
-        let expresion2 = "";
-        let resultado  = "?";
-
-        for(let i of instruccion.expresion){            
-            expresion += expresion == "" ? i.string : " "+i.string;
-            if(i.symbol == 'NAME'){
-                let valval = contenedor.getChildrenByName(i.string, true).value;
-                expresion2 += expresion2 == "" ? valval   : " "+valval;
-            }else{
-                expresion2 += expresion2 == "" ? i.string : " "+i.string;
-            }
-        }
-        destino.exp_matematica = expresion2;
-        try{
-            resultado = eval(expresion2);
-        }catch(err){
-            alert("Error en tiempo de ejecucion");
-            console.log("Error en tiempo de ejecucion");
-        }
-
-        let arr = [{ext:'ext',string:expresion}];
-        let as = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
-        let myarr = arr.concat(instruccion.expresion, as);  
-        destino.asignacion(myarr);
-
-        destino.value = resultado;
-    },
     for                    : function(instruccion){
 
         let idPadre         = this.getIdsAncestros().p;
@@ -397,7 +478,7 @@ var R01 = {
         for(let i of instruccion.arr){            
             expresion += expresion == "" ? i.string : " "+i.string;
             if(i.symbol == 'NAME'){
-                let valval = contenedor.getChildrenByName(i.string,true).value;
+                let valval = contenedor.getChildrenByName(i.string).value;
                 expresion2 += expresion2 == "" ? valval   : " "+valval;
             }else{
                 expresion2 += expresion2 == "" ? i.string : " "+i.string;

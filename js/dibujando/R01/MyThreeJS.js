@@ -56,7 +56,7 @@ var MyThreeJS = {
 
 	    document.getElementById("representacion_3D").appendChild(this.renderer.domElement);
 	},
-	'enableCameraControl' : function(){
+	'enableCameraControl'  : function(){
 		
 		this.cameraControl.enabled = true;
 	},
@@ -64,7 +64,8 @@ var MyThreeJS = {
 		//http://stackoverflow.com/questions/16525043/reset-camera-using-orbitcontrols-js
 	    this.cameraControl.enabled = false;
 	},
-	'resetCameraControl' : function(){
+	'resetCameraControl'   : function(){
+	
 		this.cameraControl.reset();	 
 	},
 	'onResize'		: function(){
@@ -95,8 +96,6 @@ var MyThreeJS = {
 	        this.scene.add( spotLight );
 	        //this.scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
 	        //*/
-
-
 	},
 	'addFloor'      : function(){
         let floorMaterial = new THREE.MeshPhongMaterial();

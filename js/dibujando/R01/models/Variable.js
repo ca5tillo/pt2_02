@@ -17,11 +17,7 @@ class Variable extends Element{
 
     	this.setTextType (this._type    );
     	this.setTextName (this._name+"=");
-	    this.setTextValue(this._value   );
-
-	    if(['INT','FLOAT','DOUBLE'].find(function(i){return(i==instruccion.type);})){
-            this._value = parseFloat(this._value);
-        }   
+	    this.setTextValue(this._value   ); 
 	}
 	set value(v){ this._value = v;    }
 	get name ( ){ return this._name;  }

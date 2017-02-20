@@ -144,7 +144,8 @@ var ejemploDeCodigo_09 =
         }
     }
     public static void main() {
-        factorial(0);
+        int i;int a = 9;
+        i = a;
         
     }
 }`;

@@ -57,9 +57,7 @@ class Libreria extends Element{
 		    .easing(TWEEN.Easing.Quadratic.In)
 		    .onComplete(function () {
 		    	_this.setTextName(_this._name,false,false);
-		    	if(minum == numLibs){
-		    		Controles.activar__botones();
-		    	}
+		    	
 		    });
 
 		opacity.chain(position);

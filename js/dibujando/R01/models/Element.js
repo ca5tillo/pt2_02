@@ -323,7 +323,7 @@ class Element{
         if(i <= f){
             if(arr[i].symbol && arr[i].symbol == 'NAME'){
                 /* Busco la variable */
-                let variable      = contenedor.getChildrenByName(arr[i].string, true);
+                let variable      = contenedor.getChildrenByName(arr[i].string);
                 /* Guardo posicion actual del elemento origen (variable) */
                 let origenPos_X   = variable.element.position.x; 
                 /* Muevo elemento origen a la izquierda (variable) */
@@ -467,15 +467,19 @@ class Element{
         
         this._setText2("value", 3, txt, siguientePaso, origen);
     }
+    asignacion0(arr){
+        // no mueve el valor de resultado desde dento de la mesa 
+        this._evaluacion(arr, 0, arr.length-2,'_eval_2');
+    }
     asignacion(arr){
-        
+        // mueve el resultado desde dentro de la mesa -- pensado para que represente el simbolo de = y el resultado
         this._evaluacion(arr, 0, arr.length-1,'_eval_2');
     }
     retornar(arr){
 
         this._evaluacion(arr, 0, arr.length-2, '_eval_return');
     }
-    getChildrenByName(name, profundidad = false){
+    getChildrenByName(name){
         // http://jsfiddle.net/dystroy/MDsyr/
         // Retorna la primera coincidencia
         let getSubMenuItem = function (subMenuItems, name) {
@@ -484,7 +488,7 @@ class Element{
                     if (subMenuItems[i].name == name) {
                         return subMenuItems[i];
                     };
-                    if(profundidad){
+                    if(true){
                         let found = getSubMenuItem(subMenuItems[i].children, name);
                         if (found) return found;
                     }

@@ -263,31 +263,68 @@ function _as_reglasProduccion(str, arr){
         	return obj; 
         }
     /*    RECONOCIENDO ASIGNACION 01                                                */
-        /* Para a++; */
         if( _RE_ = str.match(RE_ASIGNACION_01)     ){
-
+            /* Para a++; */
             let obj              = new ASElemento();
-            obj.reglaP           = "ASIGNACION_01";
+            obj.reglaP           = "asignacion_01";
             
             obj.name             = strmap.NAME;
-            obj.valor            = "";
+            obj.value            = "";
             obj.string           = dev_frase;
 
             _as_setPosition(obj, arr);
             return obj; 
         } 
-    /*    RECONOCIENDO ASIGNACION DE VALORES A VARIABLES                            */
-        if( _RE_ = str.match(RE_ASIGNACION_DE_VALOR)     ){
+    /*    RECONOCIENDO ASIGNACION 02                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_02)     ){
+            /* Para a--; */
             let obj              = new ASElemento();
-            obj.reglaP           = "asignacion";
+            obj.reglaP           = "asignacion_02";
             
             obj.name             = strmap.NAME;
-            obj.valor            = strmap[_RE_[1]];
-            obj.valueType        = _RE_[1];
+            obj.value            = "";
+            obj.string           = dev_frase;
 
             _as_setPosition(obj, arr);
             return obj; 
-        }    
+        } 
+    /*    RECONOCIENDO ASIGNACION 03                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_03)     ){
+            /* Para a = b; */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_03";
+            obj.name             = strmap.NAME;
+            obj.value            = strmap['NAME_0'];
+            obj.string           = dev_frase;
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
+    /*    RECONOCIENDO ASIGNACION 04                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_04)     ){
+            /* a = 3; a = "texto"; a = true; */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_04";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = strmap[_RE_[1]];
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        }   
+    /*    RECONOCIENDO ASIGNACION 05                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_05)                ){
+            /*  i = 5+9; i = a + b;  */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_05";
+
+            obj.name             = strmap.NAME;
+            obj.value            = _as_getExpresionMatematica(arr);
+            obj.string           = dev_frase;
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};     */
         if( _RE_ = str.match(RE_ARREGLO)                 ){
             let obj              = new ASElemento();
@@ -356,22 +393,6 @@ function _as_reglasProduccion(str, arr){
 
             obj.num             = strmap.NUM;
             
-            _as_setPosition(obj, arr);
-            return obj; 
-        }
-    /*    RECONOCIENDO asigncion a variable de una operacion i = 5+9;               */
-        if( _RE_ = str.match(RE_SUMARESTADIVMULT)                ){
-            let obj              = new ASElemento();
-
-            let resultado        = null;
-
-
-            obj.reglaP           = "asignacion2";
-            obj.name             = strmap.NAME;
-            obj.destinoName      = strmap.NAME; // destino al hacer return 
-            obj.expresion        = _as_getExpresionMatematica(arr);
-            obj.resultado        = resultado;
-        
             _as_setPosition(obj, arr);
             return obj; 
         }
