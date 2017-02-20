@@ -16,7 +16,7 @@ var MyThreeJS = {
 		this.setupThreeJS();
 		this.addFloor();
 		this.ambientLight();
-		//this.spotLight();
+		this.spotLight();
 	},
 	'setupThreeJS'  : function(){
 	    /*ESCENA*/
@@ -26,15 +26,14 @@ var MyThreeJS = {
 
 	    /*CAMARA*/
 	    this.camera            = new THREE.PerspectiveCamera( this._FOV, this._ASPECT, this._NEAR, this._FAR );
-	    //this.camera.position.set(0,TAM_GRAL*16,TAM_GRAL*22);
-	    //this.camera.lookAt(scene.position);
-	    this.camera.position.x = 0;
-	    this.camera.position.y = 20;
-	    this.camera.position.z = 60;
+
 
 	    this.camera.position.y = 400;
 		this.camera.position.z = 400;
 		this.camera.rotation.x = -45 * Math.PI / 180;
+
+		this.camera.position.y = 1400;
+		this.camera.position.z = 1400;
 
 
 	    this.camera.lookAt(this.scene.position);
@@ -79,10 +78,10 @@ var MyThreeJS = {
 	},
 	'ambientLight'  : function(){
 
-		this.scene.add( new THREE.AmbientLight( 0xffffff , 0.6 ) );// Luz blanca suave
+		this.scene.add( new THREE.AmbientLight( 0xffffff , 1 ) );// Luz blanca suave
 	},
 	'spotLight'     : function(){
-	    let spotLight = new THREE.SpotLight( 0xffffff );
+	    let spotLight = new THREE.SpotLight( 0xffffff , 0.6);
 	        spotLight.position.set( 0, 60, 60 );
 	        spotLight.name = 'Spot Light';
 	        spotLight.angle = Math.PI / 5;
@@ -94,8 +93,10 @@ var MyThreeJS = {
 	        spotLight.shadow.mapSize.height = 1024;
 
 	        this.scene.add( spotLight );
-	        //scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
+	        //this.scene.add( new THREE.CameraHelper( spotLight.shadow.camera ) );
 	        //*/
+
+
 	},
 	'addFloor'      : function(){
         let floorMaterial = new THREE.MeshPhongMaterial();

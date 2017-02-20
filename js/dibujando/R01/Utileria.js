@@ -53,7 +53,7 @@ var R01_utileria = {
 	},
 	loadMetodo   : function(){
 		let loader = new THREE.TextureLoader();
-	    loader.load('img/textures/metodo.jpg',
+	    loader.load('img/textures/nave.jpg',
 	        function ( texture ) {
 	            R01_utileria.metodo.texture  = texture;
 	            R01_utileria.metodo.isLoaded = true;	         

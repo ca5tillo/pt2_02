@@ -74,6 +74,14 @@ var Main = {
 
         _add(as_arbol);
         _run();
+
+        new TWEEN.Tween(MyThreeJS.camera.position)
+            .to         ({y:Config_R01.TAM_GRAL*6, z:Config_R01.TAM_GRAL*12 },Controles.getVelocidad()*3)
+            .easing     (TWEEN.Easing.Quadratic.Out)
+            .onStart    ( function (){} )
+            .onUpdate   ( function (){ MyThreeJS.camera.lookAt(MyThreeJS.scene.position); } )
+            .onComplete ( function (){} )
+            .start(); 
     },
     preparar               : function(){//BTN
         this.analizarCodigoFuente();  
@@ -543,6 +551,15 @@ function render(){
         //camera.lookAt(lstElements.getChildrenById(idNodoFinal).graphics.children[0].matrixWorld.getPosition());
     }
     //*/
+
+ 
+    MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.y = MyThreeJS.camera.position.y+40;
+    MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.x = MyThreeJS.camera.position.x-100;
+    MyThreeJS.scene.getObjectByName( 'Spot Light'  ).position.z = MyThreeJS.camera.position.z+60;
+
+
+
+
     requestAnimationFrame(render);
 }
 
