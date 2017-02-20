@@ -201,6 +201,7 @@ var Controles = {
     },
 };
 Controles.setupControles = function (){
+    dat.GUI.toggleHide = function(){};// El menu se ocultaba al presionar la tecla h, sobreexcribo el metodo para q no se oculte el menu
     this.gui = new dat.GUI();
     $(".dg.ac").css( "z-index", "18" );// explicacion en el archivo helpers
     $(this.gui.domElement).attr("id","MyControlesDataGui");
