@@ -128,8 +128,8 @@ function analisisSintactico(){
 	    lst_token.push(i);
 	    str     += `${i.symbol}`;
 	    
-	    RE_IS_ARREGLO.test(str) ? isArray = true :"";
-	    i.symbol == "FOR" ? isFor = true:""; 
+	    RE_IS_ARREGLO.test(str) ? isArray = true : false;
+	    i.symbol == "FOR"       ? isFor   = true : false; 
 
 	    if(   (i.symbol == "LBRACE"    && !isArray)
 	        ||(i.symbol == "SEMICOLON" && !isFor)
@@ -337,12 +337,24 @@ function _as_reglasProduccion(str, arr){
             _as_setPosition(obj, arr);
             return obj; 
         } 
+    /*    RECONOCIENDO ASIGNACION 07                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_07)     ){
+            /*  b = a.length; */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_07";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = _as_getExpresionMatematica(arr);
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};     */
         if( _RE_ = str.match(RE_ARREGLO)                 ){
             let obj              = new ASElemento();
             obj.reglaP           = "arreglo";
-
-            obj.type             = _RE_[2];
+            
+            obj.type             = _RE_[1];
             obj.name             = strmap.NAME;
             obj.hijos            = _as_getContenidoArreglo(arr, obj, obj.type, obj.name);
 

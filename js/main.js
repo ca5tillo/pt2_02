@@ -342,12 +342,13 @@ var Main = {
             /* a = 3; a = "texto"; a = true; */
             R01.asignacion_04(instruccion);  
         }   
-        else if( (O_o) == "asignacion_05"     ){
-            /*
-                Para representar Operaciones matematicas 
-                i = 5+9; i = a + b;
-            */
+        else if( (O_o) == "asignacion_05"      ){
+            /*   i = 5+9; i = a + b;   */
             R01.asignacion_05(instruccion);  
+        }     
+        else if( (O_o) == "asignacion_07"      ){
+            /*  b = a.length; */
+            R01.asignacion_07(instruccion);  
         }     
         else if( (O_o) == "arreglo"         ){
 
@@ -456,9 +457,10 @@ var Main = {
 
         else{        
 
-            alert("Error en tiempo de ejecucion");
-            console.clear();
-            console.log("Error en tiempo de ejecucion")            
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error Main.dibujando linea 461");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start();           
         }
     },
     getInstruccion         : function(){

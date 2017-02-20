@@ -95,8 +95,8 @@ var R01 = {
         this.lstElements.idPadre      = this.lstElements.id;
         this.lstElements.idContenedor = this.lstElements.id;
 
-        this.groupBase               = new THREE.Group();
-        this.groupBase.name          = "group_general";
+        this.groupBase                = new THREE.Group();
+        this.groupBase.name           = "group_general";
         MyThreeJS.scene.add(this.groupBase);
     },
     crearLibreria          : function(instruccion, minum, numLibs){
@@ -113,8 +113,7 @@ var R01 = {
         let element   = new MetodoMain(declaracion);
         this._addAncestro_1(element,"MetodoMain");
 
-        padre.children.push(element);
-        padre.sons.add(element.element);
+        padre.add(element);
 
         element.in(declaracion);
         return element.id;
@@ -135,8 +134,7 @@ var R01 = {
 
         this._addAncestro_1(element,"Metodo");
 
-        padre.children.push(element);
-        padre.sons.add(element.element);
+        padre.add(element);
 
         element.in(declaracion);
 
@@ -220,8 +218,6 @@ var R01 = {
         let nam_origen     = `${instruccion.value}`;
         let var_destino    = null;
         let var_origen     = null;
-
-
         let valor          = null;
         let arr            = null;
 
@@ -305,6 +301,46 @@ var R01 = {
             .start(); 
         }
     },
+    asignacion_07          : function(instruccion){
+        /*  b = a.length; */
+        let nam_destino    = `${instruccion.name}`;
+        let nam_origen     = `${instruccion.value[0].string}`;
+        let var_destino    = null;
+        let var_origen     = null;
+        let contenedor     = this.lstElements.getChildrenById(this.getIdsAncestros().c);
+        let padre          = this.lstElements.getChildrenById(this.getIdsAncestros().p);  
+        let expresion      = ""; 
+        let expresion2     = ""; // las variables ya se remprazaron por su valor
+        let resultado      = null;
+
+
+        var_destino    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_destino);
+        var_origen     = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_origen);
+
+        if( var_destino && var_origen && var_origen[instruccion.value[2].string]){
+            resultado = var_origen[instruccion.value[2].string];
+        }
+
+        for(let i of instruccion.value){            
+            expresion      += expresion == "" ? i.string : " "+i.string;
+        }
+        
+        if(resultado){
+            let arr   = [{ext:'ext',string:expresion}];
+            let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+            let myarr = arr.concat( as);  
+            var_destino.asignacion(myarr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_07 linea 339");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
     crearArreglo           : function(instruccion){
         let _crearArregloValor = function(instruccion, TriggerNextStep = false){
             
@@ -364,8 +400,7 @@ var R01 = {
         let element         = new Variable(instruccion);
         let TriggerNextStep = false;
 
-        padre.children.push(element);
-        padre.sons.add(element.element);
+        padre.add(element);
 
         element.in(TriggerNextStep);
     },
@@ -388,14 +423,12 @@ var R01 = {
         if(elementoOrigen){
             let ins = {name:parametros[indice].name,value:elementoOrigen.value, type:parametros[indice].type};
             element  = new VariablePorParametro(ins);
-            metodoDestino.children.push(element);
-            metodoDestino.sons.add(element.element);
+            metodoDestino.add(element);
             element.in(elementoOrigen.value,elementoOrigen);
         }else{
             let ins = {name:parametros[indice].name,value:valor, type:parametros[indice].type};
             element  = new Variable(ins);
-            metodoDestino.children.push(element);
-            metodoDestino.sons.add(element.element);
+            metodoDestino.add(element);
             element.in();
         }
     },
@@ -536,13 +569,13 @@ var R01 = {
 
         return resultado;
     },
-    ifOut                   : function(){
+    ifOut                  : function(){
         let idPadre         = this.getIdsAncestros().p;
         let padre           = this.lstElements.getChildrenById(idPadre);
         padre.out();
         this._popAncestro_2();
     },
-    elseOut                   : function(){
+    elseOut                : function(){
         let idPadre         = this.getIdsAncestros().p;
         let padre           = this.lstElements.getChildrenById(idPadre);
         padre.out();

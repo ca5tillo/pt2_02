@@ -130,24 +130,11 @@ var ejemploDeCodigo_08 =
 }`;
 var ejemploDeCodigo_09 =
 `public class MyClass {
-    public static int factorial (int numero) {
-        int temp;
-        int temp2;
-        int temp3;
-        if (numero == 0){
-            factorial(5);
-        }
-        else{
-            int u_u;
-           
-            // return numero * factorial(numero-1);
-        }
-    }
     public static void main() {
-        int i;int a = 9;
-        i = -5;
-        a=1;
-        i = i-a;
+        int[] a = {8,5,7,25,22,1};
+        int b;
+
+        b = a.length;
         
     }
 }`;

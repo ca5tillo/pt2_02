@@ -87,6 +87,9 @@ class Arreglo extends Element{
 
         return malla;
     }
+    get length(){
+    	return this._children.length;
+    }
 	in(){		
         let element = this._element;
         
