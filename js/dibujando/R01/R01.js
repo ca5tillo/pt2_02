@@ -41,10 +41,11 @@ var R01 = {
     _parseValue            : function(v){
         let vi = null;
         if(['FLOAT','DOUBLE'].find(function(i){return(i == v.type);})){
-                vi = parseFloat(v.value) || null;
+                vi = parseFloat(v.value);
         }else if(['INT'].find(function(i){return(i == v.type);})){
-                vi = parseInt(v.value) || null;
+                vi = parseInt(v.value);
         }
+        console.log(vi);
         return vi; 
     },
     _error                 : function(comentario) {
@@ -167,7 +168,7 @@ var R01 = {
                             .getChildrenByName(A_quien);
         if(variable)
             valor          = this._parseValue(variable);
-        if(valor){
+        if(valor != null){
             nuevoValor     = valor + 1;
             arr = [
                     {ext:'ext',string:instruccion.string.replace(";","")},
@@ -196,7 +197,7 @@ var R01 = {
                             .getChildrenByName(A_quien);
         if(variable)
             valor          = this._parseValue(variable);
-        if(valor){
+        if(valor != null){
             nuevoValor     = valor - 1;
             arr = [
                     {ext:'ext',string:instruccion.string.replace(";","")},
@@ -233,7 +234,7 @@ var R01 = {
 
         if(var_destino && var_origen)
             valor          = this._parseValue(var_origen);
-        if(valor){
+        if(valor != null){
             arr = [
                     
                     {symbol:'NAME',string:nam_origen},
@@ -297,7 +298,6 @@ var R01 = {
             let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
             let myarr = arr.concat(instruccion.value, as);  
             destino.asignacion(myarr);
-            destino.value = resultado;
         }else{
             new TWEEN.Tween({x:0}).to({x:2 },10)
             .onStart    ( function (){R01._error("Error asignacion_05 linea 307");} )

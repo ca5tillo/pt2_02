@@ -145,7 +145,9 @@ var ejemploDeCodigo_09 =
     }
     public static void main() {
         int i;int a = 9;
-        i = a;
+        i = -5;
+        a=1;
+        i = i-a;
         
     }
 }`;

@@ -238,7 +238,7 @@ function _as_reglasProduccion(str, arr){
         	return obj;     	
         }
     /*    RECONOCIENDO DECLARACION DE VARIABLES NO INICIALIZADAS                    */
-        if( _RE_ = str.match(RE_DEF_VAR_NO_INICIALIZADA) ){
+        if( _RE_ = str.match(RE_VAR_01) ){
             let obj              = new ASElemento();
             obj.reglaP           = "variable";
 
@@ -250,7 +250,7 @@ function _as_reglasProduccion(str, arr){
             return obj; 
         }
     /*    RECONOCIENDO DECLARACION DE VARIABLES INICIALIZADAS                       */
-        if( _RE_ = str.match(RE_DEF_VAR_INICIALIZADA)    ){
+        if( _RE_ = str.match(RE_VAR_02)    ){
         	let obj              = new ASElemento();
             obj.reglaP           = "variable";
 
@@ -302,12 +302,12 @@ function _as_reglasProduccion(str, arr){
         } 
     /*    RECONOCIENDO ASIGNACION 04                                                */
         if( _RE_ = str.match(RE_ASIGNACION_04)     ){
-            /* a = 3; a = "texto"; a = true; */
+            /* a = 3; a = -3;*/
             let obj              = new ASElemento();
             obj.reglaP           = "asignacion_04";
             
             obj.name             = strmap.NAME;
-            obj.value            = strmap[_RE_[1]];
+            obj.value            = (strmap[_RE_[1]] || "") + strmap[_RE_[2]];
 
             _as_setPosition(obj, arr);
             return obj; 
@@ -321,6 +321,18 @@ function _as_reglasProduccion(str, arr){
             obj.name             = strmap.NAME;
             obj.value            = _as_getExpresionMatematica(arr);
             obj.string           = dev_frase;
+
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
+    /*    RECONOCIENDO ASIGNACION 06                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_06)     ){
+            /*  a = "texto"; a = true; */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_04";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = strmap[_RE_[1]];
 
             _as_setPosition(obj, arr);
             return obj; 
