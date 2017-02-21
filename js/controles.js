@@ -93,7 +93,7 @@ var Controles = {
     funcion               : {
         Velocidad          : 5,
         Pasos              : 0,
-        Detenerse          : 0,
+        DetenerseEn        : 0,
         Mensaje            : "Hola mundo",
         FullScreen         : true, // para el editor
         Opacidad           : 0,// para el editor
@@ -101,6 +101,7 @@ var Controles = {
         'Linea Siguiente'  : true,
         'Panel'            : false, // Panel de detalles
         'Tema'             : 'monokai',
+        'Autocompletar'    : false,
         Comodin            : function(){
             //console.log(MyThreeJS.cameraControl)
             //let json = JSON.stringify(R01.lstElements.children[1].children[0],['name', 'children']);
@@ -115,7 +116,7 @@ var Controles = {
         Preparar        : function(){
             if(Controles._botones.preparar.isEnabled){
                 if(Main.preparar()){
-                    Controles.funcion.Pasos = 0;
+                    Controles.funcion.Pasos  = 0;
                     Controles._desactivar("preparar");
                 }
             }
@@ -135,13 +136,13 @@ var Controles = {
                 Main.pasoApaso();               
             }
         },
-        Pausa           :function (){
+        Pausa           : function (){
             if(Controles._botones.pausa.isEnabled){                
                 Controles._desactivar("pausa");
                 Main.pausa();                
             }            
         },
-        Reiniciar       :function (){
+        Reiniciar       : function (){
             if(Controles._botones.reiniciar.isEnabled){
                 Controles.desactivar__botones();                              
                 Controles._desactivar("pausa");
@@ -203,10 +204,11 @@ var Controles = {
 Controles.setupControles = function (){
     dat.GUI.toggleHide = function(){};// El menu se ocultaba al presionar la tecla h, sobreexcribo el metodo para q no se oculte el menu
     this.gui = new dat.GUI();
+
     $(".dg.ac").css( "z-index", "18" );// explicacion en el archivo helpers
     $(this.gui.domElement).attr("id","MyControlesDataGui");
 
-    this.gui.add(this.funcion,"Comodin");
+    
     //this.gui.add(this.funcion,"Mensaje");// Funciona al desactivar el orbitControl de Three.js
 
     /***************************************************************************************************/
@@ -217,14 +219,18 @@ Controles.setupControles = function (){
     this._botones.pausa.btn       = f1.add(this.funcion, 'Pausa');
     this._botones.reiniciar.btn   = f1.add(this.funcion, 'Reiniciar');
     this._botones.velocidad.btn   = f1.add(this.funcion, 'Velocidad').min(1).max(5).step(1);
-    this._botones.npasos.btn      = f1.add(this.funcion, 'Pasos').listen();
+    this._botones.npasos.btn      = f1.add(this.funcion, 'Pasos').min(0).listen();
+    this._botones.npasos.btn      = f1.add(this.funcion, 'DetenerseEn').min(0);
+
+
     this._activar("preparar");
 
 
     let f2 = this.gui.addFolder('Editor');
     this._botones.tema.btn       = f2.add(this.funcion, 'Tema',{Negro: 'monokai', Blanco:'default'});
-    this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
     this._botones.opacidad.btn   = f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
+    this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
+    f2.add(this.funcion, 'Autocompletar');
     f2.add(this.funcion, 'Linea Actual');
     f2.add(this.funcion, 'Linea Siguiente');
 

@@ -117,8 +117,8 @@ var Main = {
         let instruccion = null;
         let tipo        = null;
 
-        Controles.funcion.Pasos += 1; 
-        if(Controles.funcion.Pasos == Controles.funcion.Detenerse)this.pausa();        
+        Controles.funcion.Pasos  += 1; 
+        if(Controles.funcion.Pasos == Controles.funcion.DetenerseEn)this.pausa();        
 
         if(this.nextInstruccion){            
             this.dibujar(this.nextInstruccion);

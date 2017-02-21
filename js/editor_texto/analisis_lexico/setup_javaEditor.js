@@ -36,15 +36,23 @@ function setup_javaEditor(){
         el moverse sobre el mundo 3D
     */
     javaEditor.display.input.onContextMenu= function(){}; 
+    javaEditor_addHintWords();
     
     javaEditor_extraKeys();
 
     //  Evento inputRead que se desencadena con nuevas entradas 
     javaEditor.on("inputRead", function(javaEditor, inputRead) {
-        //console.log(javaEditor.getTokenAt(javaEditor.getCursor()));
-        //  Si no existen espacios en blanco muestra el autocompletador
-        if(javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(' ') == -1 && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(';') == -1){
-            javaEditor.showHint({completeSingle: true});
+        if(    Controles.funcion.Autocompletar
+            && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(' ') == -1 
+            && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf(';') == -1
+            && javaEditor.getTokenAt(javaEditor.getCursor()).string.indexOf('.') == -1
+        ){
+            let re = new RegExp("^"+javaEditor.getTokenAt(javaEditor.getCursor()).string);
+            for(let i of javaEditor.getHelpers(0,"hintWords")[0]){
+                if (re.test(i)) {
+                    javaEditor.showHint({completeSingle: true});
+                }
+            }
         }
     });
     //  Evento change 
@@ -60,6 +68,7 @@ function setup_javaEditor(){
     //$(".CodeMirror").css({ "background":'rgba(255,255,255,'+Controles.funcion.Opacidad+')' });
 }
 function javaEditor_setTheme(theme){
+
     javaEditor.setOption("theme", theme);
 }
 function javaEditor_setOpacity(){
@@ -71,6 +80,7 @@ function javaEditor_setOpacity(){
     }
 }
 function javaEditor_setText(value){
+
 	javaEditor.setValue(value);
 }
 function javaEditor_enableReadOnly(){
@@ -104,9 +114,8 @@ function javaEditor_addHintWords(){
     /*Con esta linea solo añade palabras al hintWords*/
     javaEditor.getHelpers(0,"hintWords")[0]
         .push(
-            'codigojava'
+            'codigojava','length'
         );
-    //*/
 }
 function javaEditor_markError(lineaInicial,lineaFinal){
     function _makeMarker() {

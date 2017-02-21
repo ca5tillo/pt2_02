@@ -45,7 +45,6 @@ var R01 = {
         }else if(['INT'].find(function(i){return(i == v.type);})){
                 vi = parseInt(v.value);
         }
-        console.log(vi);
         return vi; 
     },
     _error                 : function(comentario) {
