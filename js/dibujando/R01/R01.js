@@ -288,7 +288,7 @@ var R01 = {
             destino.exp_matematica = expresion2;
             try{ resultado = eval(expresion2); }catch(err){ }
         }
-        if(resultado){
+        if(resultado != null){
             let arr   = [{ext:'ext',string:expresion}];
             let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
             let myarr = arr.concat(instruccion.value, as);  
@@ -340,6 +340,167 @@ var R01 = {
             .start(); 
         }
     },
+    asignacion_08          : function(instruccion){
+        /*  b = a[.*]; */
+        let nam_destino    = `${instruccion.name}`;
+        let nam_origen     = `${instruccion.value}`;
+        let indice         = null;
+        let var_destino    = null;
+        let var_origen     = null;
+        let contenedor     = this.lstElements.getChildrenById(this.getIdsAncestros().c);
+        let padre          = this.lstElements.getChildrenById(this.getIdsAncestros().p);  
+        let expresion      = ""; 
+        let expresion2     = ""; // las variables ya se remprazaron por su valor
+        let resultado      = null;
+
+
+        var_destino    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_destino);
+        var_origen     = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_origen);
+
+        if( var_destino && var_origen ){
+            for(let i of instruccion.indice){            
+                expresion      += expresion == "" ? i.string : " "+i.string;
+                if(i.symbol == 'NAME'){
+                    let valval  = contenedor.getChildrenByName(i.string).value;
+                    expresion2 += expresion2 == "" ? valval   : " "+valval;
+                }else{
+                    expresion2 += expresion2 == "" ? i.string : " "+i.string;
+                }
+            }
+            try{ resultado = eval(expresion2); }catch(err){ }
+        }
+        resultado = var_origen.children[resultado].value;
+
+        if(resultado){
+            let arr   = [{ext:'ext',string:`${nam_origen}[${expresion2}]`}];
+            let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+            let myarr = arr.concat( as);  
+            var_destino.asignacion(myarr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_08 linea 388");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
+    asignacion_09          : function(instruccion){
+        /*  b[.*] = a[.*]; */
+        let nam_destino    = `${instruccion.name}`;
+        let nam_origen     = `${instruccion.value}`;
+        let indice0         = null;
+        let indice         = null;
+        let var_destino    = null;
+        let var_origen     = null;
+        let contenedor     = this.lstElements.getChildrenById(this.getIdsAncestros().c);
+        let padre          = this.lstElements.getChildrenById(this.getIdsAncestros().p);  
+        let expresion      = ""; 
+        let expresion2     = ""; // las variables ya se remprazaron por su valor
+        let resultado      = null;
+
+
+        var_destino    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_destino);
+        var_origen     = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_origen);
+
+        if( var_destino && var_origen ){
+            for(let i of instruccion.indice0){            
+                expresion      += expresion == "" ? i.string : " "+i.string;
+                if(i.symbol == 'NAME'){
+                    let valval  = contenedor.getChildrenByName(i.string).value;
+                    expresion2 += expresion2 == "" ? valval   : " "+valval;
+                }else{
+                    expresion2 += expresion2 == "" ? i.string : " "+i.string;
+                }
+            }
+            try{ indice0 = eval(expresion2); }catch(err){ }
+        }
+        var_destino = var_destino.children[indice0];
+
+        expresion      = ""; 
+        expresion2     = ""; // las variables ya se remprazaron por su valor
+
+        if( var_destino && var_origen ){
+            for(let i of instruccion.indice){            
+                expresion      += expresion == "" ? i.string : " "+i.string;
+                if(i.symbol == 'NAME'){
+                    let valval  = contenedor.getChildrenByName(i.string).value;
+                    expresion2 += expresion2 == "" ? valval   : " "+valval;
+                }else{
+                    expresion2 += expresion2 == "" ? i.string : " "+i.string;
+                }
+            }
+            try{ indice = eval(expresion2); }catch(err){ }
+        }
+        resultado = var_origen.children[indice].value;
+
+        if(resultado){
+            let arr   = [{ext:'ext',string:`${nam_origen}[${expresion2}]`}];
+            let as    = [{ext:'ext',string:'='},{ext:'ext',string:resultado}];
+            let myarr = arr.concat( as);  
+            var_destino.asignacion(myarr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_08 linea 388");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
+    asignacion_10          : function(instruccion){
+        /*  b[.*] = a; */
+        let nam_destino    = `${instruccion.name}`;
+        let nam_origen     = `${instruccion.value}`;
+        let indice0        = null;
+        let var_destino    = null;
+        let var_origen     = null;
+        let contenedor     = this.lstElements.getChildrenById(this.getIdsAncestros().c);
+        let padre          = this.lstElements.getChildrenById(this.getIdsAncestros().p);  
+        let expresion      = ""; 
+        let expresion2     = ""; // las variables ya se remprazaron por su valor
+        let resultado      = null;
+
+
+        var_destino    = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_destino);
+        var_origen     = this.lstElements
+                            .getChildrenById(this.getIdsAncestros().c)
+                            .getChildrenByName(nam_origen);
+
+        if( var_destino && var_origen ){
+            for(let i of instruccion.indice0){            
+                expresion      += expresion == "" ? i.string : " "+i.string;
+                if(i.symbol == 'NAME'){
+                    let valval  = contenedor.getChildrenByName(i.string).value;
+                    expresion2 += expresion2 == "" ? valval   : " "+valval;
+                }else{
+                    expresion2 += expresion2 == "" ? i.string : " "+i.string;
+                }
+            }
+            try{ indice0 = eval(expresion2); }catch(err){ }
+        }
+        var_destino = var_destino.children[indice0];
+
+        resultado = var_origen.value;
+
+        if(resultado){
+            let arr   = [{symbol:'NAME',string:`${nam_origen}`}];
+            let as    = [{ext:'ext',string:resultado}];
+            let myarr = arr.concat( as);  
+            var_destino.asignacion0(myarr);
+        }else{
+            new TWEEN.Tween({x:0}).to({x:2 },10)
+            .onStart    ( function (){R01._error("Error asignacion_08 linea 388");} )
+            .onComplete ( function (){ Main.TriggerNextStep(); })
+            .start(); 
+        }
+    },
     crearArreglo           : function(instruccion){
         let _crearArregloValor = function(instruccion, TriggerNextStep = false){
             
@@ -347,8 +508,7 @@ var R01 = {
             let padre           = R01.lstElements.getChildrenById(idPadre);
             let element         = new ArregloValor(instruccion);
 
-            padre.children.push(element);
-            padre.sons.add(element.element);
+            padre.add(element);
             element.in(TriggerNextStep);
         }
         let idPadre           = this.getIdsAncestros().p;
@@ -362,8 +522,7 @@ var R01 = {
         // inserto el arreglo al _lstIDsMetodos para poder despues insertar los subelementos
         this._addAncestro_2(element, "Arreglo");
         
-        padre.children.push(element);
-        padre.sons.add(element.element);
+        padre.add(element);
         element.in();
 
         for(let i = 0; i < numSubE; i++){

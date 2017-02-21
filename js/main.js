@@ -349,6 +349,18 @@ var Main = {
         else if( (O_o) == "asignacion_07"      ){
             /*  b = a.length; */
             R01.asignacion_07(instruccion);  
+        }      
+        else if( (O_o) == "asignacion_08"      ){
+            /*  b = a[.*]; */
+            R01.asignacion_08(instruccion);  
+        }     
+        else if( (O_o) == "asignacion_09"      ){
+            /*  b[.*] = a[.*]; */
+            R01.asignacion_09(instruccion);  
+        } 
+        else if( (O_o) == "asignacion_10"      ){
+            /*  b[.*] = a; */
+            R01.asignacion_10(instruccion);  
         }     
         else if( (O_o) == "arreglo"         ){
 
@@ -528,7 +540,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_09);
+        javaEditor_setText(ejemploDeCodigo_07);
 
         MyThreeJS.init();
 

@@ -4,8 +4,7 @@ class Element{
         this._idPadre       = null; // Es el padre directo Ej. si declaro una variable dentro de un for el for es el padre directo
         this._idContenedor  = null; // EJ. si es una variable a que metodo pertenece sin importa si antes pertenece a un for 
         this._children      = [];   // Contienen los objetos creados con los modelos
-        this._name          = "";
-        R01._idNodoFinal    = this._id;
+
 
         this._element       = new THREE.Group(); // Es el 3D de este objeto
         this._graphics      = new THREE.Group(); // Es el 3D de este objeto
@@ -23,12 +22,18 @@ class Element{
 
         this._element.add(this._graphics);
         this._element.add(this._sons);
+
+        this._type                  = null;
+        this._name                  = null;  
+        this._value                 = null;
     }
 
     set id           (a){  this._id           = a;     }
     set idPadre      (a){  this._idPadre      = a;     }
     set idContenedor (a){  this._idContenedor = a;     }
+    set type         (a){  this._type         = a;     }
     set name         (a){  this._name         = a;     }
+    set value        (a){  this._value        = a;     }
     get id           ( ){  return this._id;            }
     get idPadre      ( ){  return this._idPadre;       }
     get idContenedor ( ){  return this._idContenedor;  }
@@ -39,6 +44,9 @@ class Element{
     get text         ( ){  return this._text;          }
     get sons         ( ){  return this._sons;          }
     get cube         ( ){  return this._cube;          }
+    get type         ( ){  return this._type;          }
+    get name         ( ){  return this._name;          }
+    get value        ( ){  return this._value;         }
 
     _setcube(){
         var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);

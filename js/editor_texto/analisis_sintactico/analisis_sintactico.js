@@ -349,6 +349,83 @@ function _as_reglasProduccion(str, arr){
             _as_setPosition(obj, arr);
             return obj; 
         } 
+    /*    RECONOCIENDO ASIGNACION 08                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_08)     ){
+            /*  b = a[.*]; */
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_08";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = strmap.NAME_0;
+            obj.indice           = _as_getExpresionMatematica2(arr);
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
+    /*    RECONOCIENDO ASIGNACION 09                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_09)     ){
+            /*  b[.*] = a[.*]; */
+            let tem=0;
+            for (let i=0;i< arr.length-1;i++){
+                if(arr[i].symbol == "EQ"){
+                    tem=i;
+                }
+            }
+            let i1 = arr.slice(0,tem);
+            let i2 = arr.slice(tem+1,arr.length);
+            tem = false;
+            let hqr = [];
+            for(let i in strmap){
+                if(i == "EQ"){
+                    tem=true;
+                }
+                if(tem){
+                    hqr.push(strmap[i]);
+                }
+            }
+
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_09";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = hqr[1];
+            obj.indice0          = _as_getExpresionMatematica2(i1);
+            obj.indice           = _as_getExpresionMatematica2(i2);
+            _as_setPosition(obj, arr);
+            return obj; 
+        } 
+    /*    RECONOCIENDO ASIGNACION 10                                                */
+        if( _RE_ = str.match(RE_ASIGNACION_10)     ){
+            /*  b[.*] = a; */
+            let tem=0;
+            for (let i=0;i< arr.length-1;i++){
+                if(arr[i].symbol == "EQ"){
+                    tem=i;
+                }
+            }
+            let i1 = arr.slice(0,tem);
+            let i2 = arr.slice(tem+1,arr.length);
+            tem = false;
+            let hqr = [];
+            for(let i in strmap){
+                if(i == "EQ"){
+                    tem=true;
+                }
+                if(tem){
+                    hqr.push(strmap[i]);
+                }
+            }
+
+
+            let obj              = new ASElemento();
+            obj.reglaP           = "asignacion_10";
+            
+            obj.name             = strmap.NAME;
+            obj.value            = hqr[1];
+            obj.indice0          = _as_getExpresionMatematica2(i1);
+            _as_setPosition(obj, arr);
+
+            return obj; 
+        } 
     /*    RECONOCIENDO UN ARRAY TIPO Tipo_de_variable[ ] Nombre_del_array = {};     */
         if( _RE_ = str.match(RE_ARREGLO)                 ){
             let obj              = new ASElemento();
@@ -732,6 +809,21 @@ function _as_getExpresionMatematica(arr){
             lstParametros.push(i);
         }
         if(i.symbol == "EQ")insertinparam=true;
+    }
+    
+
+    return lstParametros;
+}
+function _as_getExpresionMatematica2(arr){
+    let insertinparam = false;
+    let lstParametros = [];
+
+    for(let i of arr){
+        if(i.symbol == "RBRACK")insertinparam=false;
+        if(insertinparam){
+            lstParametros.push(i);
+        }
+        if(i.symbol == "LBRACK")insertinparam=true;
     }
     
 

@@ -19,10 +19,7 @@ class Variable extends Element{
     	this.setTextName (this._name+"=");
 	    this.setTextValue(this._value   ); 
 	}
-	set value(v){ this._value = v;    }
-	get name ( ){ return this._name;  }
-	get value( ){ return this._value; }
-	get type ( ){ return this._type;  }
+
 
 	_setcube(){
         var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL*2, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);

@@ -17,6 +17,7 @@ class ArregloValor extends Element{
     	this._cube.material.visible = true; 
     	this._cube.material.opacity = 1;	
 
+    	this.setTextType ("");
     	this.setTextName(this._name);
 	    this.setTextValue(this._value);
 	}
