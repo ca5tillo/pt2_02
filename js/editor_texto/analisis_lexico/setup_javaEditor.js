@@ -188,15 +188,16 @@ function javaEditor_extraKeys(){
         },
         "Tab": function(cm) 
         {
-            var cursor = javaEditor.getCursor();
-            var token = javaEditor.getTokenAt(cursor);
-            var tabulador = Array(cm.getOption("indentUnit") + 1).join(" ");
-            var indentado = " ".repeat(token.start);
-            var brackets = `{\n${indentado}    \n${indentado}}`;
-            var abreviaturas = [];
-                abreviaturas["for"]         = `for (int i = 0; i < 10; i++)${brackets}`;
-                abreviaturas["psvm"]        = `public static void main(String[] args)${brackets}`;
-                abreviaturas["sout"]        = `System.out.println("");`;
+            var cursor                   = javaEditor.getCursor();
+            var token                    = javaEditor.getTokenAt(cursor);
+            var tabulador                = Array(cm.getOption("indentUnit") + 1).join(" ");
+            var indentado                = " ".repeat(token.start);
+            var brackets                 = `{\n${indentado}    \n${indentado}}`;
+            var abreviaturas             = [];
+                abreviaturas["for"]      = `for (int i = 0; i < 10; i++)${brackets}`;
+                abreviaturas["if"]       = `if (true)${brackets}`;
+                abreviaturas["psvm"]     = `public static void main(String[] args)${brackets}`;
+                abreviaturas["sout"]     = `System.out.println("");`;
 
             //console.log(cursor,token);
             
@@ -215,12 +216,9 @@ function javaEditor_extraKeys(){
                 }else if (abreviaturas[token.string].indexOf('""') != -1){
                     javaEditor.setCursor({line: cursor.line, ch: cursor.ch-3});
                 }
-                
-                
             }else{
                 cm.replaceSelection(tabulador);
             }
-            
         }
     });
 }
