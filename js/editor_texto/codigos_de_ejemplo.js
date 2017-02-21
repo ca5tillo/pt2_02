@@ -98,7 +98,9 @@ var ejemploDeCodigo_06 =
 var ejemploDeCodigo_07 =
 `public class MyClass {
     public static void main() {
-        int temp; int i; int j; int tam; int[] array = {8,5,7,25,22,1};
+        //METODO BURBUJA
+
+        int temp; int i; int j; int tam; int[] array = {25,24,22,15,9,5,1,0};
         tam = array.length;
 
         for( i=1;i < tam;i++){
@@ -120,14 +122,25 @@ var ejemploDeCodigo_07 =
 var ejemploDeCodigo_08 =
 `public class MyClass {
     public static void main() {
-        int temp = 0;
-        int i;
-        temp++;/*
-        for ( i = 0; i < 2; i++){
-            int y = 20;
-            temp = i+0;
-        }//*/
-        i = 10;
+        //METODO INSERCION 
+
+        int i; int tam; int[] array = {25,24,22,15,9,5,1,0};
+        tam = array.length;
+
+        for ( i=1; i < tam; i++) {
+            int j; int aux; int aux2;
+            j    = i-1;
+            aux  = array[i];
+            aux2 = array[j];
+
+            for ( j=i-1; j >= 0 && aux2 > aux; j--){
+                if(j > 0){
+                    aux2 = array[j-1];
+                }
+                array[j+1] = array[j];
+            }
+            array[j+1] = aux;
+      }
     }
 }`;
 var ejemploDeCodigo_09 =

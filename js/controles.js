@@ -198,6 +198,12 @@ var Controles = {
                     javaEditor_setText(ejemploDeCodigo_07);
                 }
             },
+            e08:function (){
+                if(Controles._botones.ejemplos.isEnabled){ 
+                    Controles.funcion.Reiniciar();          
+                    javaEditor_setText(ejemploDeCodigo_08);
+                }
+            },
         },
     },
 };
