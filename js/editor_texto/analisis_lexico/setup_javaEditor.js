@@ -55,9 +55,9 @@ function setup_javaEditor(){
             }
         }
     });
-    //  Evento change 
-    javaEditor.on("change", function(javaEditor, inputRead) {    
-
+    //  Al dejar caer un archivo se borrara el contenido actual del editor
+    javaEditor.on("drop", function(javaEditor, inputRead) {    
+        javaEditor_setText("");
     });
 
     
