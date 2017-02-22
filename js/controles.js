@@ -11,7 +11,8 @@ var Controles = {
         npasos       :{ isEnabled:false, btn:null },
         fullScreen   :{ isEnabled:false, btn:null },
         opacidad     :{ isEnabled:false, btn:null },
-        opacidad     :{ isEnabled:false, btn:null },
+        l1           :{ isEnabled:false, btn:null },//linea actual
+        l2           :{ isEnabled:false, btn:null },
         ejemplos     :{ isEnabled:false, eje: []  },
         tema         :{ isEnabled:false, btn:null },
     },
@@ -237,8 +238,8 @@ Controles.setupControles = function (){
     this._botones.opacidad.btn   = f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
     this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
     f2.add(this.funcion, 'Autocompletar');
-    f2.add(this.funcion, 'Linea Actual');
-    f2.add(this.funcion, 'Linea Siguiente');
+    this._botones.l1.btn       = f2.add(this.funcion, 'Linea Actual');
+    this._botones.l2.btn       = f2.add(this.funcion, 'Linea Siguiente');
 
     this._botones.tema.btn.onFinishChange(function(value) {
         javaEditor_setTheme(value);
@@ -249,6 +250,12 @@ Controles.setupControles = function (){
     });
     this._botones.opacidad.btn.onChange(function(value) {
         javaEditor_setOpacity();
+    });
+    this._botones.l1.btn.onFinishChange(function(value) {
+        Main.marktext();
+    });
+    this._botones.l2.btn.onFinishChange(function(value) {
+        Main.marktext();
     });
 
 
