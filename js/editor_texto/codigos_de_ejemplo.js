@@ -146,24 +146,9 @@ var ejemploDeCodigo_08 =
 var ejemploDeCodigo_09 =
 `public class MyClass {
     public static void main() {
-        int temp;int i;int j;int tam;
-        int[] array = {8,5,7,25,22,1};
-        tam = array.length;
-
-        for( i=1;i < tam;i++){
-            for ( j=0 ; j < tam - 1; j++){
-                int temp2; int temp3;
-                temp2 = array[j];
-                temp3 = array[j+1];
-
-            ///*
-                if ( temp2 > temp3 ){
-                    temp = array[j];
-                    array[j] = array[j+1];
-                    array[j+1] = temp;
-                }
-            //*/
-            }
+        int i=0;
+        while(i<10){
+            i++;
         }
     }
 }`;

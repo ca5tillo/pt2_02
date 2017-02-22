@@ -727,6 +727,88 @@ var R01 = {
 
         return resultado;
     },
+    whileIn                : function(instruccion){
+        
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+
+
+        let element  = new CWhile(instruccion);
+        this._addAncestro_2(element, "CWhile");
+        padre.add(element);
+        element.in();
+
+    },
+    while_eval             : function(instruccion){
+
+
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        let expresion  = "";
+        let expresion2 = "";
+        let resultado  = false;
+        for(let i of instruccion.arr){            
+            expresion += expresion == "" ? i.string : " "+i.string;
+            if(i.symbol == 'NAME'){
+                let valval = contenedor.getChildrenByName(i.string).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
+            }else{
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
+            }
+        }        
+        try{ resultado = eval(expresion2); }catch(err){
+            alert("Error evaluacion");
+        }
+        padre.value = resultado;
+
+
+        let miarr = [{ext:'ext',string:expresion}].concat(instruccion.arr,[{ext:'ext',string:'='},{ext:'ext',string:resultado+""}]);
+
+        padre.asignacion(miarr);
+    },
+    whileOut               : function(instruccion){
+
+        let idPadre         = this.getIdsAncestros().p;
+        let idContenedor    = this.getIdsAncestros().c;
+        let contenedor      = this.lstElements.getChildrenById(idContenedor);
+        let padre           = this.lstElements.getChildrenById(idPadre);
+
+        padre.in2();
+/*
+        let expresion  = "";
+        let expresion2 = "";
+        let resultado  = false;
+
+        for(let i of instruccion.condicionales){            
+            expresion += expresion == "" ? i.string : " "+i.string;
+            if(i.symbol == 'NAME'){
+                let valval = contenedor.getChildrenByName(i.string).value;
+                expresion2 += expresion2 == "" ? valval   : " "+valval;
+            }else{
+                expresion2 += expresion2 == "" ? i.string : " "+i.string;
+            }
+        }
+
+        
+        try{ resultado = eval(expresion2); }catch(err){
+            alert("Error evaluacion");
+        }
+
+        instruccion.value = resultado;
+
+
+
+        
+
+        return resultado;
+        //*/
+    },
     ifOut                  : function(){
         let idPadre         = this.getIdsAncestros().p;
         let padre           = this.lstElements.getChildrenById(idPadre);

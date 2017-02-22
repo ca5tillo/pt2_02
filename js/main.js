@@ -227,6 +227,12 @@ var Main = {
                 javaEditor_markText_InstuccionActual(i.position.cierre); 
                    
             }
+            else if(i.reglaP == "finGenerador2_while"){
+                            
+                javaEditor_markText_InstuccionActual(i.position.cierre); 
+                   
+            }
+
 
 
             else if(i.reglaP == "llamada"){
@@ -277,6 +283,9 @@ var Main = {
             }
 
             else if(i.reglaP == "finGenerador2_RE_FOR_0"){
+                javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
+            }
+            else if(i.reglaP == "finGenerador2_while"){
                 javaEditor_markText_InstuccionSiguiente(i.position.cierre); 
             }
 
@@ -464,6 +473,28 @@ var Main = {
 
             this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"for",false);
         }
+        else if( (O_o) == "while"         ){   
+            R01.whileIn(instruccion);
+            let hijos = instruccion.hijos.concat([]);
+                hijos.unshift(instruccion.condicionales);
+
+            this._addlstPasos_Level_2(instruccion, hijos,"while");
+           
+        }
+        else if( (O_o) == "while_R"         ){   
+           
+
+            let resultado = R01.while_eval(instruccion);
+            if(resultado){                
+                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"while");
+            }
+        }
+        else if( (O_o) == "finGenerador2_while"){
+            instruccion.reglaP = "while";
+            R01.whileOut(instruccion);
+        
+            this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"while");
+        }
         
 
 
@@ -496,10 +527,10 @@ var Main = {
                     i = { value: instruccion, done: true, nodo: nodo };
                     //*/
                     Main.lstPasos.children[index_1].children.pop();
-                    if(nodo.obj.reglaP != "Condicional_if" 
+                    if(    nodo.obj.reglaP != "Condicional_if" 
                         && nodo.obj.reglaP != "RE_FOR_0" 
                         && nodo.obj.reglaP != "Condicional_else"
-
+                        && nodo.obj.reglaP != "while"
                         )
                         i = this.getInstruccion();
                 }
@@ -540,7 +571,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_08);
+        javaEditor_setText(ejemploDeCodigo_09);
 
         MyThreeJS.init();
 

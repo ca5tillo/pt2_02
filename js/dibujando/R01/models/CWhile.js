@@ -1,4 +1,5 @@
-class CFor extends Element{
+
+class CWhile extends Element{
 	constructor(instruccion){
 		super();	
 		let my_indice               = R01.lstElements.getChildrenById(R01.getIdsAncestros().p).sons.children.length;
@@ -6,10 +7,10 @@ class CFor extends Element{
         this._idPadre               =  R01.getIdsAncestros().p;
 		this._idContenedor          =  R01.getIdsAncestros().c;
 		
-		this._type                  = `for`;
-		this._name                  = `for`;	
-		this._value                 = false
-		this._element.name          = `for`;	
+		this._type                  = `_condicional`;
+		this._name                  = `if`;	
+		this._value                 = `${instruccion.value}`;
+		this._element.name          = `if`;	
     	this._element.my_indice     = my_indice;
     	this._string                = instruccion.string;
 
@@ -19,6 +20,7 @@ class CFor extends Element{
 
         
 	}
+
 	_setcube(){
 
         var geo = new THREE.BoxGeometry(Config_R01.TAM_GRAL, Config_R01.TAM_GRAL, Config_R01.TAM_GRAL);
@@ -34,6 +36,7 @@ class CFor extends Element{
 
         return malla;
     }
+
     _eval_2(arr){ 
         let _this             = this;
         let value_1           = this.text.children[2] || null;
@@ -63,8 +66,7 @@ class CFor extends Element{
                 	_this.out();
                 }              
             }).start();
-    }
-	in(){
+    }in(){
 			
 		let _this    = this;
 
@@ -91,6 +93,7 @@ class CFor extends Element{
 	    position.chain(scale);
 	    position.start();   
 	}
+
 	in2(){
 			
 		let _this    = this;

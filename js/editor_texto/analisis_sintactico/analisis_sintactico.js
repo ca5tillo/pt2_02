@@ -181,10 +181,6 @@ function _as_setPosition(obj, arr){
     obj.position.bloque.x2 = arr[arr.length-1].end;
 }
 function _as_reglasProduccion(str, arr){
-
-
-	let RE_ASIGNACION_DE_VALOR_ARRAY = /(NAME) LBRACK (NAME|BYTE|SHORT|INT|LONG|FLOAT|DOUBLE|BOOLEAN_LITERAL|CHAR|STRING)\s?RBRACK EQ /;
-
     let _RE_              = null;
     let strmap            = {};
     let dev_frase         = ""; //contiene los string de la frase solo para ver por consola
@@ -552,30 +548,23 @@ function _as_reglasProduccion(str, arr){
             _as_setPosition(obj, arr);
             return obj;     
         }
+    /*    RECONOCIENDO UN CICLO RE_WHILE                                               */
+        if( _RE_ = str.match(RE_WHILE) ){
+            //  for ( int j = 0 ; j < 10 ; j ++ ) { 
+
+            let obj = new ASElemento();
+            obj.reglaP          = "while";
+            obj.name            = "while(...)";        
+            obj.condicionales   = _as_getReglasWhile(_as_getCondicionales(arr));
+
+            obj.string          = dev_frase.replace("{","");
+
+            obj.isNodoFinal     = false;                
+            _as_setPosition(obj, arr);
+            return obj;     
+        }
     /********************************************************************************/
     
-
-    
-
-
-
-
-
-    
-
-    /*    RECONOCIENDO ASIGNACION ARRAY TIPO Tipo_de_variable[i]=21;*/
-        if(RE_ASIGNACION_DE_VALOR_ARRAY.test(str)){
-
-    		let RE_Txt = str.match(RE_ASIGNACION_DE_VALOR_ARRAY);
-    		//console.log(str,RE_Txt,strmap[RE_Txt[1]],strmap)
-        	let obj = new ASElemento(-1,"asignacionDeValorArray");//el nivel se coloca en -1 ya q estos no tendran hijos asignados
-        	obj.valor = strmap["NAME_1"];
-    		obj.valor_tipoDeDato = RE_Txt[1];
-        	obj.name = strmap.NAME;
-        	obj.indice = strmap["NAME_0"];// esta propiedad no se ecncuentra en el modelo 
-            obj.lineaInicial = arr[0].line;
-            return obj; 
-        }
 
 
 
@@ -586,6 +575,19 @@ function _as_reglasProduccion(str, arr){
 
 
     return error;
+}
+function _as_getReglasWhile(arr){
+
+    let b1 = new ASElemento();
+    b1.reglaP          = "while_R";
+    b1.position.regla.y1 = arr[0].line;
+    b1.position.regla.y2 = arr[arr.length-1].line;
+
+    b1.position.regla.x1 = arr[0].start;
+    b1.position.regla.x2 = arr[arr.length-1].end; 
+    b1.arr = arr;
+
+    return b1;
 }
 function _as_getReglasFor(arr){
     let _arr = arr.concat([]);
