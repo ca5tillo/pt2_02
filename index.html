@@ -35,8 +35,11 @@
 
 
 <!-- JS --> 
+
+            <!-- jquery --> 
     <script src="lib/jquery/jquery-3.1.1.min.js"></script>
     <script src="lib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+            <!-- ./jquery --> 
 
             <!-- codemirror --> 
     <script src="lib/codemirror/lib/codemirror.js"></script>                    <!-- codemirror --> 
@@ -60,7 +63,14 @@
             <!-- Tween.JS --> 
     <script src="lib/tween/Tween.js"></script>
             <!-- ./Tween.JS --> 
+
+            <!-- data.gui --> 
     <script src="lib/data.gui/dat.gui.js"></script> 
+            <!-- data.gui --> 
+
+            <!-- JavaParser --> 
+    <script src="lib/javaparser/JavaParser.js"></script> 
+            <!-- JavaParser --> 
 
     <script src="js/helpers.js"></script>
     <script src="js/controles.js"></script>
@@ -97,7 +107,16 @@
 
     <script src="js/main.js"></script>
 
+<script>
+    var test= null;
+    try{
+        test = JavaParser.parse("class fds{}"); 
+    }catch(err){
+        test="error en el codigo ";
+    }
 
+console.log(test);
+</script>
 
 </head>
 <body>
