@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="lib/codemirror/theme/monokai.css">             <!-- addons theme --> 
     <link rel="stylesheet" href="lib/codemirror/addon/display/fullscreen.css">  <!-- addons extraKeys --> 
     <link rel="stylesheet" href="lib/codemirror/addon/hint/show-hint.css">      <!-- addons show-hint --> 
+
+    <link rel="stylesheet" href="lib/codemirror/addon/fold/foldgutter.css" />
             <!-- ./codemirror --> 
 
     <link rel="stylesheet" href="lib/font-awesome-4.6.3/css/font-awesome.min.css">
@@ -44,12 +46,21 @@
             <!-- codemirror --> 
     <script src="lib/codemirror/lib/codemirror.js"></script>                    <!-- codemirror --> 
     <script src="lib/codemirror/mode/clike/clike.js"></script>                  <!-- addons mode:text/x-java --> 
+    <script src="lib/codemirror/mode/javascript/javascript.js"></script>        <!-- addons mode:text/x-java --> 
     <script src="lib/codemirror/addon/edit/matchbrackets.js"></script>          <!-- addons matchBrackets: true --> 
     <script src="lib/codemirror/addon/edit/closebrackets.js"></script>          <!-- addons autoCloseBrackets: true --> 
     <script src="lib/codemirror/addon/selection/active-line.js"></script>       <!-- addons styleActiveLine: true --> 
     <script src="lib/codemirror/addon/selection/mark-selection.js"></script>    <!-- addons styleActiveLine: true --> 
     <script src="lib/codemirror/addon/display/fullscreen.js"></script>          <!-- addons extraKeys: {} --> 
     <script src="lib/codemirror/addon/hint/show-hint.js"></script>              <!-- addons show-hint --> 
+
+    <script src="lib/codemirror/addon/fold/foldcode.js"></script>
+    <script src="lib/codemirror/addon/fold/foldgutter.js"></script>
+    <script src="lib/codemirror/addon/fold/brace-fold.js"></script>
+    <script src="lib/codemirror/addon/fold/xml-fold.js"></script>
+    <script src="lib/codemirror/addon/fold/indent-fold.js"></script>
+    <script src="lib/codemirror/addon/fold/markdown-fold.js"></script>
+    <script src="lib/codemirror/addon/fold/comment-fold.js"></script>
             <!-- ./codemirror --> 
 
 
@@ -72,12 +83,19 @@
     <script src="lib/javaparser/JavaParser.js"></script> 
             <!-- JavaParser --> 
 
+            <!-- jsDump --> 
+    <script src="lib/jsDump.js"></script> 
+            <!-- ./jsDump --> 
+            <!-- D3 --> 
+    <script src="lib/D3/d3.min.js"></script> 
+            <!-- ./D3 --> 
+
     <script src="js/helpers.js"></script>
     <script src="js/controles.js"></script>
 
+    <script src="js/editor_texto/Editor.js"></script>
     <script src="js/editor_texto/codigos_de_ejemplo.js"></script>
     <script src="js/editor_texto/analisis_lexico/tabla_de_simbolos.js"></script>
-    <script src="js/editor_texto/analisis_lexico/setup_javaEditor.js"></script>
     <script src="js/editor_texto/analisis_sintactico/reglas_produccion.js"></script>
     <script src="js/editor_texto/analisis_sintactico/analisis_sintactico.js"></script>
 
@@ -104,78 +122,44 @@
             <!-- jquery-bonsai --> 
     <script src="lib/jquery-bonsai/jquery.bonsai.js"></script>
             <!-- ./jquery-bonsai --> 
-
+    <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.js"></script>
     <script src="js/main.js"></script>
 
-<script>
-    var test= null;
-    try{
-        test = JavaParser.parse("class fds{}"); 
-    }catch(err){
-        test="error en el codigo ";
-    }
-
-console.log(test);
-</script>
 
 </head>
 <body>
+    
+    <div id="editor">
+        <textarea name="javaEditor" id="javaEditor" style="display: none;"></textarea><!-- <<#5>> -->
+    </div>
 
-    <div id="editor"><textarea name="javaEditor" id="javaEditor" style="display: none;"></textarea></div>
     <div id="representacion_3D"></div>
     
+   <!-- -->
+    <div class="cuadro">
+        <div class="cuadro-header">Árbol sintáctico<i class="btn-cerrar fa fa-times" aria-hidden="true"></i></div>
+        <div class="cuadro-body">
+            <textarea name="arbol_sintactico" id="arbol_sintactico" style="display: none;"></textarea><!-- <<#5>> -->
+        </div>
+    </div>
 
 
-    <div id="detalles">
-        <!-- Manija para redimencionar el div de detalles -->
-        <div id="handle" class="ui-resizable-handle ui-resizable-n"></div>
 
-        <div id="detalles-tabs">
-            <ul id="detalles-menu">
-                <li><a href="#tabs-0">^_^</a></li>
-                <li><a href="#tabs-1">Arbol Sintactico</a></li>
-                <li><a href="#tabs-2">Arbol de llamadas</a></li>
-                <li><a href="#tabs-3">dev</a></li>
-            </ul>
-            <div id="detalles-content">
-                <div id="tabs-0" style="text-align: center;">
-                    <pre>
-                       /**************************************************************\                       
-                        *                            \\|//                           *                        
-                        *                            (O O)                           *                        
-                        *            +----------oOO---------------------+            *                        
-                        *            | Desarrollado por Miguel Castillo |            *                        
-                        *            +-------------------oOO------------+            *                        
-                        *                          |__|__|                           *                        
-                        *                           || ||                            *                        
-                        *                         ooO Ooo                            *                        
-                       \**************************************************************/                       
-                    </pre>
-                </div>                
-                <div id="tabs-1" >
-                    <div style="width: 50%; float: left;">
-                        <div id="representacion_arbolSintactico"></div>                        
-                    </div>
-                    <div style="width: 50%; float: left;">                        
-                        <div id="infonodo_as"></div>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-                <div id="tabs-2" >
-                    <div id="representacion_arbolDeLlamadas"></div>
-                </div>
-                <div id="tabs-3" >
-                    <div style="width: 50%; float: left;">
-                        <div id="representacionarreglo2"></div>                     
-                    </div>
-                    <div style="width: 50%; float: left;">  
-                        <div id="representacionarreglo1"></div>
-                    </div>
-                    <div style="clear: both;"></div>
-                </div>
-            </div>
-        </div><!-- ./ #detalles-tabs -->
-    </div><!-- id="detalles" -->
 
+
+    <div class="cuadro">
+        <div class="cuadro-header">Dendrogram sintáctico <i class="btn-cerrar fa fa-times" aria-hidden="true"></i></div>
+        <div class="cuadro-body" id="dendrograma">
+        </div>
+    </div>
+
+    <div class="cuadro">
+        <div class="cuadro-header">Árbol sintáctico2<i class="btn-cerrar fa fa-times" aria-hidden="true"></i></div>
+        <div class="cuadro-body">
+            <textarea name="arbol_sintactico2" id="arbol_sintactico2" style="display: none;"></textarea><!-- <<#5>> -->
+        </div>
+    </div>
+
+    
 </body>
 </html>
