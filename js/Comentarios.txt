@@ -1,0 +1,82 @@
+<<#0>>
+
+	javaEditor.display.input.onContextMenu= function(){}; 
+
+    onContextMenu  :   Es presionar el boton derecho del mouse
+
+    Codemirror valida este evento para un uso posterior, no se cual   
+
+    https://codemirror.net/mode/htmlmixed/index.html
+    selecciona parte del texto y da clic derecho y muestra un menu para copiar cortar ...
+
+    Estoy sobrescribiendo el metodo a una funcion vacia, ya que 
+    causaba conflicto con orbilControl de THREE.JS,
+    Sobre el editor no podia mover el mundo con el boton derecho del mouse.
+    Al sobrescribir la funcion a un metodo vacio se a conseguido solucionar de momento 
+    el moverse sobre el mundo 3D 
+
+<<#1>>
+	.CodeMirror-selected     { background-color:transparent !important;}
+
+	Vuelve transparente el fondo del texto seleccionado.
+
+	Sin esta instrucción, por defecto el editor de texto coloca un color de fondo a las líneas seleccionadas, 
+	cuya línea es del ancho del editor de texto.
+
+	Se ha quitado ese color de fondo para que no se vea sobre el área de representación 3D 
+
+
+<<#2>>
+	.CodeMirror-selectedtext { /*background-color: #49483E !important;*/}
+
+	Es el color con el cual el editor de texto remarca el texto seleccionado. 
+	Esta instrucción puede ir en el css de cada tema.
+	Se añadió en el tema “monokai.css” ya que originalmente no tenía un color asignado
+
+<<#3>>
+    dat.GUI.toggleHide = function(){};
+     
+	funcion que oculta el panel de controles al presionar la tecla "h". 
+	Se sobreescribio este metodo ya que al escribir la letra "h" 
+	en el editor de texto se ocultaba o aparecia el panel de controles 
+	(causaba un conflicto con el editor de texto)
+
+<<#4>>
+	Evento inputRead que se desencadena con nuevas entradas 
+	Cada que se escribe algo en el editor se desencadena este evento y si se cumplen las condiciones se mostrara un menú con palabras para auto completar el texto que se está escribiendo. 
+
+<<#5>>
+	Se le coloca style="display: none;", para que no sea visible el text area antes de cargar el codemirror 
+
+<<#6>>
+	Main.ejecutado = true or false;
+	Se utiliza en el helper que desactiva el orbit control cuando el maus esta sobre el panel de controles
+	Tambien se usa en "dibujando\R01\models\MetodoMain.js" para saber si la animaccion llego a su fin.
+
+<<#7>>
+	mousedown
+	Es lanzado cuando el btn del mouse esta presionado
+	es usado para desactivar el OrbirControl de THREE.js en 
+	combinacion con "mouseover" y "mouseout" para "#MyControlesDataGui"
+	para poder cambiar el tema del Editor de texto desde los controles
+
+<<#8>>
+	https://github.com/pegjs/pegjs/blob/master/CHANGELOG.md 
+	https://github.com/pegjs/pegjs/commit/4f7145e360b274807a483ebdcef4bea5ed460464
+
+	las ligas anteriores explican que se tiene que utilizar la funccion location()
+	en la definicion del lenguaje (java.1.7.pegjs) para obtener la posicion referenciando el editor de texto
+
+<<#9>>
+	http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
+
+	Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
+	Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
+	que FUNCIONES usaran de los helpers de dibujado
+
+	Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
+	el ** guionDePreCompilacion **
+	
+<<#10>>
+	http://7sabores.com/blog/recorrer-un-objeto-recursivamente-jquery
+    http://www.etnassoft.com/2011/08/16/como-obtener-el-tipo-de-datos-preciso-de-una-variable-en-javascript/

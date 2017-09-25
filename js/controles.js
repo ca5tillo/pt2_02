@@ -97,12 +97,12 @@ var Controles = {
         DetenerseEn        : 0,
         Mensaje            : "Hola mundo",
         FullScreen         : true, // para el editor
-        Opacidad           : 0,// para el editor
+        Opacidad           : 0,// para el editor 0-1
         'Linea Actual'     : true,
         'Linea Siguiente'  : true,
         'Panel'            : false, // Panel de detalles
         'Tema'             : 'monokai',
-        'Autocompletar'    : false,
+        'Autocompletar'    : true,
         Comodin            : function(){
             //console.log(MyThreeJS.cameraControl)
             //let json = JSON.stringify(R01.lstElements.children[1].children[0],['name', 'children']);
@@ -209,82 +209,79 @@ var Controles = {
     },
 };
 Controles.setupControles = function (){
-    dat.GUI.toggleHide = function(){};// El menu se ocultaba al presionar la tecla h, sobreexcribo el metodo para q no se oculte el menu
+    dat.GUI.toggleHide = function(){};// <<#3>>
     this.gui = new dat.GUI();
-
     $(".dg.ac").css( "z-index", "18" );// explicacion en el archivo helpers
     $(this.gui.domElement).attr("id","MyControlesDataGui");
-
-    
     //this.gui.add(this.funcion,"Mensaje");// Funciona al desactivar el orbitControl de Three.js
 
     /***************************************************************************************************/
-    let f1                        = this.gui.addFolder('Animacion');
-    this._botones.preparar.btn    = f1.add(this.funcion, 'Preparar');
-    this._botones.animar.btn      = f1.add(this.funcion, 'Animar');
-    this._botones.pasoApaso.btn   = f1.add(this.funcion, 'Paso a paso');
-    this._botones.pausa.btn       = f1.add(this.funcion, 'Pausa');
-    this._botones.reiniciar.btn   = f1.add(this.funcion, 'Reiniciar');
-    this._botones.velocidad.btn   = f1.add(this.funcion, 'Velocidad').min(1).max(5).step(1);
-    this._botones.npasos.btn      = f1.add(this.funcion, 'Pasos').min(0).listen();
-    this._botones.npasos.btn      = f1.add(this.funcion, 'DetenerseEn').min(0);
+    let _Botones             = this._botones;
+    let _f1                  = this.gui.addFolder('Animacion');
+    let _f2                  = this.gui.addFolder('Editor');
+    let _f4                  = this.gui.addFolder('Detalles');
+
+    _Botones.preparar.btn    = _f1.add(this.funcion, 'Preparar');
+    _Botones.animar.btn      = _f1.add(this.funcion, 'Animar');
+    _Botones.pasoApaso.btn   = _f1.add(this.funcion, 'Paso a paso');
+    _Botones.pausa.btn       = _f1.add(this.funcion, 'Pausa');
+    _Botones.reiniciar.btn   = _f1.add(this.funcion, 'Reiniciar');
+    _Botones.velocidad.btn   = _f1.add(this.funcion, 'Velocidad').min(1).max(5).step(1);
+    _Botones.npasos.btn      = _f1.add(this.funcion, 'Pasos').min(0).listen();
+    _Botones.npasos.btn      = _f1.add(this.funcion, 'DetenerseEn').min(0);
+
+    _Botones.tema.btn        = _f2.add(this.funcion, 'Tema',{Negro: 'monokai', Blanco:'default'});
+    _Botones.opacidad.btn    = _f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
+    _Botones.fullScreen.btn  = _f2.add(this.funcion, 'FullScreen');
+                               _f2.add(this.funcion, 'Autocompletar');
+    _Botones.l1.btn          = _f2.add(this.funcion, 'Linea Actual');
+    _Botones.l2.btn          = _f2.add(this.funcion, 'Linea Siguiente');
 
 
-    this._activar("preparar");
+    this._activar("preparar"); // todos los botones inician en rojo por defecto,lo cambio a verde 
 
-
-    let f2 = this.gui.addFolder('Editor');
-    this._botones.tema.btn       = f2.add(this.funcion, 'Tema',{Negro: 'monokai', Blanco:'default'});
-    this._botones.opacidad.btn   = f2.add(this.funcion, 'Opacidad').min(0).max(1).step(.1);
-    this._botones.fullScreen.btn = f2.add(this.funcion, 'FullScreen');
-    f2.add(this.funcion, 'Autocompletar');
-    this._botones.l1.btn       = f2.add(this.funcion, 'Linea Actual');
-    this._botones.l2.btn       = f2.add(this.funcion, 'Linea Siguiente');
-
-    this._botones.tema.btn.onFinishChange(function(value) {
-        javaEditor_setTheme(value);
-        javaEditor_setOpacity();
+    _Botones.tema.btn.onFinishChange       (function(value) { // Tema
+        Editor.java.theme = value;
+        Editor.java.setOpacity(Controles.funcion.Opacidad);
     });
-    this._botones.fullScreen.btn.onFinishChange(function(value) {
-        javaEditor.setOption("fullScreen", Controles.funcion.FullScreen)
+    _Botones.fullScreen.btn.onFinishChange (function(value) { // FullScreen
+        Editor.java.changeFullScreen(value);
+        /*
+        (Controles.funcion.FullScreen) 
+            ? $("#editor").removeClass("CodeMirror-myborder") 
+            : $("#editor").addClass("CodeMirror-myborder");
+            //*/
     });
-    this._botones.opacidad.btn.onChange(function(value) {
-        javaEditor_setOpacity();
+    _Botones.opacidad.btn.onChange         (function(value) { // Opacidad
+        Editor.java.setOpacity(value);
     });
-    this._botones.l1.btn.onFinishChange(function(value) {
+
+/*
+    _Botones.l1.btn.onFinishChange         (function(value) {
         Main.marktext();
     });
-    this._botones.l2.btn.onFinishChange(function(value) {
+    _Botones.l2.btn.onFinishChange         (function(value) {
         Main.marktext();
     });
-
-
-    let f3 = this.gui.addFolder('Ejemplos');
-    for(let i in this.funcion.Ejemplos){
-        this._botones.ejemplos.eje.push(f3.add(this.funcion.Ejemplos, i));
-    }
-    this._activar_Ejemplos();
-
-    let f4 = this.gui.addFolder('Detalles');
+//*/
     
+    /*
     if(this.funcion.Panel){
         $('#detalles').css({'visibility': 'visible', 'height': '250px'});
     }
-    f4.add(this.funcion,'Panel').onFinishChange(function(v){
+
+    _f4.add(this.funcion,'Panel').onFinishChange(function(v){
         helper_detalles();
 
 
         v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
         $('#detalles').css('visibility', 'hidden');
     });
-
+    //*/
 
     
 
-    f1.open();
-    //f2.open();
-    //f3.open();
-    //f4.open();
+    _f1.open();
     this._teclado();
 }
 

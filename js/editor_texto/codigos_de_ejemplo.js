@@ -144,14 +144,24 @@ var ejemploDeCodigo_08 =
     }
 }`;
 var ejemploDeCodigo_09 =
-`public class MyClass {
-    public static void main() {
-        int i=0;
-        while(i<10){
-            i++;
-        }
+`
+public class OtraClase{
+    
+}
+public class MyClass {
+    public static void main(String[] args, int z) {
+        int[]  array = {25,24,22,15,9,5,1,0};
+        String c     = "Hola mundo ";
+        int    i     = 0, 
+               b;
+        
     }
-}`;
+    public int suma(int a, int b){
+
+    }
+}
+
+`;
 var ejemploDeCodigo_10 =
 `public class MyClass {
     public static void main() {
@@ -160,7 +170,34 @@ var ejemploDeCodigo_10 =
         else{
         }
     }
-}`;
+}
+/* Ejemplo - aprenderaprogramar.com */
+public class Taxi { //El nombre de la clase
+ 
+    private String ciudad; //Ciudad de cada objeto taxi
+    private String matricula; //Matrícula de cada objeto taxi
+    private String distrito; //Distrito asignado a cada objeto taxi
+    private int tipoMotor; //Tipo de motor asignado a cada objeto taxi. 0 = desconocido, 1 = gasolina, 2 = diesel
+ 
+    //Constructor: cuando se cree un objeto taxi se ejecutará el código que incluyamos en el constructor
+    public Taxi (String valorMatricula, String valorDistrito, int valorTipoMotor) {
+        ciudad = "México D.F.";
+        matricula = valorMatricula;
+        distrito = valorDistrito;
+        tipoMotor = valorTipoMotor;
+    } //Cierre del constructor
+ 
+      //Método para obtener la matrícula del objeto taxi
+    public String getMatricula () { return matricula; } //Cierre del método
+ 
+    //Método para obtener el distrito del objeto taxi
+    public String getDistrito () { return distrito; } //Cierre del método  
+ 
+    //Método para obtener el tipo de motor del objeto taxi
+    public int getTipoMotor () { return tipoMotor; } //Cierre del método
+ 
+} //Cierre de la clase
+`;
 
 
 

@@ -35,3 +35,5 @@
   text-decoration: underline;
   color: white !important;
 }
+
+.cm-s-monokai .CodeMirror-selectedtext { background: #49483E; }

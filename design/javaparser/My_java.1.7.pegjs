@@ -464,7 +464,8 @@ ClassDeclaration
         superclassType:      extractOptional(ext, 1),
         bodyDeclarations:    body,
         typeParameters:      optionalList(gen),
-        interface:           false
+        interface:           false,
+        location       : location(),
       };
     }
 
@@ -492,8 +493,7 @@ MemberDecl
     { 
       return mergeProps(rest, {
         node           : 'MethodDeclaration',
-        typeParameters : params,
-        location       : location(),
+        typeParameters : params
       });
     }
     / type:Type id:Identifier 
@@ -520,7 +520,8 @@ MemberDecl
         node:       'MethodDeclaration',
         returnType2: makePrimitive('void'),
         name:        id,
-        constructor: false
+        constructor: false,
+        location       : location(),
       });
     }
     / id:Identifier rest:ConstructorDeclaratorRest     // Constructor

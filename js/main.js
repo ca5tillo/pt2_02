@@ -14,17 +14,17 @@ window.addEventListener('load', init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
 var Main = {
+    'ejecutado'            : false, // <<#6>>
+    'mousedown'            : false, // <<#7>>  // usada en setup_EventosMouse();
+
+
     'lstPasos'             : {id:Main_generateID.next().value, children:[], generador:null,  descripcion:"lstPasos"},
     'esAnimacionFluida'    : false,
-    'ejecutado'            : false,
-    'existeMain'           : false, // Existe metodo main en el editor
     'existenErrores'       : false, // as_imprimirArbol
-    'actualInstruccion'    : null,
+    'actualInstruccion'    : null,// {value.reglaP, value.name}
     'nextInstruccion'      : null,
     'llamadas'             : [], // llamadas a metodos
-    'mousedown'            : false, // usada en setup_EventosMouse();
     'errorEnEjecucion'     : false, // si se genera un error en ejecucion por evemplo q no encuentre una variable o un eval sanga mal se reiniciara el sistema
-
     reset                  : function(){
         this.lstPasos            = {id:Main_generateID.next().value, children:[], generador:null, descripcion:"lstPasos"};
         this.esAnimacionFluida   = false;
@@ -41,40 +41,33 @@ var Main = {
             this._marcarLinea_2(this.nextInstruccion.value);   
     },
     analizarCodigoFuente   : function(){
-        javaEditor_clearMarkError();
-        javaEditor_markText_Clean();
-        analisisSintactico();
-        as_imprimirArbol(as_arbol);
+        Editor.java.cleanMarksErrors();
+        Editor.java.cleanMarksTexts();
+
+        AS.run();
     },
     precompilacion         : function(){
-        //http://www.forosdelweb.com/f13/llamar-funcion-con-nombre-por-cadena-808443/
-        /*
-            Recorre el ** arbolSintactico ** para identificar las librerias q seran usadas 
-            Inserta las instrucciones a ** guionDePreCompilacion ** estas instrucciones establecen 
-            que FUNCIONES usaran de los helpers de dibujado
-
-            Finalmente lleva a cabo la ejecucion de todas las instrucciones que se contienen en 
-            el ** guionDePreCompilacion **
-        */
+        //<<#9>>
+        
         let _run = function (){
             for(let i = 0; i < _guion.length; i++){
-                R01[   _guion[i].metodo    ] (_guion[i].parametro,i,_guion.length-1);
+                R01[   _guion[i].metodo    ] (_guion[i].parametro, i, _guion.length-1);
             }
         }
-        let _add = function (O_o){
-            if(O_o.reglaP == "clase"){
-                _guion.push({parametro:O_o, metodo:"crearLibreria"});
-            }
-            for(let i of O_o.hijos){
-                _add(i);
+        let _add = function (clases){
+            for(let i of clases){
+                _guion.push({parametro:i, metodo:"crearLibreria"});
             }
         };
         let _guion = [];  //guionDePreCompilacion
         _guion.push({parametro:{},              metodo:"setupZoneLib"  });
         _guion.push({parametro:{},              metodo:"setupGroupBase"});
-        _guion.push({parametro:{name:"System"}, metodo:"crearLibreria" });
+        _guion.push({parametro:{name:{identifier:"System"}}, metodo:"crearLibreria" });
 
-        _add(as_arbol);
+        let _clases = null;
+        if( ( _clases = AS.filter(function(attr, obj){return (obj[attr] == "TypeDeclaration" );}) ) ){
+            _add(_clases);
+        }
         _run();
 
         new TWEEN.Tween(MyThreeJS.camera.position)
@@ -86,24 +79,44 @@ var Main = {
             .start(); 
     },
     preparar               : function(){//BTN
-        this.analizarCodigoFuente();  
+        let objMain = null;
+        this.analizarCodigoFuente();
+        if(
+            ! AS.err 
+            && (  objMain = AS.find(function(attr, obj){return (obj[attr] == "MethodDeclaration" && obj.name.identifier == "main");})  )
+        ){
+            this.ejecutado            = true;
+            Editor.sintactico.value   = jsDump.parse( AS.node );
+            createdendrograma();
 
-        let main         = as_GetFunctionByName("main");
-        if( this.existeMain && !this.existenErrores && !this.ejecutado){
-           
-            this.nextInstruccion = { value: main, done: true, nodo: null };      
-            this.ejecutado       = true;
-            this._marcarLinea_2(main);
-            
+            this.nextInstruccion = { value: objMain, done: true, nodo: null }; 
+            console.log(objMain);
+            this._marcarLinea_2(objMain); 
+
+            console.log(this.nextInstruccion);
+
             this.precompilacion();
-
-            javaEditor_enableReadOnly();
+            Editor.java.enableReadOnly();
             MyThreeJS.enableCameraControl();
+        }else{
+            if(! AS.err) Editor.java.markError(0,0,"No se encuentra el metodo main()");
+            else         Editor.java.markError(0,0,AS.node);
+        } 
+        return  objMain?true:false;
+    },
+    prepararO               : function(){//BTN
+        try{
+            //https://github.com/pegjs/pegjs/blob/master/CHANGELOG.md
+            //https://github.com/pegjs/pegjs/commit/4f7145e360b274807a483ebdcef4bea5ed460464
+            Main.arbol_sintactico     = JavaParser.parse(Editor.java.value); 
+            Editor.sintactico.value   = jsDump.parse( Main.arbol_sintactico );
+            
+        }catch(err){
+            console.log(buildErrorMessage(err));
+            Main.arbol_sintactico = null;
         }
-        if(! this.existeMain || as_arbol.hijos.length == 0){
-            javaEditor_markError(0,50);
-        }
-        return this.existeMain && !this.existenErrores;
+        //console.log(Main.arbol_sintactico);
+        createdendrograma();
     },
     animacionFluida        : function(){// BTN
         this.esAnimacionFluida = true;
@@ -266,9 +279,13 @@ var Main = {
         }
     },
     _marcarLinea_2         : function(i){
-        
+        // Marcara la siguiente linea a ejecutar
         if(Controles.funcion['Linea Siguiente']){
-            // Marcara la siguiente linea a ejecutar
+            if(i.node == "MethodDeclaration" ){
+                Editor.java.markText_InstuccionSiguiente(i.location); 
+            }
+
+            /*
             if(i.reglaP == "metodo" && i.name == "main"){
                 javaEditor_markText_InstuccionSiguiente(i.position.bloque); 
             }
@@ -311,6 +328,7 @@ var Main = {
                 javaEditor_markText_InstuccionSiguiente(parametro.position.regla); 
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
             }
+            //*/
             else{
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
             } 
@@ -555,23 +573,30 @@ var Main = {
 };
 
 
+
+
+
+
 function init(){
+    
+
+    
     Controles.setupControles();
 
-
     R01_utileria.load();
-    load();
+    load();    
 }
 function load(){
 
 
     let _id = requestAnimationFrame(load);
-    if( R01_utileria.allLoaded() ){
+    if( R01_utileria.allLoaded() ){ // si ha terminado de cargar todo lo requerido ejecuta y termina este bucle 
 
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
-        setup_javaEditor();
-        javaEditor_setText(ejemploDeCodigo_09);
+        crearEditorJava();
+        crearEditorAnSintactico();
+        crearEditorAnSintactico2();
 
         MyThreeJS.init();
 
@@ -608,6 +633,110 @@ function render(){
 }
 
 
+
+        
+
+function createdendrograma(){
+    
+
+
+    var svg      = d3.select("#dendrograma").append('svg')
+            .attr('width',640)
+            .attr('height',800)
+            
+    var     diameter = +svg.attr("width"),
+            g        = svg.append("g").attr("transform", "translate(2,2)")
+    var format   = d3.format(",d");
+
+
+    var pack = d3.pack()
+        .size([diameter - 4, diameter - 4])
+        .padding([40]);
+
+    var root = d3.hierarchy(AS.node,function(d){
+                //console.log(d);
+                if (     d.node == "CompilationUnit") { // nodo raiz
+
+                    return d.types;
+                }else if(d.node == "TypeDeclaration"){ // declaracion de clase
+
+                    return d.bodyDeclarations;
+                }else if(d.node == "MethodDeclaration"){ // Declaracion de metodo
+
+                    return d.parameters.concat(d.body.statements); // un metodo tendra como hijos a su <<contenido>> y a sus <<parametros>>;
+                }else if(d.node == "SingleVariableDeclaration"){ // Declaracion de Parametros // Se refiere a la variable en la declaración del método
+
+                    return null; // los parametros no tienen hijos 
+                }else if(d.node == "VariableDeclarationStatement"){// Declaracion de grupo de variables
+
+                    return d.fragments;
+                }else if(d.node == "VariableDeclarationFragment"){// declaracion Variable (cada fragmento)
+
+                    return null; // cada fragmento de variable no tendra mas hijos
+                }
+
+                
+                return  null ;
+            })
+        .count();
+
+    var getNombres = function (d){
+        var info = {nombre:"",parent:""};
+
+        if (d.data.node == "CompilationUnit") {
+            info.name = "/"
+        }else if(d.data.node == "TypeDeclaration"){//clases
+            info.name   = d.data.name.identifier;
+            info.parent = d.parent.data.name ? d.parent.data.name.identifier : d.parent.data.node;
+        }else if(d.data.node == "MethodDeclaration"){ //metodos
+            info.name = d.data.name.identifier;
+            info.parent = d.parent.data.name.identifier;
+        }else if(d.data.node == "SingleVariableDeclaration"){ // parametros
+            info.name = d.data.name.identifier;
+            info.parent = d.parent.data.name.identifier;
+        }else if(d.data.node == "VariableDeclarationStatement"){
+            //console.log(d);
+            info.name = d.data.type.name?d.data.type.name.identifier : "";
+            info.parent = d.parent.data.name.identifier; // porse su padre directo es el tipo de dato
+        }else if(d.data.node == "VariableDeclarationFragment"){
+            info.name = d.data.name.identifier;
+            info.parent = d.parent.parent.data.name.identifier; // por que su padre directo es el tipo de dato
+        }
+        return info;
+
+    };
+    var node = g.selectAll(".node")
+        .data(pack(root).descendants())
+        .enter().append("g")
+        .attr("class", function(d) { return d.children ? "node" : "leaf node"; })
+        .attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+        node.append("title")
+            .text(function(d) { 
+                //console.log(d);
+                var info = getNombres(d);
+                return `${info.name}\n${info.parent}`; 
+            });
+
+        node.append("circle")
+            .attr("r", function(d) { 
+                return d.r;
+            })
+            .on("click", function(d) {
+                console.clear();
+                console.log(d);
+                Editor.sintactico2.value   = jsDump.parse( d.data );
+            })
+            ;
+
+        node.filter(function(d) { return !d.children; }).append("text")
+        .attr("dy", "0.3em")
+        .text(function(d) { 
+                var info = getNombres(d);
+                return info.name;
+            });
+
+}
 
 
 

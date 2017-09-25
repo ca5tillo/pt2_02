@@ -2,7 +2,7 @@
 class Libreria extends Element{
 	constructor(instruccion){
 		super();
-		let name                    = `${instruccion.name}`;
+		let name                    = `${instruccion.name.identifier}`;
 
 		this._idPadre               = R01.lstElements.id;
 		this._idContenedor          = R01.lstElements.id;
