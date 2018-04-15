@@ -225,6 +225,7 @@ class EditorDeTexto{
     }
     markText_InstuccionSiguiente(position){
         var tester;
+        /*
         console.log(
             tester=this.Editor.getLineHandle(2)
             );
@@ -240,6 +241,7 @@ class EditorDeTexto{
             position.end.column-position.end.offset,
             position.end.offset-position.end.column);
         console.log(position);
+        //*/
 
         let tem = this.Editor.markText(
                                         {line: position.start.line-1, ch: 4}, 
@@ -287,7 +289,7 @@ function crearEditorJava(){
 
     //var docOld = Editor.java.Editor.swapDoc(nuevo);
 
-    //var nuevo = Editor.java.Editor.swapDoc(docOld);
+    //var nuevo  = Editor.java.Editor.swapDoc(docOld);
 
     //console.log(Editor.java.Editor.getDoc());
 

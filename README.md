@@ -7,11 +7,45 @@ D3.js          Version 5.0.0
 DAT.GUI        Version 2.0 
 font-awesome   Version 4.6.3
 Three-js       Version 0.91.0
+tween.js       Version 17.2.0
 
 
 
 
 JavaParser.js fue generado por PEG.js 0.10.0.  en  http://pegjs.org/   con la gramatica design/javaparser/java.1.7.pegjs 
-
+Se definio como Parser variable: "JavaParser.parse"
 https://github.com/mazko/jsjavaparser
 https://github.com/mazko/jsjavaparser/blob/master/src/Java.1.7.pegjs
+https://pegjs.org/documentation#installation
+
+
+
+
+
+
+
+
+
+
+
+//http://jsfiddle.net/Ka7P2/732/
+
+
+
+1° se carga el panel de controles
+2° se cargan las utilerias de three.js como las imagenes
+3° se carga el editor de texto
+
+
+
+      rest:GenericMethodOrConstructorRest              // Generic Method or Constructor
+    { 
+      return mergeProps(rest, {
+        node           : 'MethodDeclaration',
+        typeParameters : params,
+        location       : location(),
+      });
+    }
+    / type:Type id:Identifier 
+
+    pegjs -O speed -e JavaParser --format globals -o JavaParser.js My_java.1.7.pegjs

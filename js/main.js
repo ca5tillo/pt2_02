@@ -46,7 +46,7 @@ var Main = {
 
         AS.run();
     },
-    precompilacion         : function(){
+    animacion_de_entrada         : function(){
         //<<#9>>
         
         let _run = function (){
@@ -79,23 +79,25 @@ var Main = {
             .start(); 
     },
     preparar               : function(){//BTN
+        //https://github.com/pegjs/pegjs/blob/master/CHANGELOG.md
+        //https://github.com/pegjs/pegjs/commit/4f7145e360b274807a483ebdcef4bea5ed460464
+            
         let objMain = null;
         this.analizarCodigoFuente();
+        //si no existe error sintactico y existe la funcion main
         if(
             ! AS.err 
             && (  objMain = AS.find(function(attr, obj){return (obj[attr] == "MethodDeclaration" && obj.name.identifier == "main");})  )
         ){
+            console.log(objMain);
             this.ejecutado            = true;
             Editor.sintactico.value   = jsDump.parse( AS.node );
             createdendrograma();
 
             this.nextInstruccion = { value: objMain, done: true, nodo: null }; 
-            console.log(objMain);
             this._marcarLinea_2(objMain); 
 
-            console.log(this.nextInstruccion);
-
-            this.precompilacion();
+            this.animacion_de_entrada();
             Editor.java.enableReadOnly();
             MyThreeJS.enableCameraControl();
         }else{
@@ -103,20 +105,6 @@ var Main = {
             else         Editor.java.markError(0,0,AS.node);
         } 
         return  objMain?true:false;
-    },
-    prepararO               : function(){//BTN
-        try{
-            //https://github.com/pegjs/pegjs/blob/master/CHANGELOG.md
-            //https://github.com/pegjs/pegjs/commit/4f7145e360b274807a483ebdcef4bea5ed460464
-            Main.arbol_sintactico     = JavaParser.parse(Editor.java.value); 
-            Editor.sintactico.value   = jsDump.parse( Main.arbol_sintactico );
-            
-        }catch(err){
-            console.log(buildErrorMessage(err));
-            Main.arbol_sintactico = null;
-        }
-        //console.log(Main.arbol_sintactico);
-        createdendrograma();
     },
     animacionFluida        : function(){// BTN
         this.esAnimacionFluida = true;
@@ -149,9 +137,6 @@ var Main = {
             this.marktext();                        
         }
 
-        pintarArbolDeLlamadas();
-        pintarArbol("representacionarreglo1", R01._lstIDsMetodos, ["id","descripcion"]);
-        pintarArbol("representacionarreglo2", this.lstPasos, ["id","descripcion"]);  
     },    
     reiniciar              : function(){// BTN
         R01.reset();
@@ -166,9 +151,6 @@ var Main = {
         MyThreeJS.resetCameraControl();
 
         document.getElementById("representacion_arbolSintactico").innerHTML="";
-        document.getElementById("representacion_arbolDeLlamadas").innerHTML="";//pintarArbolDeLlamadas();
-        document.getElementById("representacionarreglo1").innerHTML="";//pintarArbol("representacionarreglo1", lstIDsMetodos, ["id","descripcion"]);
-        document.getElementById("representacionarreglo2").innerHTML="";//pintarArbol("representacionarreglo2", Main.lstPasos, ["id","descripcion"]);
     },
     TriggerNextStep        : function(){
         if(! Main.errorEnEjecucion){
@@ -578,9 +560,6 @@ var Main = {
 
 
 function init(){
-    
-
-    
     Controles.setupControles();
 
     R01_utileria.load();
@@ -595,7 +574,7 @@ function load(){
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
         crearEditorJava();
-        crearEditorAnSintactico();
+        crearEditorAnSintactico(); // ventanas flotantes 
         crearEditorAnSintactico2();
 
         MyThreeJS.init();
@@ -603,8 +582,9 @@ function load(){
         setup_EEDOCDG();
 
         render();
-
-        cancelAnimationFrame(_id);
+        
+        // finalizara este ciclo cuando todo este cargado R01_utileria.allLoaded();
+        cancelAnimationFrame(_id); 
     }
 }
 
@@ -737,119 +717,3 @@ function createdendrograma(){
             });
 
 }
-
-
-
-
-
-
-
-
-
-function pintarArbolDeLlamadas(){
-    _createLista = function (nodo){
-        let texto = document.createTextNode(`[${nodo.id},${nodo.idPadre},${nodo.idContenedor},${nodo.idAS || ""}]  ${nodo.name}`); 
-        let li    = document.createElement("li");      
-        li.setAttribute("data-value", `${nodo.id}`); 
-        li.appendChild(texto);  
-        if(nodo.children.length > 0){
-            let ul = document.createElement("ul"); 
-            li.appendChild(ul);                          
-            for(let i of nodo.children){
-                ul.appendChild(_createLista(i));  
-            }
-        } 
-        return li;
-    }
-    if(R01.lstElements){
-        let ul    = document.createElement("ul"); 
-        ul.setAttribute("id", "arbol"); 
-        ul.appendChild(_createLista(R01.lstElements)); 
-        ul.addEventListener("change", info_elemento3D);  
-
-        document.getElementById("representacion_arbolDeLlamadas").innerHTML="";
-        document.getElementById("representacion_arbolDeLlamadas").appendChild(ul);  
-
-        $('#representacion_arbolDeLlamadas ul#arbol').bonsai({
-            expandAll: true,
-            createInputs: "radio"
-        });
-
-    }
-}
-function info_elemento3D(ev) {
-    let id = ev.target.value;
-    let element = R01.lstElements.getChildrenById(id);
-    console.clear();
-    console.log(element)
-}
-function pintarArbol(destino, arbol, items){
-    
-    let _createText  = function (nodo,items){
-        let t    = "";
-        for (let i of items){if(nodo[i]) t += nodo[i]+" ";}
-        return t;
-    }
-    let _createLista = function (nodo){
-        let texto = document.createTextNode(_createText(nodo,items)); 
-        let li    = document.createElement("li");        
-        li.setAttribute("data-value", `${nodo.id}`); 
-        li.appendChild(texto);  
-        if(nodo.children.length > 0){
-            let ul = document.createElement("ul"); 
-            li.appendChild(ul);                          
-            for(let i of nodo.children){
-                ul.appendChild(_createLista(i));  
-            }
-        } 
-        return li;
-    }
-    if(arbol){
-        let ul    = document.createElement("ul"); 
-        ul.setAttribute("id", "arbol"); 
-        ul.setAttribute("data-name", destino);  
-        ul.appendChild(_createLista(arbol));   
-        if("representacionarreglo2" == destino){            
-            ul.addEventListener("change", infoMainPasos);
-        }else if("representacionarreglo1"){
-            ul.addEventListener("change", info_elemento3D);
-        }
-        //ul.addEventListener("change", as_infoNodo);
-
-        document.getElementById(destino).innerHTML="";
-        document.getElementById(destino).appendChild(ul);  
-
-        $('#'+destino+' ul#arbol').bonsai({
-            expandAll: true,
-            createInputs: "radio"
-        });
-
-    }
-}
-
-function infoMainPasos(ev) {
-    let id = ev.target.value;
-    let element = helperGetById([Main.lstPasos],id);
-    console.clear();
-    console.log(element)
-}
-
-function helperGetById(lista,id){
-    // http://jsfiddle.net/dystroy/MDsyr/
-    // Retorna la primera coincidencia
-    let getSubMenuItem = function (subMenuItems, id) {
-        if (subMenuItems) {
-            for (let i = 0; i < subMenuItems.length; i++) {
-                if (subMenuItems[i].id == id) {
-                    return subMenuItems[i];
-                };
-                let found = getSubMenuItem(subMenuItems[i].children, id);
-                if (found) return found;
-            
-            }
-        }
-    };
-    let searchedItem = getSubMenuItem(lista, id) || null;
-    return searchedItem;
-}
-

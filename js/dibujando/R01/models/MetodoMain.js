@@ -90,7 +90,6 @@ class MetodoMain extends Element{
 	        padre.children.splice(index, 1);
 
 
-	        pintarArbolDeLlamadas();
 	         if(Main.lstPasos.children.length == 0 && Main.ejecutado ){//si el programa termino 
 	         	Controles.activar__botones()
 		        Controles.funcion.Reiniciar();

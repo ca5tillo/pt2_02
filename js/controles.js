@@ -9,12 +9,14 @@ var Controles = {
         reiniciar    :{ isEnabled:false, btn:null },
         velocidad    :{ isEnabled:false, btn:null },
         npasos       :{ isEnabled:false, btn:null },
-        fullScreen   :{ isEnabled:false, btn:null },
+        
+        tema         :{ isEnabled:false, btn:null },
         opacidad     :{ isEnabled:false, btn:null },
+        fullScreen   :{ isEnabled:false, btn:null },
         l1           :{ isEnabled:false, btn:null },//linea actual
         l2           :{ isEnabled:false, btn:null },
-        ejemplos     :{ isEnabled:false, eje: []  },
-        tema         :{ isEnabled:false, btn:null },
+        
+        det_as       :{ isEnabled:false, btn:null },
     },
     _activar              : function(key){
         Controles._botones[key].isEnabled  = true;
@@ -23,18 +25,6 @@ var Controles = {
     _desactivar           : function(key){
         Controles._botones[key].isEnabled  = false;
         Controles._botones[key].btn.__li.setAttribute("style", "border-left: 3px solid red;"); 
-    },
-    _activar_Ejemplos     : function(){
-        this._botones.ejemplos.isEnabled = true;
-        for(let i of this._botones.ejemplos.eje){
-            i.__li.setAttribute("style", "border-left: 3px solid #1ed36f;"); 
-        }
-    },
-    _desactivar_Ejemplos  : function(){
-        this._botones.ejemplos.isEnabled = false;
-        for(let i of this._botones.ejemplos.eje){
-            i.__li.setAttribute("style", "border-left: 3px solid red;"); 
-        }
     },
     _teclado              : function(){
         $(document).keydown(function (tecla) {
@@ -74,7 +64,6 @@ var Controles = {
         Controles._activar("pasoApaso");
         Controles._activar("reiniciar");
 
-        Controles._activar_Ejemplos();
 
         if(this.gui.closed){
             $(".close-button").css({"background-color": "#000", "color": "#eee"}); 
@@ -85,7 +74,6 @@ var Controles = {
         Controles._desactivar("animar");
         Controles._desactivar("reiniciar");
 
-        Controles._desactivar_Ejemplos();
 
         if(this.gui.closed){
             $(".close-button").css({"background-color": "red", "color": "#000"}); 
@@ -119,6 +107,11 @@ var Controles = {
                 if(Main.preparar()){
                     Controles.funcion.Pasos  = 0;
                     Controles._desactivar("preparar");
+                    /*
+                     * Despues de presionar prepara 
+                     * los demas botones se activan al finalizar la animacion
+                     * Main.animacion_de_entrada();
+                     */
                 }
             }
         },
@@ -149,7 +142,6 @@ var Controles = {
                 Controles._desactivar("pausa");
                 Controles._activar("preparar");
                 $(".close-button").css({"background-color": "#000", "color": "#eee"}); 
-                Controles._activar_Ejemplos();
 
                 
 
@@ -206,6 +198,8 @@ var Controles = {
                 }
             },
         },
+        
+        'Arbol Sintactico': false,
     },
 };
 Controles.setupControles = function (){
@@ -219,7 +213,8 @@ Controles.setupControles = function (){
     let _Botones             = this._botones;
     let _f1                  = this.gui.addFolder('Animacion');
     let _f2                  = this.gui.addFolder('Editor');
-    let _f4                  = this.gui.addFolder('Detalles');
+    let _f3                  = this.gui.addFolder('Detalles');
+    //let _f4                  = this.gui.addFolder('Detalles');
 
     _Botones.preparar.btn    = _f1.add(this.funcion, 'Preparar');
     _Botones.animar.btn      = _f1.add(this.funcion, 'Animar');
@@ -236,10 +231,24 @@ Controles.setupControles = function (){
                                _f2.add(this.funcion, 'Autocompletar');
     _Botones.l1.btn          = _f2.add(this.funcion, 'Linea Actual');
     _Botones.l2.btn          = _f2.add(this.funcion, 'Linea Siguiente');
-
-
-    this._activar("preparar"); // todos los botones inician en rojo por defecto,lo cambio a verde 
-
+    
+    _Botones.det_as.btn      = _f3.add(this.funcion, 'Arbol Sintactico');
+    
+    /*
+     * Todos los botones inician en rojo por defecto de dat.gui 
+     * y desactibado ya que tienen su propiedad en false (preparar:{ isEnabled:false, btn:null })
+     * Asi que el boton "preparar", esto es cambiar su color y su propiedad.
+     */
+    this._activar("preparar");
+    
+    
+    
+/*  Eventos  */
+    
+    /*
+     * Evento que se dispara al seleccionar un Tema
+     * Se establece el tema y la opacidad del editor de texto
+     */
     _Botones.tema.btn.onFinishChange       (function(value) { // Tema
         Editor.java.theme = value;
         Editor.java.setOpacity(Controles.funcion.Opacidad);
@@ -256,29 +265,20 @@ Controles.setupControles = function (){
         Editor.java.setOpacity(value);
     });
 
-/*
+    /*
     _Botones.l1.btn.onFinishChange         (function(value) {
         Main.marktext();
     });
     _Botones.l2.btn.onFinishChange         (function(value) {
         Main.marktext();
     });
-//*/
     
-    /*
-    if(this.funcion.Panel){
-        $('#detalles').css({'visibility': 'visible', 'height': '250px'});
-    }
-
-    _f4.add(this.funcion,'Panel').onFinishChange(function(v){
-        helper_detalles();
-
-
-        v ? $('#detalles').css({'visibility': 'visible', 'height': '250px'}):
-        $('#detalles').css('visibility', 'hidden');
-    });
     //*/
-
+    
+    _Botones.det_as.btn.onFinishChange (function(value) { // 
+        value ? $('.cuadro').css('visibility', 'visible'):
+        $('.cuadro').css('visibility', 'hidden');
+    });
     
 
     _f1.open();

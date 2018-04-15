@@ -43,15 +43,20 @@
 
 <<#4>>
 	Evento inputRead que se desencadena con nuevas entradas 
-	Cada que se escribe algo en el editor se desencadena este evento y si se cumplen las condiciones se mostrara un menú con palabras para auto completar el texto que se está escribiendo. 
+	Cada que se escribe algo en el editor se desencadena este evento y si se cumplen las 
+    condiciones se mostrara un menú con palabras para auto completar el texto 
+    que se está escribiendo. 
 
 <<#5>>
-	Se le coloca style="display: none;", para que no sea visible el text area antes de cargar el codemirror 
+	Se le coloca style="display: none;", para que no sea visible el text area 
+    antes de cargar el codemirror 
 
 <<#6>>
 	Main.ejecutado = true or false;
-	Se utiliza en el helper que desactiva el orbit control cuando el maus esta sobre el panel de controles
-	Tambien se usa en "dibujando\R01\models\MetodoMain.js" para saber si la animaccion llego a su fin.
+	Se utiliza en el helper que desactiva el orbit control cuando el maus esta sobre el panel 
+    de controles.
+	Tambien se usa en "dibujando\R01\models\MetodoMain.js" para saber si la animaccion 
+    llego a su fin.
 
 <<#7>>
 	mousedown

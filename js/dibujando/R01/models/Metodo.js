@@ -118,7 +118,6 @@ class Metodo extends Element{
 	        padre.children.splice(index, 1);
 
 
-	        pintarArbolDeLlamadas();
 
 	  
             Main.TriggerNextStep();

@@ -154,7 +154,6 @@ class CFor extends Element{
 
             R01._popAncestro_2();
 
-	        pintarArbolDeLlamadas();
 
 	  		
             Main.TriggerNextStep();
