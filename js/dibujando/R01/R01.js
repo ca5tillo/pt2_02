@@ -108,8 +108,11 @@ var R01 = {
         element.in(minum,numLibs);
     },
     llamarMetodoMain       : function(declaracion){
-        let padre     = this.getElementLibByName(declaracion.padre.name);
-        let element   = new MetodoMain(declaracion);
+        let padre_as        = AS.find(function(attr, obj){return (attr == 'my_id' && obj[attr] == declaracion.my_idParent);}) 
+        let padre_as_nombre = padre_as.name.identifier;
+
+        let padre     = this.getElementLibByName(padre_as_nombre);
+        let element   = new MetodoMain(padre_as, declaracion);
         this._addAncestro_1(element,"MetodoMain");
 
         padre.add(element);

@@ -34,6 +34,10 @@ var AS = {
     },
     find              : function(condicion, obj = this.node){
         //<<#10>>
+        /*
+         * Busqueda Recursiva dentro de un arbol de objetos
+         * Retorna el primer elemento que coincida con la condicion 
+         */
         for( let attr in obj ){
             if( condicion(attr, obj) ) return obj;
             if(typeof obj[attr] === 'object'){
@@ -44,6 +48,10 @@ var AS = {
         return null;
     },
     filter            : function(condicion, obj = this.node){
+        /*
+         * Busqueda Recursiva dentro de un arbol de objetos
+         * Retorna un Arraeglo con los elementos que cumplen la condicion
+         */
         let _find = function(condicion, obj){
             for( let attr in obj ){
                 if( condicion(attr, obj) )

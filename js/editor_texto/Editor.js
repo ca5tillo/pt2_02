@@ -244,8 +244,8 @@ class EditorDeTexto{
         //*/
 
         let tem = this.Editor.markText(
-                                        {line: position.start.line-1, ch: 4}, 
-                                        {line: position.end.line-1, ch: 0}, 
+                                        {line: position.start.line-1, ch: position.start.column-1}, 
+                                        {line: position.end.line-1, ch: position.end.column-1}, 
                                         {className: "EditorTooltipMarcatexto siguiente_instruccion",
                                          css:"background: #ffa2ab; color: #000; ",
                                          title:"Se ejecutara en el siguiente paso.",
@@ -257,8 +257,8 @@ class EditorDeTexto{
     markText_InstuccionActual(position){
 
         let tem = this.Editor.markText(
-                                        {line: position.y1, ch: position.x1}, 
-                                        {line: position.y2, ch: position.x2},  
+                                        {line: position.start.line-1, ch: position.start.column-1}, 
+                                        {line: position.start.line-1, ch: 90},  
                                         {className: "EditorTooltipMarcatexto",
                                          css:"background: orange; color: #000; ",
                                          title:"Instruccion ejecutada.",

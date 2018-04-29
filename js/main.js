@@ -34,7 +34,7 @@ var Main = {
         this.llamadas            = []; 
     },
     marktext               : function(){
-        javaEditor_markText_Clean();
+        Editor.java.cleanMarksTexts();
         if(this.actualInstruccion)
             this._marcarLinea_1(this.actualInstruccion.value);
         if(this.nextInstruccion)
@@ -88,13 +88,19 @@ var Main = {
         if(
             ! AS.err 
             && (  objMain = AS.find(function(attr, obj){return (obj[attr] == "MethodDeclaration" && obj.name.identifier == "main");})  )
+            //&& (  objMain = AS.find(function(attr, obj){return (obj[attr] == "Block");})  )
         ){
-            console.log(objMain);
+            /*
+                MethodDeclaration
+                    body{node:Block}
+                        VariableDeclarationStatement
+                            VariableDeclarationFragment
+            */
             this.ejecutado            = true;
             Editor.sintactico.value   = jsDump.parse( AS.node );
             createdendrograma();
 
-            this.nextInstruccion = { value: objMain, done: true, nodo: null }; 
+            this.nextInstruccion = { value: objMain, done: true, nodo: null }; // La estructura es una simulacion de la que devuelve el generador
             this._marcarLinea_2(objMain); 
 
             this.animacion_de_entrada();
@@ -200,8 +206,12 @@ var Main = {
     _marcarLinea_1         : function(i){
         // Marcara line ejecutada
         if(Controles.funcion['Linea Actual']){
-
-            
+            if(i.location){
+                Editor.java.markText_InstuccionActual(i.location); 
+            }else{
+                console.log("El Elemento enviado no tiene datos de posision.")
+            }
+            /*
             if(i.reglaP == "metodo" && i.name == "main"){
                 javaEditor_markText_InstuccionActual(i.position.regla); 
             }
@@ -257,17 +267,25 @@ var Main = {
             else{
                 javaEditor_markText_InstuccionActual(i.position.regla); 
             }
+            //*/
 
         }
     },
     _marcarLinea_2         : function(i){
         // Marcara la siguiente linea a ejecutar
         if(Controles.funcion['Linea Siguiente']){
+            if(i.location){
+                Editor.java.markText_InstuccionSiguiente(i.location); 
+            }else{
+                console.log("El Elemento enviado no tiene datos de posision.")
+            }
+
+            /*
+
             if(i.node == "MethodDeclaration" ){
                 Editor.java.markText_InstuccionSiguiente(i.location); 
             }
 
-            /*
             if(i.reglaP == "metodo" && i.name == "main"){
                 javaEditor_markText_InstuccionSiguiente(i.position.bloque); 
             }
@@ -310,192 +328,19 @@ var Main = {
                 javaEditor_markText_InstuccionSiguiente(parametro.position.regla); 
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
             }
-            //*/
             else{
                 javaEditor_markText_InstuccionSiguiente(i.position.regla); 
             } 
+            //*/
         }
     },
     dibujar                : function(generador){
-        let O_o = generador.value.reglaP;
-        let instruccion = generador.value;
+        let declaracion = generador.value;
        
-        if( (O_o) == "metodo" && instruccion.name == "main"){                        
-            let id           = R01.llamarMetodoMain(instruccion);
-            this._addlstPasos_Level_1(instruccion);
-        }
-        else if( (O_o) == "finDeGenerador"  ){
-
-            R01.MethodOut();
-        }
-        else if( (O_o) == "variable"        ){
-            /*  Para Representar :
-                int     a;
-                String  cadena = "texto";
-            */
-            R01.crearVariable(instruccion);
-        }
-        else if( (O_o) == "asignacion_01"      ){
-            /* i++;*/
-            R01.asignacion_01(instruccion);  
-        } 
-        else if( (O_o) == "asignacion_02"      ){
-            /* i--;*/
-            R01.asignacion_02(instruccion);  
-        } 
-        else if( (O_o) == "asignacion_03"      ){
-            /* a = b; */
-            R01.asignacion_03(instruccion);    
-        } 
-        else if( (O_o) == "asignacion_04"      ){
-            /* a = 3; a = "texto"; a = true; */
-            R01.asignacion_04(instruccion);  
-        }   
-        else if( (O_o) == "asignacion_05"      ){
-            /*   i = 5+9; i = a + b;   */
-            R01.asignacion_05(instruccion);  
-        }     
-        else if( (O_o) == "asignacion_07"      ){
-            /*  b = a.length; */
-            R01.asignacion_07(instruccion);  
-        }      
-        else if( (O_o) == "asignacion_08"      ){
-            /*  b = a[.*]; */
-            R01.asignacion_08(instruccion);  
-        }     
-        else if( (O_o) == "asignacion_09"      ){
-            /*  b[.*] = a[.*]; */
-            R01.asignacion_09(instruccion);  
-        } 
-        else if( (O_o) == "asignacion_10"      ){
-            /*  b[.*] = a; */
-            R01.asignacion_10(instruccion);  
-        }     
-        else if( (O_o) == "arreglo"         ){
-
-            R01.crearArreglo(instruccion);  
-        }
-        else if( (O_o) == "llamada"         ){
-            /*  Para Representar :
-                int e = pasoParametros(a, b, "envio");
-                    e = pasoParametros(a, e, "texto");
-                    metodo();
-            */
-            if(instruccion.destinoCreate){// Para int e = pasoParametros(a, b, "envio");
-                R01.crearVariable_2({
-                    lineaInicial:instruccion.lineaInicial, 
-                    type:instruccion.type,
-                    name:instruccion.destinoName,
-                    value: "?",
-                });  
-            }
-
-            let destino     = instruccion.destinoName;
-            let declaracion = as_GetFunctionByName(instruccion.name);
-            let id          = R01.llamarMetodo(instruccion, declaracion, destino);
-
-            // Add Pasos para ejecutar el contenido  de la declaracion del metodo
+        if( (generador.value.node) == "MethodDeclaration" && (generador.value.name.identifier) == "main"){                        
+            let id           = R01.llamarMetodoMain(declaracion);
             this._addlstPasos_Level_1(declaracion);
-
-            // Add Pasos al generador para la creacion de los argumentos
-            if(instruccion.argumentos.length > 0 ){
-                this._addlstPasos_Level_2(instruccion, instruccion.argumentos,"argumentos",false);
-            }
         }
-        else if( (O_o) == "finGenerador2_llamada"){
-            
-            Controles.activar__botones();
-        }
-        else if( (O_o) == "argumento"       ){
-
-            R01.crearParametros(instruccion, as_GetFunctionByName(instruccion.namePadre).parametros); 
-        }
-        
-        else if( (O_o) == "return_variable" ){    
-
-            R01.returnVariable(instruccion);
-        }
-        else if( (O_o) == "return_num" ){    
-
-            R01.returnNum(instruccion);
-        }
-        else if( (O_o) == "Condicional_if"         ){   
-            
-            let resultado = R01.drawIF(instruccion);
-            if(resultado){                
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_if");
-            }
-
-                /*
-            if(this.esAnimacionFluida){
-                    se vielve infinita por crear multipes instancias 
-                    se puede llamar a un siguiente paso desde una animacion ya q 
-                    la animagion se ejecuta en otro hilo 
-                //Main.pasoApaso();//se vielve infinita por crear multipes instancias 
-            }  
-                */
-        }
-        else if( (O_o) == "finGenerador2_Condicional_if"){
-            
-            R01.ifOut();
-        }
-        else if( (O_o) == "Condicional_else"         ){    
-            // Aqui No valido si se ejecuto el if este se valida en la funcion paso a paso 
-            // si existe el " finGenerador2_Condicional_if " significa que se evaluo en TRUE
-            // y se brincara la instruccion q contenfa el else 
-            this._addlstPasos_Level_2(instruccion, instruccion.hijos,"Condicional_else");
-            R01.viewElse(instruccion);
-        }
-        else if( (O_o) == "finGenerador2_Condicional_else"){
-
-            R01.elseOut();
-        }
-        else if( (O_o) == "RE_FOR_0"){
-            R01.for(instruccion);
-            let hijos = instruccion.hijos.concat([]);
-                hijos.unshift(instruccion.reglas[1]);
-                hijos.unshift(instruccion.reglas[0]);
-                hijos.push(instruccion.reglas[2]);
-
-            this._addlstPasos_Level_2(instruccion, hijos,"for",true);
-        } 
-        else if( (O_o) == "FOR_R1"){
-        
-            R01.for_r1(instruccion);
-        }
-        else if( (O_o) == "finGenerador2_RE_FOR_0"){
-            instruccion.reglaP = "RE_FOR_0";
-            R01.forend(instruccion);
-            if(generador.nodo.value === true){
-                generador.nodo.pasos.shift();
-                
-            }
-
-            this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"for",false);
-        }
-        else if( (O_o) == "while"         ){   
-            R01.whileIn(instruccion);
-            let hijos = instruccion.hijos.concat([]);
-                hijos.unshift(instruccion.condicionales);
-
-            this._addlstPasos_Level_2(instruccion, hijos,"while");
-           
-        }
-        else if( (O_o) == "while_R"         ){   
-           
-
-            let resultado = R01.while_eval(instruccion);
-            if(resultado){                
-                this._addlstPasos_Level_2(instruccion, instruccion.hijos,"while");
-            }
-        }
-        else if( (O_o) == "finGenerador2_while"){
-            instruccion.reglaP = "while";
-            R01.whileOut(instruccion);
-        
-            this._addlstPasos_Level_2(instruccion, generador.nodo.pasos,"while");
-        }
-        
 
 
         else{        

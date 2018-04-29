@@ -48,4 +48,6 @@ https://pegjs.org/documentation#installation
     }
     / type:Type id:Identifier 
 
+
+    cd C:\Users\MG\Documents\GitHub\pt2_02\lib\javaparser
     pegjs -O speed -e JavaParser --format globals -o JavaParser.js My_java.1.7.pegjs

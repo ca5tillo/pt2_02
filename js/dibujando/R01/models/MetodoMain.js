@@ -1,9 +1,9 @@
 class MetodoMain extends Element{
-	constructor(declaracion){
+	constructor(padre_as, declaracion){
 		super();	
-        this._idPadre               =  R01.getElementLibByName(declaracion.padre.name).id;
-		this._idContenedor          =  R01.getElementLibByName(declaracion.padre.name).id;
-		this._name                  = `${declaracion.name}`;			
+        this._idPadre               =  R01.getElementLibByName(padre_as.name.identifier).id;
+		this._idContenedor          =  R01.getElementLibByName(padre_as.name.identifier).id;
+		this._name                  = `${declaracion.name.identifier}`;			
 	}
 	_setcube(){
 
