@@ -271,8 +271,10 @@ class EditorDeTexto{
 }
 
 function crearEditorJava(){
+    let codigoFuente         = getCodigoFuente();
     Editor.java              = new EditorDeTexto("javaEditor");
-    Editor.java.value        = ejemploDeCodigo_09;
+    //Editor.java.value        = ejemploDeCodigo_09;
+    Editor.java.value        = codigoFuente;
     Editor.java.theme        = Controles.funcion.Tema;
     Editor.java.changeFullScreen(Controles.funcion.FullScreen);
     Editor.java.addHintWords();

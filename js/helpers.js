@@ -40,3 +40,38 @@ function setup_EventosMouse(){  /*  <<#7>>  */  /* Desactivar OrbilControl de TH
 
 }
 
+function getQueryVariable(variable) {
+    //https://css-tricks.com/snippets/javascript/get-url-variables/
+   var query = window.location.search.substring(1);
+   var vars = query.split("&");
+   for (var i=0;i<vars.length;i++) {
+           var pair = vars[i].split("=");
+           if(pair[0] == variable){return pair[1];}
+   }
+   return(false);
+}
+function getCodigoFuente(){
+    //Trae el codigo fuente de la Base de Datos
+    //Esta funcion es usada en editor_texto/Editor.js
+    var xhttp;    
+    var codigo_fuente = "";
+    var id            = getQueryVariable('n');
+    console.log(id);
+    if(id != false){
+        
+        xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                codigo_fuente = this.responseText;
+            }
+        };
+        // En controlador se encuentra fuera de este proyecto
+        // Se encuentra en la parte de la pagina web que administra a los usuarios
+        xhttp.open("GET", "../controladores/getcodigofuente.php?id="+id, false);
+        xhttp.send();
+        //https://developer.mozilla.org/en-US/docs/Web/API/WindowBase64/Base64_encoding_and_decoding
+        //ejemploDeCodigo_09 = btoa(ejemploDeCodigo_09); // cifrar
+        codigo_fuente = atob(codigo_fuente);   //decifrar 
+    }
+    return codigo_fuente;
+}
