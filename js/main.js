@@ -13,6 +13,12 @@
 window.addEventListener('load', init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
+var Usuario = {
+    'logueado'             : false,
+    'id_proyecto'          : 0,
+    'user_name'            : "",
+    'permiso_edicion'      : false
+};
 var Main = {
     'ejecutado'            : false, // <<#6>>
     'mousedown'            : false, // <<#7>>  // usada en setup_EventosMouse();
@@ -406,6 +412,7 @@ var Main = {
 
 function init(){
     Controles.setupControles();
+    getDatosDelUsuario();
 
     R01_utileria.load();
     load();    

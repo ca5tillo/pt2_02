@@ -1,6 +1,9 @@
 
 var Controles = { 
     gui                   : null,
+    folders : {
+        Animacion:null,Editor:null,Archivo:null,Detalles:null,
+    },
     _botones              : {
         preparar     :{ isEnabled:false, btn:null },
         animar       :{ isEnabled:false, btn:null },
@@ -15,6 +18,8 @@ var Controles = {
         fullScreen   :{ isEnabled:false, btn:null },
         l1           :{ isEnabled:false, btn:null },//linea actual
         l2           :{ isEnabled:false, btn:null },
+        
+        guardarArchivo:{ isEnabled:false, btn:null },
         
         det_as       :{ isEnabled:false, btn:null },
     },
@@ -198,6 +203,18 @@ var Controles = {
                 }
             },
         },
+
+        'Guardar archivo' : function (){
+            setCodigoFuente();
+
+        },
+        Salir : function (){
+            if(Usuario.logueado){
+                window.location="../proyectos.php?u="+Usuario.user_name;
+            }else{
+                window.location="../proyectos.php";
+            }
+        },
         
         'Arbol Sintactico': false,
     },
@@ -211,10 +228,17 @@ Controles.setupControles = function (){
 
     /***************************************************************************************************/
     let _Botones             = this._botones;
-    let _f1                  = this.gui.addFolder('Animacion');
-    let _f2                  = this.gui.addFolder('Editor');
-    let _f3                  = this.gui.addFolder('Detalles');
-    //let _f4                  = this.gui.addFolder('Detalles');
+    
+    this.folders.Animacion   = this.gui.addFolder('Animacion');
+    this.folders.Editor      = this.gui.addFolder('Editor');
+    this.folders.Archivo     = this.gui.addFolder('Archivo');
+    this.folders.Detalles    = this.gui.addFolder('Detalles');
+    
+    let _f1                  = this.folders.Animacion;
+    let _f2                  = this.folders.Editor;
+    let _f3                  = this.folders.Archivo;
+    let _f4                  = this.folders.Detalles;
+                     
 
     _Botones.preparar.btn    = _f1.add(this.funcion, 'Preparar');
     _Botones.animar.btn      = _f1.add(this.funcion, 'Animar');
@@ -232,7 +256,15 @@ Controles.setupControles = function (){
     _Botones.l1.btn          = _f2.add(this.funcion, 'Linea Actual');
     _Botones.l2.btn          = _f2.add(this.funcion, 'Linea Siguiente');
     
-    _Botones.det_as.btn      = _f3.add(this.funcion, 'Arbol Sintactico');
+    /*
+    if(  Usuario.logueado){
+        Botones.guardarArchivo.btn    = _f3.add(this.funcion, 'Guardar archivo');
+    }
+    //*/
+    _f3.add(this.funcion, 'Salir');
+
+
+    _Botones.det_as.btn      = _f4.add(this.funcion, 'Arbol Sintactico');
     
     /*
      * Todos los botones inician en rojo por defecto de dat.gui 

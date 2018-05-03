@@ -1,20 +1,14 @@
 var ejemploDeCodigo_01 = 
-`public class Clase{
-    public static void main(String[] args){
-        int[]   edad       = {45, 23, 11, 9};
-        double[ ] estatura = {1.73, 1.67, 1.56}; //Array de 3 elementos
-        String[ ] nombre   = {"María", "Gerson"};   //Array de 2 elementos
-        int     a;
-        String  cadena = "texto";
-        int     b      = 10;
-        boolean c      = true;
-
-        a              = 10;
-        cadena         = "nuevo";
-        b              = 0;
-        c              = false;            
-    }
-}`;
+`/**************************************************************\
+ *                            \\|//                           *
+ *                            (O O)                           *
+ *            +----------oOO---------------------+            *
+ *            | Desarrollado por Miguel Castillo |            *
+ *            +-------------------oOO------------+            *
+ *                          |__|__|                           *
+ *                           || ||                            *
+ *                         ooO Ooo                            *
+\**************************************************************/`;
 
 var ejemploDeCodigo_02 =
 `public class MyClass {
