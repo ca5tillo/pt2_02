@@ -19,7 +19,6 @@ var Controles = {
         l1           :{ isEnabled:false, btn:null },//linea actual
         l2           :{ isEnabled:false, btn:null },
         
-        guardarArchivo:{ isEnabled:false, btn:null },
         
         det_as       :{ isEnabled:false, btn:null },
     },
@@ -204,7 +203,7 @@ var Controles = {
             },
         },
 
-        'Guardar archivo' : function (){
+        'Guardar Cambios' : function (){
             setCodigoFuente();
 
         },
@@ -258,7 +257,7 @@ Controles.setupControles = function (){
     
     /*
     if(  Usuario.logueado){
-        Botones.guardarArchivo.btn    = _f3.add(this.funcion, 'Guardar archivo');
+        _f3.add(this.funcion, 'Guardar archivo');
     }
     //*/
     _f3.add(this.funcion, 'Salir');

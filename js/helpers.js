@@ -67,7 +67,7 @@ function getDatosDelUsuario(){
         Usuario.user_name       = datos_usuario.user_name;
         Usuario.permiso_edicion = datos_usuario.permiso_edicion;
         if(Usuario.permiso_edicion){
-            Controles.folders.Archivo.add(Controles.funcion, 'Guardar archivo');
+            Controles.folders.Archivo.add(Controles.funcion, 'Guardar Cambios');
         }
     } else {
         console.error(req.status + " " + req.statusText);
