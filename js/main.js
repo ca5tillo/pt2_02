@@ -15,6 +15,7 @@ window.addEventListener('resize', MyThreeJS.onResize, false);
 
 var ApiInfo = {
     'llamada_terminada'    : false,
+    'existe'               : false,
     'logueado'             : false,
     'id_proyecto'          : 0,
     'user_name'            : "",

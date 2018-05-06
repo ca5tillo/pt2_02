@@ -230,12 +230,10 @@ Controles.setupControles = function (){
     
     this.folders.Animacion   = this.gui.addFolder('Animacion');
     this.folders.Editor      = this.gui.addFolder('Editor');
-    this.folders.Archivo     = this.gui.addFolder('Archivo');
     this.folders.Detalles    = this.gui.addFolder('Detalles');
     
     let _f1                  = this.folders.Animacion;
     let _f2                  = this.folders.Editor;
-    let _f3                  = this.folders.Archivo;
     let _f4                  = this.folders.Detalles;
                      
 
@@ -255,11 +253,15 @@ Controles.setupControles = function (){
     _Botones.l1.btn          = _f2.add(this.funcion, 'Linea Actual');
     _Botones.l2.btn          = _f2.add(this.funcion, 'Linea Siguiente');
     ///*
-    if(  ApiInfo.logueado  ){
-        _f3.add(this.funcion, 'Guardar Cambios');
+    if(  ApiInfo.existe  ){
+        this.folders.Archivo     = this.gui.addFolder('Archivo');
+        let _f3                  = this.folders.Archivo;
+        if(  ApiInfo.logueado  ){
+            _f3.add(this.funcion, 'Guardar Cambios');
+        }
+        _f3.add(this.funcion, 'Salir');
     }
     //*/
-    _f3.add(this.funcion, 'Salir');
 
 
     _Botones.det_as.btn      = _f4.add(this.funcion, 'Arbol Sintactico');

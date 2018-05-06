@@ -71,11 +71,12 @@ function getApiInfo(){
     if (req.status >= 200 && req.status < 400) {
         res = JSON.parse(this.responseText);
         ApiInfo.llamada_terminada = true;
-        ApiInfo.logueado        = res.logueado;
-        ApiInfo.id_proyecto     = res.id_proyecto;
-        ApiInfo.user_name       = res.user_name;
-        ApiInfo.permiso_edicion = res.permiso_edicion;
-
+        ApiInfo.existe            = true;
+        ApiInfo.logueado          = res.logueado;
+        ApiInfo.id_proyecto       = res.id_proyecto;
+        ApiInfo.user_name         = res.user_name;
+        ApiInfo.permiso_edicion   = res.permiso_edicion;
+        
     } else {
         ApiInfo.llamada_terminada = true;
         //console.error(req.status + " " + req.statusText);
