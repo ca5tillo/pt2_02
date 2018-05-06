@@ -13,7 +13,8 @@
 window.addEventListener('load', init);
 window.addEventListener('resize', MyThreeJS.onResize, false);
 
-var Usuario = {
+var ApiInfo = {
+    'llamada_terminada'    : false,
     'logueado'             : false,
     'id_proyecto'          : 0,
     'user_name'            : "",
@@ -411,20 +412,19 @@ var Main = {
 
 
 function init(){
-    Controles.setupControles();
-    getDatosDelUsuario();
-
-    R01_utileria.load();
-    load();    
+    getApiInfo(); // Llamada ascincrona al servidor
+    R01_utileria.load();// Inicia carga de componentes comoimagenes
+    load();    // Se mantiene en espera hasta que esten cargados los componentes
 }
 function load(){
 
 
     let _id = requestAnimationFrame(load);
-    if( R01_utileria.allLoaded() ){ // si ha terminado de cargar todo lo requerido ejecuta y termina este bucle 
+    if( R01_utileria.allLoaded() && ApiInfo.llamada_terminada ){ // si ha terminado de cargar todo lo requerido ejecuta y termina este bucle 
 
         //console.log("Utilerias Cargadas Satisfactoriamente")
 
+        Controles.setupControles();
         crearEditorJava();
         crearEditorAnSintactico(); // ventanas flotantes 
         crearEditorAnSintactico2();
@@ -438,6 +438,7 @@ function load(){
         // finalizara este ciclo cuando todo este cargado R01_utileria.allLoaded();
         cancelAnimationFrame(_id); 
     }
+    console.log(_id);
 }
 
 function render(){   

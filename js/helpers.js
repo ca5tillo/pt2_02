@@ -17,6 +17,15 @@ var Main_generateID      = GenerateID();
 var dibujando_generateID = GenerateID();
 var AS_generateID        = GenerateID();
 
+var routes = {
+    'api-info'           : '../pt/api/info.php',
+    'api-set_codigo'     : '../pt/api/codigoFuente/set.php',
+    'api-get_codigo'     : '../pt/api/codigoFuente/get.php',
+    'api'                : '../pt/index.php',
+    'api-proyectos'      : '../pt/proyectos.php',
+    'api-textruras'      : '../pt/api/texturas/textura.php'
+};
+
 
 function setup_EEDOCDG(){
     // inicializar propiedades 
@@ -43,7 +52,7 @@ function setup_EventosMouse(){  /*  <<#7>>  */  /* Desactivar OrbilControl de TH
 /*
  * Funciones para comunicarse con el servidor
  */
-function getQueryVariable(variable) {
+function _GET(variable) {
     //https://css-tricks.com/snippets/javascript/get-url-variables/
    var query = window.location.search.substring(1);
    var vars = query.split("&");
@@ -53,46 +62,49 @@ function getQueryVariable(variable) {
    }
    return(false);
 }
-function getDatosDelUsuario(){
+function getApiInfo(){
     // https://openclassrooms.com/courses/crea-paginas-webs-interactivas-con-javascript/envia-peticiones-ajax-al-servidor
-    var id  = getQueryVariable('n');
-    
+    var id  = _GET('n');
     var req = new XMLHttpRequest();
-    req.open("GET","../controladores/getDatosDelUsuario.php?id_proyecto="+id, true);
+    req.open("GET",`${routes['api-info']}?id_proyecto=${id}`, true);
     req.addEventListener("load", function() {
     if (req.status >= 200 && req.status < 400) {
-        datos_usuario = JSON.parse(this.responseText);
-        Usuario.logueado        = datos_usuario.logueado;
-        Usuario.id_proyecto     = datos_usuario.id_proyecto;
-        Usuario.user_name       = datos_usuario.user_name;
-        Usuario.permiso_edicion = datos_usuario.permiso_edicion;
-        if(Usuario.permiso_edicion){
-            Controles.folders.Archivo.add(Controles.funcion, 'Guardar Cambios');
-        }
+        res = JSON.parse(this.responseText);
+        ApiInfo.llamada_terminada = true;
+        ApiInfo.logueado        = res.logueado;
+        ApiInfo.id_proyecto     = res.id_proyecto;
+        ApiInfo.user_name       = res.user_name;
+        ApiInfo.permiso_edicion = res.permiso_edicion;
+
     } else {
-        console.error(req.status + " " + req.statusText);
+        ApiInfo.llamada_terminada = true;
+        //console.error(req.status + " " + req.statusText);
     }
     });
     req.addEventListener("error", function(){
-        console.error("Error de red");
+        ApiInfo.llamada_terminada = true;
+        //console.error("Error de red");
     });
     req.send(null);
 }
 function getCodigoFuente(){
-    var id            = getQueryVariable('n');
+    var id            = _GET('n');
+    
     if(id != false){
         var req = new XMLHttpRequest();
-        req.open("GET",  "../controladores/getcodigofuente.php?id="+id, true);
+        req.open("GET", `${routes['api-get_codigo']}?id=${id}`, true);
         req.addEventListener("load", function() {
         if (req.status >= 200 && req.status < 400) {
-            Editor.java.value        = atob(req.responseText);   //decifrar ;
+            codigoFuente = JSON.parse(this.responseText);
+            if(codigoFuente.status){
+                Editor.java.value        = atob(codigoFuente.codigo);   //decifrar ;
+            }
         } else {
-            console.error(req.status + " " + req.statusText);
+            //console.error(req.status + " " + req.statusText);
         }
         });
         req.addEventListener("error", function(){
-            console.error("Error de red");
-            Editor.java.value = ejemploDeCodigo_01;
+            //console.error("Error de red");
         });
         req.send(null);
     }else{
@@ -106,18 +118,17 @@ function setCodigoFuente(){
     var codigo = Editor.java.value;
     codigo = btoa(codigo);// cifrar
 
-
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             alert("El proyecto ha sido guardado.");
         }
     };
-    xhttp.open("POST", "../controladores/guardar_codigofuente.php", true);
+    xhttp.open("POST", routes['api-set_codigo'], true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
 
-    var id_proyecto = Usuario.id_proyecto;
-    xhttp.send("codigo="+codigo+"&&id_proyecto="+id_proyecto+"");
+    var id_proyecto = ApiInfo.id_proyecto;
+    xhttp.send(`id_proyecto=${id_proyecto}&&codigo=${codigo}`);
 
 }

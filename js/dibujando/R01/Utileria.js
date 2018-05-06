@@ -29,15 +29,22 @@ var R01_utileria = {
 	        R01_utileria.font.isLoaded  = true;
 	    });
 	},
-	loadFloor     : function(){
+	loadFloor     : function(bandera = true){
 	    let loader = new THREE.TextureLoader();
-	    loader.load('img/textures/floor_2-1024x1024.png',
+		let url    = bandera ? `${routes['api-textruras']}?id_proyecto=${ApiInfo.id_proyecto}&&textura=floor`:'img/textures/floor_2-1024x1024.png';
+	    loader.load(url,
 	        function ( texture ) {
 	            R01_utileria.floor.texture  = texture;
 	            R01_utileria.floor.isLoaded = true;	         
 	        },	        
 	        function ( xhr ) {},// Function called when download progresses //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );	        
-	        function ( xhr ) {}// Function called when download errors
+	        function ( xhr ) {
+	        	if (bandera) {
+	        		R01_utileria.loadFloor(false)
+	        	}else{
+
+	        	}
+	        }// Function called when download errors
 	    );
 	},
 	loadVar   : function(){

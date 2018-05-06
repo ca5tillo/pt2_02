@@ -208,10 +208,10 @@ var Controles = {
 
         },
         Salir : function (){
-            if(Usuario.logueado){
-                window.location="../proyectos.php?u="+Usuario.user_name;
+            if(ApiInfo.logueado){
+                window.location = `${routes['api-proyectos']}?u=${ApiInfo.user_name}`;
             }else{
-                window.location="../proyectos.php";
+                window.location = routes['api-proyectos'];
             }
         },
         
@@ -254,10 +254,9 @@ Controles.setupControles = function (){
                                _f2.add(this.funcion, 'Autocompletar');
     _Botones.l1.btn          = _f2.add(this.funcion, 'Linea Actual');
     _Botones.l2.btn          = _f2.add(this.funcion, 'Linea Siguiente');
-    
-    /*
-    if(  Usuario.logueado){
-        _f3.add(this.funcion, 'Guardar archivo');
+    ///*
+    if(  ApiInfo.logueado  ){
+        _f3.add(this.funcion, 'Guardar Cambios');
     }
     //*/
     _f3.add(this.funcion, 'Salir');
