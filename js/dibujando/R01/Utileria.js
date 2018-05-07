@@ -31,7 +31,7 @@ var R01_utileria = {
 	},
 	loadFloor     : function(bandera = true){
 	    let loader = new THREE.TextureLoader();
-		let url    = bandera ? `${routes['api-textruras']}?id_proyecto=${ApiInfo.id_proyecto}&&textura=floor`:'img/textures/floor_2-1024x1024.png';
+		let url    = bandera ? `${routes['api-textruras']}?id_proyecto=${_GET('n')}&&textura=floor`:'img/textures/floor_2-1024x1024.png';
 	    loader.load(url,
 	        function ( texture ) {
 	            R01_utileria.floor.texture  = texture;
