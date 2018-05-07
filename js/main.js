@@ -439,7 +439,7 @@ function load(){
         // finalizara este ciclo cuando todo este cargado R01_utileria.allLoaded();
         cancelAnimationFrame(_id); 
     }
-    console.log(_id);
+    //console.log(_id);
 }
 
 function render(){   

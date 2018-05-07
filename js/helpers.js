@@ -50,7 +50,8 @@ function setup_EventosMouse(){  /*  <<#7>>  */  /* Desactivar OrbilControl de TH
 }
 
 /*
- * Funciones para comunicarse con el servidor
+ * Funciones para comunicarse con el sistema 
+ * que gestiona a los usuarios y proyectos 
  */
 function _GET(variable) {
     //https://css-tricks.com/snippets/javascript/get-url-variables/
@@ -131,5 +132,4 @@ function setCodigoFuente(){
 
     var id_proyecto = ApiInfo.id_proyecto;
     xhttp.send(`id_proyecto=${id_proyecto}&&codigo=${codigo}`);
-
 }
