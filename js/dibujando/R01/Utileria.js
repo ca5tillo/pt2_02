@@ -47,37 +47,66 @@ var R01_utileria = {
 	        }// Function called when download errors
 	    );
 	},
-	loadVar   : function(){
+	loadVar   : function(bandera = true){
 		let loader = new THREE.TextureLoader();
-	    loader.load('img/textures/var.jpg',
+		let url    = bandera ? 
+		`${routes['api-textruras']}?id_proyecto=${_GET('n')}&&textura=variable`
+		:'img/textures/var.jpg';
+	   
+	    loader.load(url,
 	        function ( texture ) {
 	            R01_utileria.var.texture  = texture;
 	            R01_utileria.var.isLoaded = true;	         
 	        },	        
 	        function ( xhr ) {},// Function called when download progresses //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );	        
-	        function ( xhr ) {}// Function called when download errors
+	        function ( xhr ) {
+	        	if (bandera) {
+	        		R01_utileria.loadVar(false)
+	        	}else{
+
+	        	}
+	        }// Function called when download errors
 	    );
 	},
-	loadMetodo   : function(){
+	loadMetodo   : function(bandera = true){
 		let loader = new THREE.TextureLoader();
-	    loader.load('img/textures/nave.jpg',
+	    let url    = bandera ? 
+		`${routes['api-textruras']}?id_proyecto=${_GET('n')}&&textura=metodo`
+		:'img/textures/nave.jpg';
+	   
+	    loader.load(url,
 	        function ( texture ) {
 	            R01_utileria.metodo.texture  = texture;
 	            R01_utileria.metodo.isLoaded = true;	         
 	        },	        
 	        function ( xhr ) {},// Function called when download progresses //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );	        
-	        function ( xhr ) {}// Function called when download errors
+	        function ( xhr ) {
+	        	if (bandera) {
+	        		R01_utileria.loadMetodo(false)
+	        	}else{
+
+	        	}
+	        }// Function called when download errors
 	    );
 	},
-	loadLib   : function(){
+	loadLib   : function(bandera = true){
 		let loader = new THREE.TextureLoader();
-	    loader.load('img/textures/lib.jpg',
+	    let url    = bandera ? 
+		`${routes['api-textruras']}?id_proyecto=${_GET('n')}&&textura=libreria`
+		:'img/textures/lib.jpg';
+	   
+	    loader.load(url,
 	        function ( texture ) {
 	            R01_utileria.lib.texture  = texture;
 	            R01_utileria.lib.isLoaded = true;	         
 	        },	        
 	        function ( xhr ) {},// Function called when download progresses //console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );	        
-	        function ( xhr ) {}// Function called when download errors
+	        function ( xhr ) {
+	        	if (bandera) {
+	        		R01_utileria.loadLib(false)
+	        	}else{
+
+	        	}}// Function called when download errors
 	    );
 	}
 };
